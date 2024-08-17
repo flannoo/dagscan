@@ -5,14 +5,14 @@ import Link from "next/link"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { useQuery } from "@tanstack/react-query";
-import { Snapshot, getLatestSnapshots } from "@/lib/services/blockexplorer-requests";
+import { Snapshot, getLatestSnapshotsMetagraph } from "@/lib/services/blockexplorer-requests";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 import { AlertCircle } from "lucide-react";
 
-export function LatestSnapshots() {
+export function LatestSnapshotsMetagraph({ metagraphId }: { metagraphId: string }) {
     const { data, isLoading, isError } = useQuery({
-        queryKey: ['latestSnapshots'],
-        queryFn: async () => getLatestSnapshots(),
+        queryKey: ['latestSnapshots-' + metagraphId],
+        queryFn: async () => getLatestSnapshotsMetagraph(metagraphId),
         staleTime: 10 * 1000,
         refetchInterval: 10 * 1000,
         refetchOnWindowFocus: true,
@@ -46,7 +46,7 @@ export function LatestSnapshots() {
                                 {data?.map((snapshot) => (
                                     <TableRow key={snapshot.ordinal}>
                                         <TableCell>
-                                            <Link href={`/snapshots/${snapshot.ordinal}`} className="hover:underline" prefetch={false}>
+                                            <Link href={`/snapshots/${metagraphId}/${snapshot.ordinal}`} className="hover:underline" prefetch={false}>
                                                 {snapshot.ordinal}
                                             </Link>
                                         </TableCell>

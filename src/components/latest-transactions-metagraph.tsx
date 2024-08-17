@@ -5,14 +5,14 @@ import Link from "next/link"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { useQuery } from "@tanstack/react-query";
-import { Snapshot, getLatestSnapshots } from "@/lib/services/blockexplorer-requests";
+import { Transaction, getLatestTransactionsMetagraph } from "@/lib/services/blockexplorer-requests";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 import { AlertCircle } from "lucide-react";
 
-export function LatestSnapshots() {
+export function LatestTransactionsMetagraph({ metagraphId }: { metagraphId: string }) {
     const { data, isLoading, isError } = useQuery({
-        queryKey: ['latestSnapshots'],
-        queryFn: async () => getLatestSnapshots(),
+        queryKey: ['latestTransactions-' + metagraphId],
+        queryFn: async () => getLatestTransactionsMetagraph(metagraphId),
         staleTime: 10 * 1000,
         refetchInterval: 10 * 1000,
         refetchOnWindowFocus: true,
@@ -22,7 +22,7 @@ export function LatestSnapshots() {
         <div>
             <Card>
                 <CardHeader>
-                    <CardTitle>Latest Snapshots</CardTitle>
+                    <CardTitle>Latest Transactions</CardTitle>
                 </CardHeader>
                 <CardContent>
                     {isLoading ? (
@@ -36,23 +36,26 @@ export function LatestSnapshots() {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Ordinal</TableHead>
+                                    <TableHead>TXN Hash</TableHead>
                                     <TableHead>Timestamp</TableHead>
-                                    <TableHead>Blocks</TableHead>
-                                    <TableHead>Rewards</TableHead>
+                                    <TableHead>Amount</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {data?.map((snapshot) => (
-                                    <TableRow key={snapshot.ordinal}>
+                                {data?.map((transaction) => (
+                                    <TableRow key={transaction.hash}>
                                         <TableCell>
-                                            <Link href={`/snapshots/${snapshot.ordinal}`} className="hover:underline" prefetch={false}>
-                                                {snapshot.ordinal}
+                                            <Link href={`/transactions/${metagraphId}/${transaction.hash}`} className="hover:underline" prefetch={false}>
+                                                {transaction.hash.slice(0, 6)}...{transaction.hash.slice(-6)}
                                             </Link>
                                         </TableCell>
-                                        <TableCell>{new Date(snapshot.timestamp).toLocaleString()}</TableCell>
-                                        <TableCell>{snapshot.blocks.length}</TableCell>
-                                        <TableCell>{snapshot.rewards.length} recipients</TableCell>
+                                        <TableCell>{new Date(transaction.timestamp).toLocaleString()}</TableCell>
+                                        <TableCell>{
+                                            new Intl.NumberFormat('en-US', {
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 8,
+                                            }).format(transaction.amount / 1e8)
+                                        }</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

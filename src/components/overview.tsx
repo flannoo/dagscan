@@ -1,7 +1,4 @@
 import React from "react"
-import Link from "next/link"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { LatestTransactions } from "./latest-transactions"
 import { LatestSnapshots } from "./latest-snapshots"
 

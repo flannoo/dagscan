@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { useQuery } from "@tanstack/react-query";
 import { Transaction, getLatestTransactions } from "@/lib/services/blockexplorer-requests";
-import { SkeletonCard } from "./ui/skeleton-card";
+import { SkeletonCard } from "@/components/ui/skeleton-card";
 import { AlertCircle } from "lucide-react";
 
 export function LatestTransactions() {
@@ -45,7 +45,7 @@ export function LatestTransactions() {
                                 {data?.map((transaction) => (
                                     <TableRow key={transaction.hash}>
                                         <TableCell>
-                                            <Link href={`/transaction/${transaction.hash}`} className="hover:underline" prefetch={false}>
+                                            <Link href={`/transactions/${transaction.hash}`} className="hover:underline" prefetch={false}>
                                                 {transaction.hash.slice(0, 6)}...{transaction.hash.slice(-6)}
                                             </Link>
                                         </TableCell>
