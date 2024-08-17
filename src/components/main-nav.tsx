@@ -5,7 +5,7 @@ import { NavigationMenu, NavigationMenuList } from "@/components/ui/navigation-m
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Search } from "@/components/search";
-import { NavMenuLinks } from "./nav-menu-links";
+import { MainNavLinks } from "./main-nav-links";
 
 export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
     const [isOpen, setIsOpen] = useState(false);
@@ -29,7 +29,7 @@ export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElemen
                             <div className="mb-4 text-xl font-bold">Dag Scan</div>
                             <NavigationMenu>
                                 <NavigationMenuList className="flex flex-col items-start space-y-4">
-                                    <NavMenuLinks />
+                                    <MainNavLinks />
                                 </NavigationMenuList>
                             </NavigationMenu>
                         </SheetContent>
@@ -40,7 +40,7 @@ export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElemen
                 <div className="hidden lg:flex items-center space-x-4">
                     <NavigationMenu>
                         <NavigationMenuList className="flex space-x-4">
-                            <NavMenuLinks />
+                            <MainNavLinks />
                         </NavigationMenuList>
                     </NavigationMenu>
                 </div>

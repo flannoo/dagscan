@@ -7,7 +7,7 @@ import {
     NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
 
-export function NavMenuLinks() {
+export function MainNavLinks() {
     return (
         <>
             <Link href="/metagraphs" legacyBehavior passHref>
