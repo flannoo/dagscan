@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/lib/providers/themeProvider";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import ReactQueryProvider from "@/lib/providers/reactQueryProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,13 +23,11 @@ export default function RootLayout({
       <html lang="en" suppressHydrationWarning>
         <head />
         <body>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             <Header />
-            {children}
+            <ReactQueryProvider>
+              {children}
+            </ReactQueryProvider>
             <Footer />
           </ThemeProvider>
         </body>
