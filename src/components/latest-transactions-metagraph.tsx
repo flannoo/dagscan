@@ -5,11 +5,11 @@ import Link from "next/link"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { useQuery } from "@tanstack/react-query";
-import { Transaction, getLatestTransactionsMetagraph } from "@/lib/services/blockexplorer-requests";
+import { getLatestTransactionsMetagraph } from "@/lib/services/api-blockexplorer-requests";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 import { AlertCircle } from "lucide-react";
 
-export function LatestTransactionsMetagraph({ metagraphId }: { metagraphId: string }) {
+export function LatestTransactionsMetagraph({ metagraphId, metagraphSymbol }: { metagraphId: string, metagraphSymbol: string }) {
     const { data, isLoading, isError } = useQuery({
         queryKey: ['latestTransactions-' + metagraphId],
         queryFn: async () => getLatestTransactionsMetagraph(metagraphId),
@@ -22,7 +22,7 @@ export function LatestTransactionsMetagraph({ metagraphId }: { metagraphId: stri
         <div>
             <Card>
                 <CardHeader>
-                    <CardTitle>Latest Transactions</CardTitle>
+                    <CardTitle>Latest {metagraphSymbol} Transactions</CardTitle>
                 </CardHeader>
                 <CardContent>
                     {isLoading ? (
@@ -55,7 +55,7 @@ export function LatestTransactionsMetagraph({ metagraphId }: { metagraphId: stri
                                                 minimumFractionDigits: 0,
                                                 maximumFractionDigits: 8,
                                             }).format(transaction.amount / 1e8)
-                                        }</TableCell>
+                                        } {metagraphSymbol}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

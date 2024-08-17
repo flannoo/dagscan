@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { useQuery } from "@tanstack/react-query";
-import { Snapshot, getLatestSnapshots } from "@/lib/services/blockexplorer-requests";
+import { getLatestSnapshots } from "@/lib/services/api-blockexplorer-requests";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 import { AlertCircle } from "lucide-react";
 
