@@ -15,6 +15,11 @@ export function MainNavLinks() {
                     Metagraphs
                 </NavigationMenuLink>
             </Link>
+            <Link href="/rewards" legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    Reward Explorer
+                </NavigationMenuLink>
+            </Link>
             <Link href="/node-explorer" legacyBehavior passHref>
                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                     Node Explorer
