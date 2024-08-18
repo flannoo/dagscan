@@ -20,7 +20,7 @@ export function MainNavLinks() {
                     Reward Explorer
                 </NavigationMenuLink>
             </Link>
-            <Link href="/node-explorer" legacyBehavior passHref>
+            <Link href="/nodes" legacyBehavior passHref>
                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                     Node Explorer
                 </NavigationMenuLink>
