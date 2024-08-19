@@ -25,6 +25,16 @@ export type SnapshotCount = {
     Count: number;
 }
 
+export type Wallet = {
+    Address: string;
+    Balance: number;
+    BalanceUSD: number;
+    Rank: number;
+    Tag: string;
+    SupplyPercentage: number;
+    LastSnapshotReward: string;
+}
+
 export async function getMetagraphs() {
     const res = await fetch('https://api.nebula-tech.io/dag/v1/metagraphs');
 
@@ -71,4 +81,39 @@ export async function getSnapshotCount() {
     const data = await res.json();
     const snapshotCount = data as SnapshotCount[];
     return snapshotCount;
+}
+
+export async function getDagWallets() {
+    const res = await fetch(`https://api.nebula-tech.io/dag/v1/dag/wallets`);
+
+    if (!res.ok) {
+        throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    const wallets = data as Wallet[];
+    return wallets;
+}
+
+export async function getMetagraphWallets(metagraphSymbol: string) {
+    if (!metagraphSymbol) {
+        return [];
+    }
+
+    let res;
+
+    if (metagraphSymbol === 'DAG') {
+        res = await fetch(`https://api.nebula-tech.io/dag/v1/dag/wallets`);
+    } else {
+
+        res = await fetch(`https://api.nebula-tech.io/dag/v1/metagraph-wallets?metagraph=${metagraphSymbol}`);
+    }
+
+    if (!res.ok) {
+        throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    const wallets = data as Wallet[];
+    return wallets;
 }

@@ -1,10 +1,13 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { Reward } from "@/lib/services/api-nebula-requests"
+import { getRewards, Reward } from "@/lib/services/api-nebula-requests"
+import { useQuery } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 import Link from "next/link";
+import { SkeletonCard } from "@/components/ui/skeleton-card";
+import { DataTable } from "@/components/ui/data-table"
 
 export const columns: ColumnDef<Reward>[] = [
     {
@@ -43,6 +46,9 @@ export const columns: ColumnDef<Reward>[] = [
         header: "Amount",
         cell: ({ row }) => {
             const parsedAmount = parseFloat(row.getValue("Amount"));
+            if (isNaN(parsedAmount)) {
+                return "";
+            }
             const formattedAmount = new Intl.NumberFormat('en-US', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 8,
@@ -76,3 +82,21 @@ export const columns: ColumnDef<Reward>[] = [
         },
     },
 ]
+
+export default function GridRewards({ addresses }: { addresses: string }) {
+    const { data: rewards, isLoading, isError } = useQuery({
+        queryKey: ['rewards-' + addresses],
+        queryFn: async () => getRewards(addresses),
+    });
+    return (
+        <div className="mb-4">
+            {isLoading ? (
+                <SkeletonCard />
+            ) : isError ? (
+                <p className="text-red-500">Error loading reward data.</p>
+            ) : (
+                <DataTable columns={columns} data={rewards ?? []} />
+            )}
+        </div>
+    )
+}
