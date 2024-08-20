@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/lib/providers/themeProvider";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import ReactQueryProvider from "@/lib/providers/reactQueryProvider";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,6 +30,7 @@ export default function RootLayout({
             <ReactQueryProvider>
               {children}
             </ReactQueryProvider>
+            <Toaster  />
             <Footer />
           </ThemeProvider>
         </body>
