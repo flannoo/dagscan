@@ -19,7 +19,6 @@ export function MetagraphList() {
     return (
         <div>
             <Card>
-                <CardHeader>Metagraphs</CardHeader>
                 <CardContent>
                     {isLoading ? (
                         <SkeletonCard />

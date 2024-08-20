@@ -12,7 +12,6 @@ export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElemen
 
     return (
         <div className={`flex items-center justify-between w-full ${className}`} {...props}>
-            {/* Left Side: Navigation Links or Hamburger Button */}
             <div className="flex items-center space-x-4">
                 {/* Hamburger Menu for Mobile View */}
                 <div className="lg:hidden">
@@ -29,7 +28,7 @@ export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElemen
                             <div className="mb-4 text-xl font-bold">Dag Scan</div>
                             <NavigationMenu>
                                 <NavigationMenuList className="flex flex-col items-start space-y-4">
-                                    <MainNavLinks />
+                                    <MainNavLinks setIsOpen={setIsOpen} />
                                 </NavigationMenuList>
                             </NavigationMenu>
                         </SheetContent>
@@ -40,7 +39,7 @@ export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElemen
                 <div className="hidden lg:flex items-center space-x-4">
                     <NavigationMenu>
                         <NavigationMenuList className="flex space-x-4">
-                            <MainNavLinks />
+                            <MainNavLinks setIsOpen={setIsOpen} />
                         </NavigationMenuList>
                     </NavigationMenu>
                 </div>
