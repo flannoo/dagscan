@@ -18,6 +18,17 @@ public sealed class HypergraphValidatorNodeEntityTypeConfiguration : IEntityType
                 value => new HypergraphValidatorNodeId(value)
             );
 
+        builder.Property(h => h.HypergraphId)
+            .ValueGeneratedNever()
+            .HasConversion(
+                id => id.Value,
+                value => new HypergraphId(value)
+            );
+
+        builder.HasOne<Hypergraph>()
+            .WithMany()
+            .HasForeignKey(h => h.HypergraphId);
+
         builder.HasKey(h => h.Id);
 
         builder.HasIndex(h => new { h.WalletHash, h.WalletId }).IsUnique();

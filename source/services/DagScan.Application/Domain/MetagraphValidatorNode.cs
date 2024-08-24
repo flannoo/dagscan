@@ -20,8 +20,9 @@ public sealed class MetagraphValidatorNodeId : ValueObject
     }
 }
 
-public sealed class MetagraphValidatorNode : Entity<MetagraphValidatorNodeId>
+public sealed class MetagraphValidatorNode : Aggregate<MetagraphValidatorNodeId>
 {
+    public MetagraphId MetagraphId { get; private set; } = default!;
     public MetagraphTypes MetagraphType { get; private init; }
     public string WalletHash { get; private init; } = default!;
     public string WalletId { get; private init; } = default!;

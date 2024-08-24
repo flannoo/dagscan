@@ -20,7 +20,6 @@ public sealed class SyncHypergraphValidatorNodesJob(
         logger.LogInformation("Start {JobName} Execution", nameof(SyncHypergraphValidatorNodesJob));
 
         var hypergraphs = dagContext.Hypergraphs
-            .Include(x => x.HypergraphValidatorNodes)
             .ToList();
 
         foreach (var hypergraph in hypergraphs)

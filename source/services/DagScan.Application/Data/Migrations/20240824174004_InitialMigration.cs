@@ -26,25 +26,6 @@ namespace DagScan.Application.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Metagraphs",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Symbol = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
-                    CompanyName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Website = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    DataSyncEnabled = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    MetagraphEndpoint = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Metagraphs", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "NodeOperators",
                 columns: table => new
                 {
@@ -59,10 +40,37 @@ namespace DagScan.Application.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Metagraphs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    HypergraphId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Symbol = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    CompanyName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Website = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    DataSyncEnabled = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    MetagraphEndpoint = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Metagraphs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Metagraphs_Hypergraphs_HypergraphId",
+                        column: x => x.HypergraphId,
+                        principalTable: "Hypergraphs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "HypergraphValidatorNodes",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    HypergraphId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     WalletHash = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     WalletId = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     IpAddress = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
@@ -73,8 +81,7 @@ namespace DagScan.Application.Data.Migrations
                     City = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Latitude = table.Column<double>(type: "float", nullable: true),
                     Longitude = table.Column<double>(type: "float", nullable: true),
-                    NodeOperatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    HypergraphId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    NodeOperatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -83,7 +90,8 @@ namespace DagScan.Application.Data.Migrations
                         name: "FK_HypergraphValidatorNodes_Hypergraphs_HypergraphId",
                         column: x => x.HypergraphId,
                         principalTable: "Hypergraphs",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_HypergraphValidatorNodes_NodeOperators_NodeOperatorId",
                         column: x => x.NodeOperatorId,
@@ -96,6 +104,7 @@ namespace DagScan.Application.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MetagraphId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     MetagraphType = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
                     WalletHash = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     WalletId = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
@@ -107,8 +116,7 @@ namespace DagScan.Application.Data.Migrations
                     City = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Latitude = table.Column<double>(type: "float", nullable: true),
                     Longitude = table.Column<double>(type: "float", nullable: true),
-                    NodeOperatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    MetagraphId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    NodeOperatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -117,7 +125,8 @@ namespace DagScan.Application.Data.Migrations
                         name: "FK_MetagraphValidatorNodes_Metagraphs_MetagraphId",
                         column: x => x.MetagraphId,
                         principalTable: "Metagraphs",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_MetagraphValidatorNodes_NodeOperators_NodeOperatorId",
                         column: x => x.NodeOperatorId,
@@ -140,6 +149,11 @@ namespace DagScan.Application.Data.Migrations
                 table: "HypergraphValidatorNodes",
                 columns: new[] { "WalletHash", "WalletId" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Metagraphs_HypergraphId",
+                table: "Metagraphs",
+                column: "HypergraphId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MetagraphValidatorNodes_MetagraphId",
@@ -168,13 +182,13 @@ namespace DagScan.Application.Data.Migrations
                 name: "MetagraphValidatorNodes");
 
             migrationBuilder.DropTable(
-                name: "Hypergraphs");
-
-            migrationBuilder.DropTable(
                 name: "Metagraphs");
 
             migrationBuilder.DropTable(
                 name: "NodeOperators");
+
+            migrationBuilder.DropTable(
+                name: "Hypergraphs");
         }
     }
 }

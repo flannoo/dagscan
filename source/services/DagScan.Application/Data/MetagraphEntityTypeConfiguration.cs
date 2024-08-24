@@ -20,6 +20,17 @@ public sealed class MetagraphEntityTypeConfiguration : IEntityTypeConfiguration<
 
         builder.HasKey(m => m.Id);
 
+        builder.Property(m => m.HypergraphId)
+            .ValueGeneratedNever()
+            .HasConversion(
+                id => id.Value,
+                value => new HypergraphId(value)
+            );
+
+        builder.HasOne<Hypergraph>()
+            .WithMany()
+            .HasForeignKey(m => m.HypergraphId);
+
         builder.Property(m => m.Address)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
             .IsRequired();

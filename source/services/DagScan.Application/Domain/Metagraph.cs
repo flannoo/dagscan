@@ -42,6 +42,7 @@ public sealed class MetagraphEndpoint : ValueObject
 
 public sealed class Metagraph : Aggregate<MetagraphId>
 {
+    public HypergraphId HypergraphId { get; private set; } = default!;
     public string Address { get; private init; } = default!;
     public string Name { get; private init; } = default!;
     public string Symbol { get; private init; } = default!;
@@ -50,6 +51,4 @@ public sealed class Metagraph : Aggregate<MetagraphId>
     public string? Website { get; private init; }
     public string? Description { get; private init; }
     public bool DataSyncEnabled { get; private init; }
-
-    public List<MetagraphValidatorNode> MetagraphValidatorNodes { get; private init; } = [];
 }

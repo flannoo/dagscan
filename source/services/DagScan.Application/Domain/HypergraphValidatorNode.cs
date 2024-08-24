@@ -20,8 +20,9 @@ public sealed class HypergraphValidatorNodeId : ValueObject
     }
 }
 
-public sealed class HypergraphValidatorNode : Entity<HypergraphValidatorNodeId>
+public sealed class HypergraphValidatorNode : Aggregate<HypergraphValidatorNodeId>
 {
+    public HypergraphId HypergraphId { get; private set; } = default!;
     public string WalletHash { get; private init; } = default!;
     public string WalletId { get; private init; } = default!;
     public string IpAddress { get; private set; } = default!;
@@ -34,22 +35,29 @@ public sealed class HypergraphValidatorNode : Entity<HypergraphValidatorNodeId>
     public double? Longitude { get; private set; }
     public NodeOperator? NodeOperator { get; private set; }
 
-    public static HypergraphValidatorNode Create(string walletId, string walletHash, string state,
+    public static HypergraphValidatorNode Create(HypergraphId hypergraphId, string walletId, string walletHash, string state,
         string ipAddress)
     {
         Guard.Against.NullOrWhiteSpace(walletHash, nameof(walletHash));
         Guard.Against.NullOrWhiteSpace(walletId, nameof(walletId));
         Guard.Against.NullOrWhiteSpace(state, nameof(state));
         Guard.Against.NullOrWhiteSpace(ipAddress, nameof(ipAddress));
+        Guard.Against.Null(hypergraphId, nameof(hypergraphId));
 
         return new HypergraphValidatorNode()
         {
             Id = new HypergraphValidatorNodeId(Guid.NewGuid()),
+            HypergraphId = hypergraphId,
             WalletHash = walletHash,
             WalletId = walletId,
             State = state,
             IpAddress = ipAddress
         };
+    }
+
+    public void Created()
+    {
+        // TODO: add domain event here
     }
 
     public void UpdateNodeInfo(string state, string ipAddress)

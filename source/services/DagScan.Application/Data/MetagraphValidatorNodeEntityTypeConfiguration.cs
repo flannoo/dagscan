@@ -22,6 +22,17 @@ public sealed class MetagraphValidatorNodeEntityTypeConfiguration : IEntityTypeC
 
         builder.HasIndex(v => new { v.WalletHash, v.MetagraphType }).IsUnique();
 
+        builder.Property(v => v.MetagraphId)
+            .ValueGeneratedNever()
+            .HasConversion(
+                id => id.Value,
+                value => new MetagraphId(value)
+            );
+
+        builder.HasOne<Metagraph>()
+            .WithMany()
+            .HasForeignKey(v => v.MetagraphId);
+
         builder.Property(v => v.WalletHash)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
             .IsRequired();

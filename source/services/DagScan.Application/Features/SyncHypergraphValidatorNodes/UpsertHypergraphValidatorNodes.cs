@@ -23,7 +23,7 @@ public sealed class UpsertHypergraphValidatorNodesCommandHandler(
     {
         using var httpClient = httpClientFactory.CreateClient();
 
-        var hypergraph = await dagContext.Hypergraphs.Include(x => x.HypergraphValidatorNodes)
+        var hypergraph = await dagContext.Hypergraphs //.Include(x => x.HypergraphValidatorNodes)
             .FirstOrDefaultAsync(x => x.Id == new HypergraphId(request.HypergraphId), cancellationToken);
 
         if (hypergraph is null)
@@ -40,18 +40,21 @@ public sealed class UpsertHypergraphValidatorNodesCommandHandler(
             return false;
         }
 
+        var hypergraphNodes =
+            await dagContext.HypergraphValidatorNodes.ToListAsync(cancellationToken: cancellationToken);
+
         foreach (var validatorNode in validatorNodes.ToList())
         {
-            var persistedNode =
-                hypergraph.HypergraphValidatorNodes.FirstOrDefault(x => x.WalletId == validatorNode.Id);
+            var persistedNode = hypergraphNodes.FirstOrDefault(x => x.WalletId == validatorNode.Id);
 
             if (persistedNode is null)
             {
-                var newNode = HypergraphValidatorNode.Create(validatorNode.Id,
+                var newNode = HypergraphValidatorNode.Create(hypergraph.Id, validatorNode.Id,
                     validatorNode.Id.ConvertNodeIdToWalletHash(),
                     validatorNode.State, validatorNode.Ip);
 
-                hypergraph.AddValidatorNode(newNode);
+                await dagContext.HypergraphValidatorNodes.AddAsync(newNode, cancellationToken);
+                newNode.Created();
             }
             else
             {
@@ -60,10 +63,10 @@ public sealed class UpsertHypergraphValidatorNodesCommandHandler(
         }
 
         // Mark nodes as offline if they are not included in validatorNodes API response
-        var validatorNodeIds = validatorNodes.Select(vn => vn.Id).ToHashSet();
-        foreach (var persistedNode in hypergraph.HypergraphValidatorNodes)
+        //var validatorNodeIds = validatorNodes.Select(vn => vn.Id).ToHashSet();
+        foreach (var persistedNode in hypergraphNodes)
         {
-            if (!validatorNodeIds.Contains(persistedNode.WalletId))
+            if (!hypergraphNodes.Select(x => x.WalletId).Contains(persistedNode.WalletId))
             {
                 persistedNode.MarkAsOffline();
             }

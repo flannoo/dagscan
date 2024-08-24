@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DagScan.Application.Data.Migrations
 {
     [DbContext(typeof(DagContext))]
-    [Migration("20240824133402_InitialMigration")]
+    [Migration("20240824174004_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -62,7 +62,7 @@ namespace DagScan.Application.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<Guid?>("HypergraphId")
+                    b.Property<Guid>("HypergraphId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("IpAddress")
@@ -138,6 +138,9 @@ namespace DagScan.Application.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<Guid>("HypergraphId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -153,6 +156,8 @@ namespace DagScan.Application.Data.Migrations
                         .HasColumnType("nvarchar(250)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("HypergraphId");
 
                     b.ToTable("Metagraphs", (string)null);
                 });
@@ -181,7 +186,7 @@ namespace DagScan.Application.Data.Migrations
                     b.Property<double?>("Longitude")
                         .HasColumnType("float");
 
-                    b.Property<Guid?>("MetagraphId")
+                    b.Property<Guid>("MetagraphId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("MetagraphType")
@@ -253,8 +258,10 @@ namespace DagScan.Application.Data.Migrations
             modelBuilder.Entity("DagScan.Application.Domain.HypergraphValidatorNode", b =>
                 {
                     b.HasOne("DagScan.Application.Domain.Hypergraph", null)
-                        .WithMany("HypergraphValidatorNodes")
-                        .HasForeignKey("HypergraphId");
+                        .WithMany()
+                        .HasForeignKey("HypergraphId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("DagScan.Application.Domain.NodeOperator", "NodeOperator")
                         .WithMany()
@@ -265,6 +272,12 @@ namespace DagScan.Application.Data.Migrations
 
             modelBuilder.Entity("DagScan.Application.Domain.Metagraph", b =>
                 {
+                    b.HasOne("DagScan.Application.Domain.Hypergraph", null)
+                        .WithMany()
+                        .HasForeignKey("HypergraphId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.OwnsMany("DagScan.Application.Domain.MetagraphEndpoint", "MetagraphEndpoint", b1 =>
                         {
                             b1.Property<Guid>("MetagraphId")
@@ -300,24 +313,16 @@ namespace DagScan.Application.Data.Migrations
             modelBuilder.Entity("DagScan.Application.Domain.MetagraphValidatorNode", b =>
                 {
                     b.HasOne("DagScan.Application.Domain.Metagraph", null)
-                        .WithMany("MetagraphValidatorNodes")
-                        .HasForeignKey("MetagraphId");
+                        .WithMany()
+                        .HasForeignKey("MetagraphId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("DagScan.Application.Domain.NodeOperator", "NodeOperator")
                         .WithMany()
                         .HasForeignKey("NodeOperatorId");
 
                     b.Navigation("NodeOperator");
-                });
-
-            modelBuilder.Entity("DagScan.Application.Domain.Hypergraph", b =>
-                {
-                    b.Navigation("HypergraphValidatorNodes");
-                });
-
-            modelBuilder.Entity("DagScan.Application.Domain.Metagraph", b =>
-                {
-                    b.Navigation("MetagraphValidatorNodes");
                 });
 #pragma warning restore 612, 618
         }
