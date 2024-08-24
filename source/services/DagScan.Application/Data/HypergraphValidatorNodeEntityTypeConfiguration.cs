@@ -1,9 +1,9 @@
-using DagScan.Core.Domain;
+using DagScan.Application.Domain;
 using DagScan.Core.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace DagScan.Core.Data;
+namespace DagScan.Application.Data;
 
 public sealed class HypergraphValidatorNodeEntityTypeConfiguration : IEntityTypeConfiguration<HypergraphValidatorNode>
 {

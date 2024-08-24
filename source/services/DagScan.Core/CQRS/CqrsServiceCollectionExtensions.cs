@@ -3,9 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DagScan.Core.CQRS;
 
-public static class CQRSServiceCollectionExtensions
+public static class CqrsServiceCollectionExtensions
 {
-    public static IServiceCollection AddCQRS(
+    public static IServiceCollection AddCqrs(
         this IServiceCollection services,
         Assembly[] assemblies,
         params Type[]? pipelines

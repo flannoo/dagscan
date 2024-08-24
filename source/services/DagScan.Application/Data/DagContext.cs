@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
-using DagScan.Core.Domain;
+using DagScan.Application.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace DagScan.Core.Data;
+namespace DagScan.Application.Data;
 
 public sealed class DagContext(DbContextOptions<DagContext> options) : DbContext(options)
 {

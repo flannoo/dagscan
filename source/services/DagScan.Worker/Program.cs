@@ -1,7 +1,7 @@
 using System.Reflection;
+using DagScan.Application.Data;
+using DagScan.Application.Extensions;
 using DagScan.Core.CQRS;
-using DagScan.Core.Data;
-using DagScan.Core.Extensions;
 using DagScan.Core.Persistence;
 using DagScan.Worker;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +15,7 @@ builder.Services.AddDbContext<DagContext>(options => { options.UseSqlServer(conn
 builder.Services.AddDbContext<ReadOnlyDagContext>(options => { options.UseSqlServer(connectionString); });
 
 builder.Services
-    .AddCQRS(
+    .AddCqrs(
         new[] { Assembly.GetExecutingAssembly() },
         pipelines: new[] { typeof(UnitOfWorkBehavior<,>), }
     );

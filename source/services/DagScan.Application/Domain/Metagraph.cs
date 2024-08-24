@@ -1,7 +1,7 @@
 using Ardalis.GuardClauses;
 using DagScan.Core.DDD;
 
-namespace DagScan.Core.Domain;
+namespace DagScan.Application.Domain;
 
 public enum MetagraphTypes
 {

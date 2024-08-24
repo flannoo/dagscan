@@ -1,10 +1,10 @@
-﻿using DagScan.Core.Data;
+﻿using DagScan.Application.Data;
 using DagScan.Core.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace DagScan.Core.Extensions;
+namespace DagScan.Application.Extensions;
 
 public static class StorageExtensions
 {
