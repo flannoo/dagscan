@@ -1,5 +1,7 @@
 using Ardalis.GuardClauses;
+using DagScan.Core.CQRS;
 using DagScan.Core.DDD;
+using MediatR;
 
 namespace DagScan.Application.Domain;
 
@@ -22,7 +24,7 @@ public sealed class HypergraphValidatorNodeId : ValueObject
 
 public sealed class HypergraphValidatorNode : Aggregate<HypergraphValidatorNodeId>
 {
-    public HypergraphId HypergraphId { get; private set; } = default!;
+    public HypergraphId HypergraphId { get; private init; } = default!;
     public string WalletHash { get; private init; } = default!;
     public string WalletId { get; private init; } = default!;
     public string IpAddress { get; private set; } = default!;
@@ -35,7 +37,8 @@ public sealed class HypergraphValidatorNode : Aggregate<HypergraphValidatorNodeI
     public double? Longitude { get; private set; }
     public NodeOperator? NodeOperator { get; private set; }
 
-    public static HypergraphValidatorNode Create(HypergraphId hypergraphId, string walletId, string walletHash, string state,
+    public static HypergraphValidatorNode Create(HypergraphId hypergraphId, string walletId, string walletHash,
+        string state,
         string ipAddress)
     {
         Guard.Against.NullOrWhiteSpace(walletHash, nameof(walletHash));
@@ -57,7 +60,7 @@ public sealed class HypergraphValidatorNode : Aggregate<HypergraphValidatorNodeI
 
     public void Created()
     {
-        // TODO: add domain event here
+        AddDomainEvent(new HypergraphValidatorNodeAdded(HypergraphId, Id));
     }
 
     public void UpdateNodeInfo(string state, string ipAddress)
@@ -100,3 +103,8 @@ public sealed class HypergraphValidatorNode : Aggregate<HypergraphValidatorNodeI
         NodeOperator = nodeOperator;
     }
 }
+
+public sealed record HypergraphValidatorNodeAdded(
+    HypergraphId HypergraphId,
+    HypergraphValidatorNodeId HypergraphValidatorNodeId)
+    : DomainEvent, INotification;

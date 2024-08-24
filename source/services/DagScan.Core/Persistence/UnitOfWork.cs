@@ -2,15 +2,10 @@
 
 namespace DagScan.Core.Persistence;
 
-public sealed class EfUnitOfWork<TContext> : IUnitOfWork, IEfUnitOfWork
+public sealed class EfUnitOfWork<TContext>(TContext dbContext) : IUnitOfWork, IEfUnitOfWork
     where TContext : DbContext
 {
-    public EfUnitOfWork(TContext dbContext)
-    {
-        DbContext = dbContext;
-    }
-
-    public DbContext DbContext { get; private set; }
+    public DbContext DbContext { get; private set; } = dbContext;
 
     public async Task CommitAsync(CancellationToken cancellationToken)
     {

@@ -4,6 +4,7 @@ using DagScan.Application.Data;
 using DagScan.Application.Data.Seeders;
 using DagScan.Application.Extensions;
 using DagScan.Core.CQRS;
+using DagScan.Core.Messaging;
 using DagScan.Core.Persistence;
 using DagScan.Worker.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,7 @@ builder.Services.AddScoped<IRequiredDataSeeder, HypergraphDataSeeder>();
 builder.Services
     .AddCqrs(
         new[] { Assembly.GetExecutingAssembly(), typeof(IApplicationMarker).Assembly },
-        pipelines: new[] { typeof(UnitOfWorkBehavior<,>), }
+        pipelines: new[] { typeof(UnitOfWorkBehavior<,>), typeof(PublishDomainEventBehavior<,>) }
     );
 
 builder.AddHangfire(databaseConnectionString);

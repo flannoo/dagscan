@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using DagScan.Application;
+using DagScan.Application.Features.UpdateValidatorNodeLocations;
 using DagScan.Core.Scheduling;
 using Hangfire;
 using NGuid;
@@ -19,13 +20,20 @@ public static class HangfireExtensions
             .UseRecommendedSerializerSettings()
             .UseSqlServerStorage(databaseConnectionString));
 
-        builder.Services.AddHangfireServer((options) => options.WorkerCount = 4);
+        builder.Services.AddHangfireServer((options) =>
+            {
+                options.WorkerCount = 4;
+                options.Queues = ["default", "ip-lookup"];
+            }
+        );
 
         builder.Services.Scan(scanner => scanner
             .FromAssembliesOf(typeof(IApplicationMarker))
             .AddClasses(classes => classes.AssignableTo<IJob>())
             .AsImplementedInterfaces()
             .WithTransientLifetime());
+
+        builder.Services.AddTransient<UpdateHypergraphValidatorNodeLocationJob>();
 
         return builder;
     }

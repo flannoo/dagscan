@@ -23,7 +23,7 @@ public sealed class UpsertHypergraphValidatorNodesCommandHandler(
     {
         using var httpClient = httpClientFactory.CreateClient();
 
-        var hypergraph = await dagContext.Hypergraphs //.Include(x => x.HypergraphValidatorNodes)
+        var hypergraph = await dagContext.Hypergraphs
             .FirstOrDefaultAsync(x => x.Id == new HypergraphId(request.HypergraphId), cancellationToken);
 
         if (hypergraph is null)
@@ -63,7 +63,6 @@ public sealed class UpsertHypergraphValidatorNodesCommandHandler(
         }
 
         // Mark nodes as offline if they are not included in validatorNodes API response
-        //var validatorNodeIds = validatorNodes.Select(vn => vn.Id).ToHashSet();
         foreach (var persistedNode in hypergraphNodes)
         {
             if (!hypergraphNodes.Select(x => x.WalletId).Contains(persistedNode.WalletId))
