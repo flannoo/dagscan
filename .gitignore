@@ -367,3 +367,7 @@ crash.*.log
 .vscode/*
 **/.vscode/*
 **/.DS_Store
+
+# Jetbrains IDE
+.idea/*
+**/.idea/*
