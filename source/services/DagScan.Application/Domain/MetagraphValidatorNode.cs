@@ -24,7 +24,7 @@ public sealed class MetagraphValidatorNode : Entity<MetagraphValidatorNodeId>
 {
     public MetagraphTypes MetagraphType { get; private init; }
     public string WalletHash { get; private init; } = default!;
-    public string WalletAddress { get; private init; } = default!;
+    public string WalletId { get; private init; } = default!;
     public string IpAddress { get; private set; } = default!;
     public string State { get; private set; } = default!;
     public string? Version { get; private set; }

@@ -23,13 +23,13 @@ public sealed class MetagraphValidatorNodeEntityTypeConfiguration : IEntityTypeC
         builder.HasIndex(v => new { v.WalletHash, v.MetagraphType }).IsUnique();
 
         builder.Property(v => v.WalletHash)
+            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
+            .IsRequired();
+
+        builder.Property(v => v.WalletId)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.LongText)
             .IsRequired();
 
-        builder.Property(v => v.WalletAddress)
-            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
-            .IsRequired();
-        
         builder.Property(v => v.IpAddress)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
             .IsRequired();

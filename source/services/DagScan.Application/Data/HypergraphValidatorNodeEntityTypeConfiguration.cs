@@ -20,14 +20,14 @@ public sealed class HypergraphValidatorNodeEntityTypeConfiguration : IEntityType
 
         builder.HasKey(h => h.Id);
 
-        builder.HasIndex(h => new { h.WalletHash, h.WalletAddress }).IsUnique();
+        builder.HasIndex(h => new { h.WalletHash, h.WalletId }).IsUnique();
 
         builder.Property(h => h.WalletHash)
-            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.LongText)
+            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
             .IsRequired();
 
-        builder.Property(h => h.WalletAddress)
-            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
+        builder.Property(h => h.WalletId)
+            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.LongText)
             .IsRequired();
 
         builder.Property(h => h.IpAddress)

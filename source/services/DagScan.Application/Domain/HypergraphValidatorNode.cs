@@ -23,7 +23,7 @@ public sealed class HypergraphValidatorNodeId : ValueObject
 public sealed class HypergraphValidatorNode : Entity<HypergraphValidatorNodeId>
 {
     public string WalletHash { get; private init; } = default!;
-    public string WalletAddress { get; private init; } = default!;
+    public string WalletId { get; private init; } = default!;
     public string IpAddress { get; private set; } = default!;
     public string State { get; private set; } = default!;
     public string? Version { get; private set; } = default!;
@@ -34,11 +34,11 @@ public sealed class HypergraphValidatorNode : Entity<HypergraphValidatorNodeId>
     public double? Longitude { get; private set; }
     public NodeOperator? NodeOperator { get; private set; }
 
-    public static HypergraphValidatorNode Create(string walletHash, string walletAddress, string state,
+    public static HypergraphValidatorNode Create(string walletId, string walletHash, string state,
         string ipAddress)
     {
         Guard.Against.NullOrWhiteSpace(walletHash, nameof(walletHash));
-        Guard.Against.NullOrWhiteSpace(walletAddress, nameof(walletAddress));
+        Guard.Against.NullOrWhiteSpace(walletId, nameof(walletId));
         Guard.Against.NullOrWhiteSpace(state, nameof(state));
         Guard.Against.NullOrWhiteSpace(ipAddress, nameof(ipAddress));
 
@@ -46,7 +46,7 @@ public sealed class HypergraphValidatorNode : Entity<HypergraphValidatorNodeId>
         {
             Id = new HypergraphValidatorNodeId(Guid.NewGuid()),
             WalletHash = walletHash,
-            WalletAddress = walletAddress,
+            WalletId = walletId,
             State = state,
             IpAddress = ipAddress
         };

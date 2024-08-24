@@ -1,3 +1,3 @@
-﻿namespace DagScan.Application.Features.UpsertHypergraphValidatorNodes;
+﻿namespace DagScan.Application.Features.SyncHypergraphValidatorNodes;
 
 public sealed record HypergraphClusterInfo(string Id, string Ip, string State);

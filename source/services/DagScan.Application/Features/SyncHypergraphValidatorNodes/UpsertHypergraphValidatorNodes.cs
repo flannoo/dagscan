@@ -3,10 +3,11 @@ using System.Text.Json;
 using DagScan.Application.Data;
 using DagScan.Application.Domain;
 using DagScan.Core.CQRS;
+using DagScan.Core.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace DagScan.Application.Features.UpsertHypergraphValidatorNodes;
+namespace DagScan.Application.Features.SyncHypergraphValidatorNodes;
 
 public sealed record UpsertHypergraphValidatorNodesCommand : ICommand<bool>
 {
@@ -39,27 +40,24 @@ public sealed class UpsertHypergraphValidatorNodesCommandHandler(
             return false;
         }
 
-        var updatedNodes = new List<HypergraphValidatorNode>();
         foreach (var validatorNode in validatorNodes.ToList())
         {
             var persistedNode =
-                hypergraph.HypergraphValidatorNodes.FirstOrDefault(x => x.WalletHash == validatorNode.Id);
+                hypergraph.HypergraphValidatorNodes.FirstOrDefault(x => x.WalletId == validatorNode.Id);
 
             if (persistedNode is null)
             {
-                var newNode = HypergraphValidatorNode.Create(validatorNode.Id, validatorNode.Id.Substring(0, 40),
+                var newNode = HypergraphValidatorNode.Create(validatorNode.Id,
+                    validatorNode.Id.ConvertNodeIdToWalletHash(),
                     validatorNode.State, validatorNode.Ip);
 
-                updatedNodes.Add(newNode);
+                hypergraph.HypergraphValidatorNodes.Add(newNode);
             }
             else
             {
                 persistedNode.UpdateNodeInfo(validatorNode.State, validatorNode.Ip);
-                updatedNodes.Add(persistedNode);
             }
         }
-
-        hypergraph.UpdateHypergraphValidatorNodes(updatedNodes);
 
         return true;
     }

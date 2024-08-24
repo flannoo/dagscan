@@ -1,12 +1,11 @@
 ﻿using DagScan.Application.Data;
-using DagScan.Application.Features.UpsertHypergraphValidatorNodes;
 using DagScan.Core.Scheduling;
 using Hangfire;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace DagScan.Application.Features.SyncHypergraphValidatorNodesJob;
+namespace DagScan.Application.Features.SyncHypergraphValidatorNodes;
 
 [DisableConcurrentExecution(timeoutInSeconds: 3600)]
 public sealed class SyncHypergraphValidatorNodesJob(

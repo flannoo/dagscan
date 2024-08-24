@@ -25,7 +25,7 @@ public sealed class Hypergraph : Aggregate<HypergraphId>
     public string Name { get; private init; } = default!;
     public string ApiBaseAddress { get; private init; } = default!;
     public bool DataSyncEnabled { get; private init; }
-    public List<HypergraphValidatorNode> HypergraphValidatorNodes { get; private set; } = [];
+    public List<HypergraphValidatorNode> HypergraphValidatorNodes { get; set; } = [];
 
     public static Hypergraph Create(string name, string apiBaseAddress, bool dataSyncEnabled)
     {
@@ -39,12 +39,5 @@ public sealed class Hypergraph : Aggregate<HypergraphId>
             ApiBaseAddress = apiBaseAddress,
             DataSyncEnabled = dataSyncEnabled
         };
-    }
-
-    public void UpdateHypergraphValidatorNodes(List<HypergraphValidatorNode> hypergraphValidatorNodes)
-    {
-        Guard.Against.Null(hypergraphValidatorNodes, nameof(hypergraphValidatorNodes));
-
-        HypergraphValidatorNodes = hypergraphValidatorNodes;
     }
 }
