@@ -22,9 +22,11 @@ public sealed class UpdateHypergraphValidatorNodeLocationJob(
         }
 
         using var httpClient = httpClientFactory.CreateClient();
-        // TODO: make it configurable
-        httpClient.BaseAddress = new Uri("http://ip-api.com");
-        var location = await httpClient.GetFromJsonAsync<IpGeolocationResponse>($"json/{validatorNode.IpAddress}",
+        // TODO: make it configurable and use free version if api key not found
+        httpClient.BaseAddress = new Uri("http://pro.ip-api.com");
+        var apiKey = Environment.GetEnvironmentVariable("APIKEY_IPAPI");
+        var location = await httpClient.GetFromJsonAsync<IpGeolocationResponse>(
+            $"json/{validatorNode.IpAddress}?key={apiKey}",
             new JsonSerializerOptions(JsonSerializerDefaults.Web));
 
         if (location == null)

@@ -371,3 +371,6 @@ crash.*.log
 # Jetbrains IDE
 .idea/*
 **/.idea/*
+
+# local env files
+**/.env.local
