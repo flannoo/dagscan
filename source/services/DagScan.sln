@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DagScan.Core", "DagScan.Cor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DagScan.Application", "DagScan.Application\DagScan.Application.csproj", "{79FB379F-7F21-4F4E-80AC-D9A18E0C0A87}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DagScan.Api", "DagScan.Api\DagScan.Api.csproj", "{0E5457BA-CC22-4160-BCD8-6EF6D01657BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,5 +33,9 @@ Global
 		{79FB379F-7F21-4F4E-80AC-D9A18E0C0A87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79FB379F-7F21-4F4E-80AC-D9A18E0C0A87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79FB379F-7F21-4F4E-80AC-D9A18E0C0A87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E5457BA-CC22-4160-BCD8-6EF6D01657BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E5457BA-CC22-4160-BCD8-6EF6D01657BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E5457BA-CC22-4160-BCD8-6EF6D01657BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E5457BA-CC22-4160-BCD8-6EF6D01657BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -6,7 +6,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["DagScan.Worker/DagScan.Worker.csproj", "DagScan.Worker/"]
-RUN dotnet restore "DagScan.worker/DagScan.Worker.csproj"
+RUN dotnet restore "DagScan.Worker/DagScan.Worker.csproj"
 COPY . .
 WORKDIR "/src/dagscan.worker"
 RUN dotnet build "DagScan.Worker.csproj" -c $BUILD_CONFIGURATION -o /app/build

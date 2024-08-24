@@ -27,6 +27,24 @@ services:
     networks:
       - backend
 
+  dagscan.api:
+    image: dagscan.api
+    container_name: dagscan.api
+    ports:
+      - ${DAGSCAN_API_HTTP_PORT}:8080
+      - ${DAGSCAN_API_HTTPS_PORT}:8081
+    build:
+      context: .
+      dockerfile: dagscan.api/Dockerfile
+    env_file:
+      - .env
+      - .env.local
+    depends_on:
+      mssql:
+        condition: service_started
+    networks:
+      - backend
+
 networks:
   backend: {
     driver: bridge

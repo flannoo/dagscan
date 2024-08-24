@@ -374,3 +374,4 @@ crash.*.log
 
 # local env files
 **/.env.local
+**/docker-compose.override.local.yml
