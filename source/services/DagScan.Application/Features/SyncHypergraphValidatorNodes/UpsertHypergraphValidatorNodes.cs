@@ -74,10 +74,11 @@ public sealed class UpsertHypergraphValidatorNodesCommandHandler(
             }
         }
 
-        // Mark nodes as offline if they are not included in validatorNodes API response
+        // Mark nodes as offline if they are not included in validatorNodes API response and not already marked as offline
         foreach (var persistedNode in hypergraphNodes)
         {
-            if (!hypergraphNodes.Select(x => x.WalletId).Contains(persistedNode.WalletId))
+            if (!hypergraphNodes.Select(x => x.WalletId).Contains(persistedNode.WalletId) &&
+                persistedNode.State != "Offline")
             {
                 persistedNode.MarkAsOffline();
             }
