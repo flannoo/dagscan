@@ -40,8 +40,6 @@ public sealed class SyncHypergraphValidatorNodesJob(
             }
         }
 
-        await dagContext.SaveChangesAsync();
-
         logger.LogInformation("Completed {JobName} Execution", nameof(SyncHypergraphValidatorNodesJob));
     }
 }

@@ -29,7 +29,8 @@ public sealed class HypergraphValidatorNode : Aggregate<HypergraphValidatorNodeI
     public string WalletId { get; private init; } = default!;
     public string IpAddress { get; private set; } = default!;
     public string State { get; private set; } = default!;
-    public string? Version { get; private set; } = default!;
+    public bool IsInConsensus { get; private set; }
+    public DateTime LastModifiedUtc { get; private set; }
     public string? Provider { get; private set; }
     public string? Country { get; private set; }
     public string? City { get; private set; }
@@ -38,8 +39,7 @@ public sealed class HypergraphValidatorNode : Aggregate<HypergraphValidatorNodeI
     public NodeOperator? NodeOperator { get; private set; }
 
     public static HypergraphValidatorNode Create(HypergraphId hypergraphId, string walletId, string walletHash,
-        string state,
-        string ipAddress)
+        string state, string ipAddress, bool isInConsensus)
     {
         Guard.Against.NullOrWhiteSpace(walletHash, nameof(walletHash));
         Guard.Against.NullOrWhiteSpace(walletId, nameof(walletId));
@@ -54,7 +54,9 @@ public sealed class HypergraphValidatorNode : Aggregate<HypergraphValidatorNodeI
             WalletHash = walletHash,
             WalletId = walletId,
             State = state,
-            IpAddress = ipAddress
+            IpAddress = ipAddress,
+            IsInConsensus = isInConsensus,
+            LastModifiedUtc = DateTime.UtcNow
         };
     }
 
@@ -63,24 +65,28 @@ public sealed class HypergraphValidatorNode : Aggregate<HypergraphValidatorNodeI
         AddDomainEvent(new HypergraphValidatorNodeAdded(HypergraphId, Id));
     }
 
-    public void UpdateNodeInfo(string state, string ipAddress)
+    public void UpdateNodeState(string state, bool isInConsensus)
     {
         Guard.Against.NullOrWhiteSpace(state, nameof(state));
-        Guard.Against.NullOrWhiteSpace(ipAddress, nameof(ipAddress));
 
         State = state;
+        IsInConsensus = isInConsensus;
+        LastModifiedUtc = DateTime.UtcNow;
+    }
+
+    public void UpdateNodeIpAddress(string ipAddress)
+    {
+        Guard.Against.NullOrWhiteSpace(ipAddress, nameof(ipAddress));
+
         IpAddress = ipAddress;
+        LastModifiedUtc = DateTime.UtcNow;
     }
 
     public void MarkAsOffline()
     {
         State = "Offline";
-    }
-
-    public void UpdateVersion(string version)
-    {
-        Guard.Against.NullOrWhiteSpace(version, nameof(version));
-        Version = version;
+        IsInConsensus = false;
+        LastModifiedUtc = DateTime.UtcNow;
     }
 
     public void UpdateProviderInfo(string provider, string country, string city, double latitude, double longitude)
@@ -96,6 +102,7 @@ public sealed class HypergraphValidatorNode : Aggregate<HypergraphValidatorNodeI
         City = city;
         Latitude = latitude;
         Longitude = longitude;
+        LastModifiedUtc = DateTime.UtcNow;
     }
 
     public void UpdateNodeOperator(NodeOperator nodeOperator)

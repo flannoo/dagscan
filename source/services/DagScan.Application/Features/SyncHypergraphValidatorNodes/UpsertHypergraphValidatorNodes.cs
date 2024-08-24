@@ -35,7 +35,10 @@ public sealed class UpsertHypergraphValidatorNodesCommandHandler(
         var validatorNodes = await httpClient.GetFromJsonAsync<HypergraphClusterInfo[]>("cluster/info",
             new JsonSerializerOptions(JsonSerializerDefaults.Web), cancellationToken: cancellationToken) ?? [];
 
-        if (validatorNodes.Length == 0)
+        var inConsensusNodes = await httpClient.GetFromJsonAsync<HypergraphInConsensusInfo>("consensus/latest/peers",
+            new JsonSerializerOptions(JsonSerializerDefaults.Web), cancellationToken: cancellationToken);
+
+        if (validatorNodes.Length == 0 || inConsensusNodes is null)
         {
             return false;
         }
@@ -46,19 +49,28 @@ public sealed class UpsertHypergraphValidatorNodesCommandHandler(
         foreach (var validatorNode in validatorNodes.ToList())
         {
             var persistedNode = hypergraphNodes.FirstOrDefault(x => x.WalletId == validatorNode.Id);
+            var nodeIsInConsensus = inConsensusNodes.Peers.Any(x => x.Id == validatorNode.Id);
 
             if (persistedNode is null)
             {
                 var newNode = HypergraphValidatorNode.Create(hypergraph.Id, validatorNode.Id,
                     validatorNode.Id.ConvertNodeIdToWalletHash(),
-                    validatorNode.State, validatorNode.Ip);
+                    validatorNode.State, validatorNode.Ip, nodeIsInConsensus);
 
                 await dagContext.HypergraphValidatorNodes.AddAsync(newNode, cancellationToken);
                 newNode.Created();
             }
             else
             {
-                persistedNode.UpdateNodeInfo(validatorNode.State, validatorNode.Ip);
+                if (persistedNode.State != validatorNode.State || persistedNode.IsInConsensus != nodeIsInConsensus)
+                {
+                    persistedNode.UpdateNodeState(validatorNode.State, nodeIsInConsensus);
+                }
+
+                if (persistedNode.IpAddress != validatorNode.Ip)
+                {
+                    persistedNode.UpdateNodeIpAddress(validatorNode.Ip);
+                }
             }
         }
 

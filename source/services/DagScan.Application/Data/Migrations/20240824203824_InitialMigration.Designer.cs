@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DagScan.Application.Data.Migrations
 {
     [DbContext(typeof(DagContext))]
-    [Migration("20240824174004_InitialMigration")]
+    [Migration("20240824203824_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -70,6 +70,12 @@ namespace DagScan.Application.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<bool>("IsInConsensus")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastModifiedUtc")
+                        .HasColumnType("datetime2");
+
                     b.Property<double?>("Latitude")
                         .HasColumnType("float");
 
@@ -85,10 +91,6 @@ namespace DagScan.Application.Data.Migrations
 
                     b.Property<string>("State")
                         .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)");
-
-                    b.Property<string>("Version")
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
 
