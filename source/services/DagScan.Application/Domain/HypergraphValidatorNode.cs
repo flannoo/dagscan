@@ -61,6 +61,11 @@ public sealed class HypergraphValidatorNode : Entity<HypergraphValidatorNodeId>
         IpAddress = ipAddress;
     }
 
+    public void MarkAsOffline()
+    {
+        State = "Offline";
+    }
+
     public void UpdateVersion(string version)
     {
         Guard.Against.NullOrWhiteSpace(version, nameof(version));

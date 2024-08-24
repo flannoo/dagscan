@@ -51,11 +51,21 @@ public sealed class UpsertHypergraphValidatorNodesCommandHandler(
                     validatorNode.Id.ConvertNodeIdToWalletHash(),
                     validatorNode.State, validatorNode.Ip);
 
-                hypergraph.HypergraphValidatorNodes.Add(newNode);
+                hypergraph.AddValidatorNode(newNode);
             }
             else
             {
                 persistedNode.UpdateNodeInfo(validatorNode.State, validatorNode.Ip);
+            }
+        }
+
+        // Mark nodes as offline if they are not included in validatorNodes API response
+        var validatorNodeIds = validatorNodes.Select(vn => vn.Id).ToHashSet();
+        foreach (var persistedNode in hypergraph.HypergraphValidatorNodes)
+        {
+            if (!validatorNodeIds.Contains(persistedNode.WalletId))
+            {
+                persistedNode.MarkAsOffline();
             }
         }
 
