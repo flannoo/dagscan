@@ -1,26 +1,35 @@
 using System.Reflection;
+using DagScan.Application;
 using DagScan.Application.Data;
+using DagScan.Application.Data.Seeders;
 using DagScan.Application.Extensions;
 using DagScan.Core.CQRS;
 using DagScan.Core.Persistence;
-using DagScan.Worker;
+using DagScan.Worker.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork<DagContext>>();
+builder.Services.AddScoped<IEfUnitOfWork, EfUnitOfWork<DagContext>>();
 
-var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
-builder.Services.AddDbContext<DagContext>(options => { options.UseSqlServer(connectionString); });
-builder.Services.AddDbContext<ReadOnlyDagContext>(options => { options.UseSqlServer(connectionString); });
+var databaseConnectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") ??
+                               throw new ArgumentException("DB_CONNECTION_STRING environment variable not found.");
+
+builder.Services.AddDbContext<DagContext>(options => { options.UseSqlServer(databaseConnectionString); });
+builder.Services.AddDbContext<ReadOnlyDagContext>(options => { options.UseSqlServer(databaseConnectionString); });
+
+builder.Services.AddScoped<IRequiredDataSeeder, HypergraphDataSeeder>();
 
 builder.Services
     .AddCqrs(
-        new[] { Assembly.GetExecutingAssembly() },
+        new[] { Assembly.GetExecutingAssembly(), typeof(IApplicationMarker).Assembly },
         pipelines: new[] { typeof(UnitOfWorkBehavior<,>), }
     );
 
-builder.Services.AddHostedService<Worker>();
+builder.AddHangfire(databaseConnectionString);
+
+builder.Services.AddHttpClient();
 
 var host = builder.Build();
 
@@ -37,5 +46,7 @@ if (bool.TryParse(Environment.GetEnvironmentVariable("ENABLE_DB_SEEDER") ?? "fal
 {
     await host.Services.ApplySeedDatabase();
 }
+
+host.Services.InitRecurringJobs();
 
 host.Run();

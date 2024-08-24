@@ -20,6 +20,10 @@ public sealed class HypergraphEntityTypeConfiguration : IEntityTypeConfiguration
 
         builder.HasKey(h => h.Id);
 
+        builder.Property(h => h.Name)
+            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
+            .IsRequired();
+
         builder.Property(h => h.ApiBaseAddress)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
             .IsRequired();

@@ -30,13 +30,17 @@ public sealed class HypergraphValidatorNodeEntityTypeConfiguration : IEntityType
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
             .IsRequired();
 
+        builder.Property(h => h.IpAddress)
+            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
+            .IsRequired();
+
         builder.Property(h => h.Version)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.ShortText)
             .IsRequired(false);
 
         builder.Property(h => h.State)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.ShortText)
-            .IsRequired(false);
+            .IsRequired();
 
         builder.Property(h => h.Provider)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.MediumText)

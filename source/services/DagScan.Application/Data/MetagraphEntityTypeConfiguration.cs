@@ -44,7 +44,7 @@ public sealed class MetagraphEntityTypeConfiguration : IEntityTypeConfiguration<
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.LongText)
             .IsRequired(false);
 
-        builder.Property(m => m.ProtocolRewardsEnabled)
+        builder.Property(m => m.DataSyncEnabled)
             .HasDefaultValue(false);
 
         builder.OwnsMany<MetagraphEndpoint>(m => m.MetagraphEndpoint, endpointBuilder =>

@@ -29,6 +29,10 @@ public sealed class MetagraphValidatorNodeEntityTypeConfiguration : IEntityTypeC
         builder.Property(v => v.WalletAddress)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
             .IsRequired();
+        
+        builder.Property(v => v.IpAddress)
+            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
+            .IsRequired();
 
         builder.Property(v => v.Version)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.ShortText)
@@ -36,7 +40,7 @@ public sealed class MetagraphValidatorNodeEntityTypeConfiguration : IEntityTypeC
 
         builder.Property(v => v.State)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.ShortText)
-            .IsRequired(false);
+            .IsRequired();
 
         builder.Property(v => v.Provider)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.MediumText)

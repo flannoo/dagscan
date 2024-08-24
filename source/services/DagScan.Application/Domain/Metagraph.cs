@@ -49,7 +49,7 @@ public sealed class Metagraph : Aggregate<MetagraphId>
     public string? CompanyName { get; private init; }
     public string? Website { get; private init; }
     public string? Description { get; private init; }
-    public bool ProtocolRewardsEnabled { get; private init; }
+    public bool DataSyncEnabled { get; private init; }
 
-    public MetagraphValidatorNode[] MetagraphValidatorNodes { get; private init; } = [];
+    public List<MetagraphValidatorNode> MetagraphValidatorNodes { get; private init; } = [];
 }

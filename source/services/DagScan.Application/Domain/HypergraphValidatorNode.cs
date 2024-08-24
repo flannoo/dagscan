@@ -24,12 +24,66 @@ public sealed class HypergraphValidatorNode : Entity<HypergraphValidatorNodeId>
 {
     public string WalletHash { get; private init; } = default!;
     public string WalletAddress { get; private init; } = default!;
-    public string Version { get; private init; } = default!;
-    public string State { get; private init; } = default!;
-    public string? Provider { get; private init; }
-    public string? Country { get; private init; }
-    public string? City { get; private init; }
-    public double? Latitude { get; private init; }
-    public double? Longitude { get; private init; }
-    public NodeOperator? NodeOperator { get; private init; }
+    public string IpAddress { get; private set; } = default!;
+    public string State { get; private set; } = default!;
+    public string? Version { get; private set; } = default!;
+    public string? Provider { get; private set; }
+    public string? Country { get; private set; }
+    public string? City { get; private set; }
+    public double? Latitude { get; private set; }
+    public double? Longitude { get; private set; }
+    public NodeOperator? NodeOperator { get; private set; }
+
+    public static HypergraphValidatorNode Create(string walletHash, string walletAddress, string state,
+        string ipAddress)
+    {
+        Guard.Against.NullOrWhiteSpace(walletHash, nameof(walletHash));
+        Guard.Against.NullOrWhiteSpace(walletAddress, nameof(walletAddress));
+        Guard.Against.NullOrWhiteSpace(state, nameof(state));
+        Guard.Against.NullOrWhiteSpace(ipAddress, nameof(ipAddress));
+
+        return new HypergraphValidatorNode()
+        {
+            Id = new HypergraphValidatorNodeId(Guid.NewGuid()),
+            WalletHash = walletHash,
+            WalletAddress = walletAddress,
+            State = state,
+            IpAddress = ipAddress
+        };
+    }
+
+    public void UpdateNodeInfo(string state, string ipAddress)
+    {
+        Guard.Against.NullOrWhiteSpace(state, nameof(state));
+        Guard.Against.NullOrWhiteSpace(ipAddress, nameof(ipAddress));
+
+        State = state;
+        IpAddress = ipAddress;
+    }
+
+    public void UpdateVersion(string version)
+    {
+        Guard.Against.NullOrWhiteSpace(version, nameof(version));
+        Version = version;
+    }
+
+    public void UpdateProviderInfo(string provider, string country, string city, double latitude, double longitude)
+    {
+        Guard.Against.NullOrWhiteSpace(provider, nameof(provider));
+        Guard.Against.NullOrWhiteSpace(country, nameof(country));
+        Guard.Against.NullOrWhiteSpace(city, nameof(city));
+        Guard.Against.Null(latitude, nameof(latitude));
+        Guard.Against.Null(longitude, nameof(longitude));
+
+        Provider = provider;
+        Country = country;
+        City = city;
+        Latitude = latitude;
+        Longitude = longitude;
+    }
+
+    public void UpdateNodeOperator(NodeOperator nodeOperator)
+    {
+        NodeOperator = nodeOperator;
+    }
 }
