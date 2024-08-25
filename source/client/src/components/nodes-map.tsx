@@ -5,20 +5,20 @@ import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility"; // This ensures icons load correctly
-import { NodeVpsData } from "@/lib/shared/types";
+import { ValidatorNode } from "@/lib/shared/types";
 import L from "leaflet";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 // Props interface definition
 interface NodesMapProps {
-  vpsData: NodeVpsData[];
+  nodesData: ValidatorNode[];
 }
 
 // Group the data by latitude and longitude
-const groupDataByCoordinates = (vpsData: NodeVpsData[]) => {
-  const grouped: { [key: string]: NodeVpsData[] } = {};
+const groupDataByCoordinates = (nodesData: ValidatorNode[]) => {
+  const grouped: { [key: string]: ValidatorNode[] } = {};
 
-  vpsData.forEach(vps => {
+  nodesData.forEach(vps => {
     const key = `${vps.latitude},${vps.longitude}`;
     if (!grouped[key]) {
       grouped[key] = [];
@@ -29,11 +29,11 @@ const groupDataByCoordinates = (vpsData: NodeVpsData[]) => {
   return grouped;
 };
 
-const groupDataByProperty = (vpsData: NodeVpsData[], property: keyof NodeVpsData) => {
-  const grouped: { [key: string]: NodeVpsData[] } = {};
+const groupDataByProperty = (nodesData: ValidatorNode[], property: keyof ValidatorNode) => {
+  const grouped: { [key: string]: ValidatorNode[] } = {};
 
-  vpsData.forEach(vps => {
-    const key = vps[property] || "Unknown"; // Group by property (e.g., country or isp)
+  nodesData.forEach(vps => {
+    const key = String(vps[property]) || "Unknown"; // Group by property (e.g., country or isp)
     if (!grouped[key]) {
       grouped[key] = [];
     }
@@ -51,18 +51,18 @@ const createCustomIcon = (size: number) => {
   });
 };
 
-export default function NodesMap({ vpsData }: NodesMapProps) {
-  const groupedVpsData = groupDataByCoordinates(vpsData); // Group VPS data by coordinates
-  const nodesByCountry = groupDataByProperty(vpsData, "country"); // Group VPS data by country
-  const nodesByIsp = groupDataByProperty(vpsData, "isp"); // Group VPS data by isp
+export default function NodesMap({ nodesData }: NodesMapProps) {
+  const groupedVpsData = groupDataByCoordinates(nodesData); // Group VPS data by coordinates
+  const nodesByCountry = groupDataByProperty(nodesData, "country"); // Group VPS data by country
+  const nodesByIsp = groupDataByProperty(nodesData, "serviceProvider"); // Group VPS data by isp
 
   // State for currently selected filter (either country or ISP)
-  const [selectedFilter, setSelectedFilter] = useState<{ type: keyof NodeVpsData | null, value: string | null }>({
+  const [selectedFilter, setSelectedFilter] = useState<{ type: keyof ValidatorNode | null, value: string | null }>({
     type: null,
     value: null,
   });
 
-  const handleFilter = (type: keyof NodeVpsData, value: string) => {
+  const handleFilter = (type: keyof ValidatorNode, value: string) => {
     if (selectedFilter.type === type && selectedFilter.value === value) {
       // If clicking the same row, deselect it (reset the filter)
       setSelectedFilter({ type: null, value: null });
@@ -74,8 +74,8 @@ export default function NodesMap({ vpsData }: NodesMapProps) {
 
   const filteredVpsData =
     selectedFilter.type !== null && selectedFilter.value !== null
-      ? vpsData.filter(node => node[selectedFilter.type!] === selectedFilter.value)
-      : vpsData;
+      ? nodesData.filter(node => node[selectedFilter.type!] === selectedFilter.value)
+      : nodesData;
 
   return (
     <div className="flex flex-col md:flex-row">
@@ -117,8 +117,8 @@ export default function NodesMap({ vpsData }: NodesMapProps) {
             {Object.entries(nodesByIsp).map(([isp, nodes], index) => (
               <TableRow
                 key={index}
-                onClick={() => handleFilter("isp", isp)}
-                className={`cursor-pointer ${selectedFilter.type === "isp" && selectedFilter.value === isp
+                onClick={() => handleFilter("serviceProvider", isp)}
+                className={`cursor-pointer ${selectedFilter.type === "serviceProvider" && selectedFilter.value === isp
                     ? "bg-gray-300 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600" // Selected row
                     : "hover:bg-gray-300 dark:hover:bg-gray-700" // Non-selected rows
                   }`}
@@ -153,7 +153,7 @@ export default function NodesMap({ vpsData }: NodesMapProps) {
                 icon={createCustomIcon(markerSize)} // Custom icon with dynamic size
               >
                 <Popup>
-                  <strong>{firstVps.isp}</strong><br />
+                  <strong>{firstVps.serviceProvider}</strong><br />
                   City: {firstVps.city}<br />
                   Country: {firstVps.country}<br />
                   <strong>{count} nodes in this location</strong> {/* Display count */}
