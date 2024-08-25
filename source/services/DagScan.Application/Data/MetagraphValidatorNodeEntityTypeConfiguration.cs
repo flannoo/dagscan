@@ -1,4 +1,5 @@
 using DagScan.Application.Domain;
+using DagScan.Application.Domain.ValueObjects;
 using DagScan.Core.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -20,7 +21,7 @@ public sealed class MetagraphValidatorNodeEntityTypeConfiguration : IEntityTypeC
 
         builder.HasKey(v => v.Id);
 
-        builder.HasIndex(v => new { v.WalletHash, v.MetagraphType }).IsUnique();
+        builder.HasIndex(v => new { v.WalletAddress, v.MetagraphType }).IsUnique();
 
         builder.Property(v => v.MetagraphId)
             .ValueGeneratedNever()
@@ -33,9 +34,13 @@ public sealed class MetagraphValidatorNodeEntityTypeConfiguration : IEntityTypeC
             .WithMany()
             .HasForeignKey(v => v.MetagraphId);
 
-        builder.Property(v => v.WalletHash)
-            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
-            .IsRequired();
+        builder.Property(v => v.WalletAddress)
+            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.WalletText)
+            .IsRequired()
+            .HasConversion(
+                id => id.Value,
+                value => new WalletAddress(value)
+            );
 
         builder.Property(v => v.WalletId)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.LongText)
@@ -49,11 +54,11 @@ public sealed class MetagraphValidatorNodeEntityTypeConfiguration : IEntityTypeC
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.ShortText)
             .IsRequired(false);
 
-        builder.Property(v => v.State)
+        builder.Property(v => v.NodeStatus)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.ShortText)
             .IsRequired();
 
-        builder.Property(v => v.Provider)
+        builder.Property(v => v.ServiceProvider)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.MediumText)
             .IsRequired(false);
 
@@ -69,5 +74,11 @@ public sealed class MetagraphValidatorNodeEntityTypeConfiguration : IEntityTypeC
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.ShortText)
             .HasConversion<string>()
             .IsRequired();
+
+        builder.OwnsOne(m => m.Coordinates, cb =>
+        {
+            cb.Property(c => c.Latitude).HasColumnName("Latitude");
+            cb.Property(c => c.Longitude).HasColumnName("Longitude");
+        });
     }
 }

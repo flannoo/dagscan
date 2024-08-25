@@ -3,6 +3,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using DagScan.Application.Data;
 using DagScan.Application.Domain;
+using DagScan.Application.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace DagScan.Application.Features.UpdateValidatorNodeLocations;
@@ -34,8 +35,8 @@ public sealed class UpdateHypergraphValidatorNodeLocationJob(
             throw new Exception($"Failed to retrieve geolocation for IP address {validatorNode.IpAddress}");
         }
 
-        validatorNode.UpdateProviderInfo(location.Isp, location.Country, location.City, location.Lat,
-            location.Lon);
+        validatorNode.UpdateServiceProviderInfo(location.Isp, location.Country, location.City,
+            new Coordinate(location.Lat, location.Lon));
 
         await dagContext.SaveChangesAsync();
     }

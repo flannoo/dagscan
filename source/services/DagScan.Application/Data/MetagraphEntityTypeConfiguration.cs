@@ -1,4 +1,5 @@
 using DagScan.Application.Domain;
+using DagScan.Application.Domain.ValueObjects;
 using DagScan.Core.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -13,6 +14,7 @@ public sealed class MetagraphEntityTypeConfiguration : IEntityTypeConfiguration<
 
         builder.Property(m => m.Id)
             .ValueGeneratedNever()
+            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
             .HasConversion(
                 id => id.Value,
                 value => new MetagraphId(value)
@@ -31,9 +33,21 @@ public sealed class MetagraphEntityTypeConfiguration : IEntityTypeConfiguration<
             .WithMany()
             .HasForeignKey(m => m.HypergraphId);
 
-        builder.Property(m => m.Address)
-            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
-            .IsRequired();
+        builder.Property(h => h.FeeAddress)
+            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.WalletText)
+            .IsRequired(false)
+            .HasConversion(
+                id => id!.Value,
+                value => new WalletAddress(value)
+            );
+
+        builder.Property(h => h.StakingAddress)
+            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.WalletText)
+            .IsRequired(false)
+            .HasConversion(
+                id => id!.Value,
+                value => new WalletAddress(value)
+            );
 
         builder.Property(m => m.Name)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)

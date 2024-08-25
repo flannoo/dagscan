@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DagScan.Application.Data.Migrations
 {
     [DbContext(typeof(DagContext))]
-    [Migration("20240824203824_InitialMigration")]
+    [Migration("20240825081202_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -33,6 +33,10 @@ namespace DagScan.Application.Data.Migrations
 
                     b.Property<string>("ApiBaseAddress")
                         .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("BlockExplorerApiBaseAddress")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -76,28 +80,22 @@ namespace DagScan.Application.Data.Migrations
                     b.Property<DateTime>("LastModifiedUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<double?>("Latitude")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("Longitude")
-                        .HasColumnType("float");
-
                     b.Property<Guid?>("NodeOperatorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Provider")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("State")
+                    b.Property<string>("NodeStatus")
                         .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
 
-                    b.Property<string>("WalletHash")
+                    b.Property<string>("ServiceProvider")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("WalletAddress")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(51)
+                        .HasColumnType("nvarchar(51)");
 
                     b.Property<string>("WalletId")
                         .IsRequired()
@@ -110,7 +108,7 @@ namespace DagScan.Application.Data.Migrations
 
                     b.HasIndex("NodeOperatorId");
 
-                    b.HasIndex("WalletHash", "WalletId")
+                    b.HasIndex("WalletAddress", "WalletId")
                         .IsUnique();
 
                     b.ToTable("HypergraphValidatorNodes", (string)null);
@@ -118,11 +116,7 @@ namespace DagScan.Application.Data.Migrations
 
             modelBuilder.Entity("DagScan.Application.Domain.Metagraph", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
+                    b.Property<string>("Id")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -140,6 +134,10 @@ namespace DagScan.Application.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<string>("FeeAddress")
+                        .HasMaxLength(51)
+                        .HasColumnType("nvarchar(51)");
+
                     b.Property<Guid>("HypergraphId")
                         .HasColumnType("uniqueidentifier");
 
@@ -147,6 +145,10 @@ namespace DagScan.Application.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("StakingAddress")
+                        .HasMaxLength(51)
+                        .HasColumnType("nvarchar(51)");
 
                     b.Property<string>("Symbol")
                         .IsRequired()
@@ -182,14 +184,9 @@ namespace DagScan.Application.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<double?>("Latitude")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("Longitude")
-                        .HasColumnType("float");
-
-                    b.Property<Guid>("MetagraphId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("MetagraphId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("MetagraphType")
                         .IsRequired()
@@ -199,23 +196,23 @@ namespace DagScan.Application.Data.Migrations
                     b.Property<Guid?>("NodeOperatorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Provider")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("State")
+                    b.Property<string>("NodeStatus")
                         .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
+
+                    b.Property<string>("ServiceProvider")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Version")
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
 
-                    b.Property<string>("WalletHash")
+                    b.Property<string>("WalletAddress")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(51)
+                        .HasColumnType("nvarchar(51)");
 
                     b.Property<string>("WalletId")
                         .IsRequired()
@@ -228,7 +225,7 @@ namespace DagScan.Application.Data.Migrations
 
                     b.HasIndex("NodeOperatorId");
 
-                    b.HasIndex("WalletHash", "MetagraphType")
+                    b.HasIndex("WalletAddress", "MetagraphType")
                         .IsUnique();
 
                     b.ToTable("MetagraphValidatorNodes", (string)null);
@@ -269,6 +266,29 @@ namespace DagScan.Application.Data.Migrations
                         .WithMany()
                         .HasForeignKey("NodeOperatorId");
 
+                    b.OwnsOne("DagScan.Application.Domain.ValueObjects.Coordinate", "Coordinates", b1 =>
+                        {
+                            b1.Property<Guid>("HypergraphValidatorNodeId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<double>("Latitude")
+                                .HasColumnType("float")
+                                .HasColumnName("Latitude");
+
+                            b1.Property<double>("Longitude")
+                                .HasColumnType("float")
+                                .HasColumnName("Longitude");
+
+                            b1.HasKey("HypergraphValidatorNodeId");
+
+                            b1.ToTable("HypergraphValidatorNodes");
+
+                            b1.WithOwner()
+                                .HasForeignKey("HypergraphValidatorNodeId");
+                        });
+
+                    b.Navigation("Coordinates");
+
                     b.Navigation("NodeOperator");
                 });
 
@@ -280,10 +300,10 @@ namespace DagScan.Application.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsMany("DagScan.Application.Domain.MetagraphEndpoint", "MetagraphEndpoint", b1 =>
+                    b.OwnsMany("DagScan.Application.Domain.ValueObjects.MetagraphEndpoint", "MetagraphEndpoint", b1 =>
                         {
-                            b1.Property<Guid>("MetagraphId")
-                                .HasColumnType("uniqueidentifier");
+                            b1.Property<string>("MetagraphId")
+                                .HasColumnType("nvarchar(50)");
 
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()
@@ -323,6 +343,29 @@ namespace DagScan.Application.Data.Migrations
                     b.HasOne("DagScan.Application.Domain.NodeOperator", "NodeOperator")
                         .WithMany()
                         .HasForeignKey("NodeOperatorId");
+
+                    b.OwnsOne("DagScan.Application.Domain.ValueObjects.Coordinate", "Coordinates", b1 =>
+                        {
+                            b1.Property<Guid>("MetagraphValidatorNodeId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<double>("Latitude")
+                                .HasColumnType("float")
+                                .HasColumnName("Latitude");
+
+                            b1.Property<double>("Longitude")
+                                .HasColumnType("float")
+                                .HasColumnName("Longitude");
+
+                            b1.HasKey("MetagraphValidatorNodeId");
+
+                            b1.ToTable("MetagraphValidatorNodes");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MetagraphValidatorNodeId");
+                        });
+
+                    b.Navigation("Coordinates");
 
                     b.Navigation("NodeOperator");
                 });

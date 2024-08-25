@@ -1,4 +1,5 @@
 using DagScan.Application.Domain;
+using DagScan.Application.Domain.ValueObjects;
 using DagScan.Core.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -31,11 +32,15 @@ public sealed class HypergraphValidatorNodeEntityTypeConfiguration : IEntityType
 
         builder.HasKey(h => h.Id);
 
-        builder.HasIndex(h => new { h.WalletHash, h.WalletId }).IsUnique();
+        builder.HasIndex(h => new { WalletHash = h.WalletAddress, h.WalletId }).IsUnique();
 
-        builder.Property(h => h.WalletHash)
-            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
-            .IsRequired();
+        builder.Property(h => h.WalletAddress)
+            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.WalletText)
+            .IsRequired()
+            .HasConversion(
+                id => id.Value,
+                value => new WalletAddress(value)
+            );
 
         builder.Property(h => h.WalletId)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.LongText)
@@ -45,11 +50,11 @@ public sealed class HypergraphValidatorNodeEntityTypeConfiguration : IEntityType
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
             .IsRequired();
 
-        builder.Property(h => h.State)
+        builder.Property(h => h.NodeStatus)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.ShortText)
             .IsRequired();
 
-        builder.Property(h => h.Provider)
+        builder.Property(h => h.ServiceProvider)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.MediumText)
             .IsRequired(false);
 
@@ -60,5 +65,11 @@ public sealed class HypergraphValidatorNodeEntityTypeConfiguration : IEntityType
         builder.Property(h => h.City)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
             .IsRequired(false);
+
+        builder.OwnsOne(h => h.Coordinates, cb =>
+        {
+            cb.Property(c => c.Latitude).HasColumnName("Latitude");
+            cb.Property(c => c.Longitude).HasColumnName("Longitude");
+        });
     }
 }

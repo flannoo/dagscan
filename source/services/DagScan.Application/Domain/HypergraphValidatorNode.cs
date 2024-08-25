@@ -1,47 +1,29 @@
 using Ardalis.GuardClauses;
+using DagScan.Application.Domain.ValueObjects;
 using DagScan.Core.CQRS;
 using DagScan.Core.DDD;
 using MediatR;
 
 namespace DagScan.Application.Domain;
 
-public sealed class HypergraphValidatorNodeId : ValueObject
-{
-    public Guid Value { get; }
-
-    public HypergraphValidatorNodeId(Guid value)
-    {
-        Guard.Against.Default(value, nameof(value));
-
-        Value = value;
-    }
-
-    protected override IEnumerable<object> GetEqualityComponents()
-    {
-        yield return Value;
-    }
-}
-
 public sealed class HypergraphValidatorNode : Aggregate<HypergraphValidatorNodeId>
 {
     public HypergraphId HypergraphId { get; private init; } = default!;
-    public string WalletHash { get; private init; } = default!;
+    public WalletAddress WalletAddress { get; private init; } = default!;
     public string WalletId { get; private init; } = default!;
     public string IpAddress { get; private set; } = default!;
-    public string State { get; private set; } = default!;
+    public string NodeStatus { get; private set; } = default!;
     public bool IsInConsensus { get; private set; }
     public DateTime LastModifiedUtc { get; private set; }
-    public string? Provider { get; private set; }
+    public string? ServiceProvider { get; private set; }
     public string? Country { get; private set; }
     public string? City { get; private set; }
-    public double? Latitude { get; private set; }
-    public double? Longitude { get; private set; }
+    public Coordinate? Coordinates { get; private set; }
     public NodeOperator? NodeOperator { get; private set; }
 
-    public static HypergraphValidatorNode Create(HypergraphId hypergraphId, string walletId, string walletHash,
+    public static HypergraphValidatorNode Create(HypergraphId hypergraphId, string walletId, WalletAddress walletAddress,
         string state, string ipAddress, bool isInConsensus)
     {
-        Guard.Against.NullOrWhiteSpace(walletHash, nameof(walletHash));
         Guard.Against.NullOrWhiteSpace(walletId, nameof(walletId));
         Guard.Against.NullOrWhiteSpace(state, nameof(state));
         Guard.Against.NullOrWhiteSpace(ipAddress, nameof(ipAddress));
@@ -51,9 +33,9 @@ public sealed class HypergraphValidatorNode : Aggregate<HypergraphValidatorNodeI
         {
             Id = new HypergraphValidatorNodeId(Guid.NewGuid()),
             HypergraphId = hypergraphId,
-            WalletHash = walletHash,
+            WalletAddress = walletAddress,
             WalletId = walletId,
-            State = state,
+            NodeStatus = state,
             IpAddress = ipAddress,
             IsInConsensus = isInConsensus,
             LastModifiedUtc = DateTime.UtcNow
@@ -65,11 +47,11 @@ public sealed class HypergraphValidatorNode : Aggregate<HypergraphValidatorNodeI
         AddDomainEvent(new HypergraphValidatorNodeAdded(HypergraphId, Id));
     }
 
-    public void UpdateNodeState(string state, bool isInConsensus)
+    public void UpdateNodeStatus(string nodeStatus, bool isInConsensus)
     {
-        Guard.Against.NullOrWhiteSpace(state, nameof(state));
+        Guard.Against.NullOrWhiteSpace(nodeStatus, nameof(nodeStatus));
 
-        State = state;
+        NodeStatus = nodeStatus;
         IsInConsensus = isInConsensus;
         LastModifiedUtc = DateTime.UtcNow;
     }
@@ -84,24 +66,21 @@ public sealed class HypergraphValidatorNode : Aggregate<HypergraphValidatorNodeI
 
     public void MarkAsOffline()
     {
-        State = "Offline";
+        NodeStatus = "Offline";
         IsInConsensus = false;
         LastModifiedUtc = DateTime.UtcNow;
     }
 
-    public void UpdateProviderInfo(string provider, string country, string city, double latitude, double longitude)
+    public void UpdateServiceProviderInfo(string serviceProvider, string country, string city, Coordinate coordinates)
     {
-        Guard.Against.NullOrWhiteSpace(provider, nameof(provider));
+        Guard.Against.NullOrWhiteSpace(serviceProvider, nameof(serviceProvider));
         Guard.Against.NullOrWhiteSpace(country, nameof(country));
         Guard.Against.NullOrWhiteSpace(city, nameof(city));
-        Guard.Against.Null(latitude, nameof(latitude));
-        Guard.Against.Null(longitude, nameof(longitude));
 
-        Provider = provider;
+        ServiceProvider = serviceProvider;
         Country = country;
         City = city;
-        Latitude = latitude;
-        Longitude = longitude;
+        Coordinates = coordinates;
         LastModifiedUtc = DateTime.UtcNow;
     }
 

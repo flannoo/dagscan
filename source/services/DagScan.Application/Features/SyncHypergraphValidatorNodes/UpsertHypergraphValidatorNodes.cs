@@ -2,6 +2,7 @@
 using System.Text.Json;
 using DagScan.Application.Data;
 using DagScan.Application.Domain;
+using DagScan.Application.Domain.ValueObjects;
 using DagScan.Core.CQRS;
 using DagScan.Core.Extensions;
 using MediatR;
@@ -54,7 +55,7 @@ public sealed class UpsertHypergraphValidatorNodesCommandHandler(
             if (persistedNode is null)
             {
                 var newNode = HypergraphValidatorNode.Create(hypergraph.Id, validatorNode.Id,
-                    validatorNode.Id.ConvertNodeIdToWalletHash(),
+                    new WalletAddress(validatorNode.Id.ConvertNodeIdToWalletHash()),
                     validatorNode.State, validatorNode.Ip, nodeIsInConsensus);
 
                 await dagContext.HypergraphValidatorNodes.AddAsync(newNode, cancellationToken);
@@ -62,9 +63,9 @@ public sealed class UpsertHypergraphValidatorNodesCommandHandler(
             }
             else
             {
-                if (persistedNode.State != validatorNode.State || persistedNode.IsInConsensus != nodeIsInConsensus)
+                if (persistedNode.NodeStatus != validatorNode.State || persistedNode.IsInConsensus != nodeIsInConsensus)
                 {
-                    persistedNode.UpdateNodeState(validatorNode.State, nodeIsInConsensus);
+                    persistedNode.UpdateNodeStatus(validatorNode.State, nodeIsInConsensus);
                 }
 
                 if (persistedNode.IpAddress != validatorNode.Ip)
@@ -75,7 +76,7 @@ public sealed class UpsertHypergraphValidatorNodesCommandHandler(
         }
 
         // Mark nodes as offline if they are not included in validatorNodes API response and not already marked as offline
-        foreach (var persistedNode in hypergraphNodes.Where(x => x.State != "Offline"))
+        foreach (var persistedNode in hypergraphNodes.Where(x => x.NodeStatus != "Offline"))
         {
             if (!hypergraphNodes.Select(x => x.WalletId).Contains(persistedNode.WalletId))
             {

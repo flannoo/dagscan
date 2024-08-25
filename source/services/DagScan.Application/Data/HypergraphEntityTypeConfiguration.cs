@@ -1,4 +1,5 @@
 using DagScan.Application.Domain;
+using DagScan.Application.Domain.ValueObjects;
 using DagScan.Core.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -27,5 +28,13 @@ public sealed class HypergraphEntityTypeConfiguration : IEntityTypeConfiguration
         builder.Property(h => h.ApiBaseAddress)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
             .IsRequired();
+
+        builder.Property(h => h.ApiBaseAddress)
+            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
+            .IsRequired();
+
+        builder.Property(h => h.BlockExplorerApiBaseAddress)
+            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
+            .IsRequired(false);
     }
 }
