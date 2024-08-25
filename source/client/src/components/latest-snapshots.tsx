@@ -39,7 +39,7 @@ export function LatestSnapshots() {
                                     <TableHead>Ordinal</TableHead>
                                     <TableHead>Timestamp</TableHead>
                                     <TableHead>Blocks</TableHead>
-                                    <TableHead>Rewards</TableHead>
+                                    <TableHead>Protocol Rewards</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>

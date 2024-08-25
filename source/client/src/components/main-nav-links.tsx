@@ -26,13 +26,13 @@ export function MainNavLinks({ setIsOpen }: MainNavLinksProps) {
                         pathname === "/" ? "bg-accent text-accent-foreground active" : ""
                     }`}
                 >
-                    Overview
+                    Hypergraph
                 </span>
             </Link>
             <Link href="/metagraphs" passHref>
                 <span
                     onClick={handleClick}
-                    className={`ml-1 w-max rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${
+                    className={`w-max rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${
                         pathname.startsWith("/metagraphs") ? "bg-accent text-accent-foreground active" : ""
                     }`}
                 >

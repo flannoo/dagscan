@@ -6,6 +6,7 @@ import { LatestSnapshotsMetagraph } from "@/components/latest-snapshots-metagrap
 import { getMetagraphs } from "@/lib/services/api-nebula-requests";
 import { useQuery } from "@tanstack/react-query";
 import GridWallets from "@/components/grid-wallets";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export default function Metagraph({ params }: { params: { id: string } }) {
     const id = Array.isArray(params.id) ? params.id[0] : params.id;
@@ -21,17 +22,28 @@ export default function Metagraph({ params }: { params: { id: string } }) {
     return (
         <div className="container mx-auto px-4 lg:px-8 mb-4 mt-4">
             <h1 className="text-2xl font-bold mb-4">{metagraphSymbol} Metagraph</h1>
-            <div className="mb-4">
-                <GridWallets metagraphSymbol={metagraphSymbol} />
-            </div>
-            <div className="flex flex-col lg:flex-row lg:space-x-4 space-y-4 lg:space-y-0">
-                <div className="lg:w-1/2">
-                    <LatestSnapshotsMetagraph metagraphId={id} metagraphSymbol={metagraphSymbol} />
-                </div>
-                <div className="lg:w-1/2">
-                    <LatestTransactionsMetagraph metagraphId={id} metagraphSymbol={metagraphSymbol} />
-                </div>
-            </div>
+
+            <Tabs defaultValue="overview" className="w-full">
+                <TabsList className="w-full justify-start">
+                    <TabsTrigger value="overview">Overview</TabsTrigger>
+                    <TabsTrigger value="wallets">Wallet Explorer</TabsTrigger>
+                </TabsList>
+                <TabsContent value="overview">
+                    <div className="flex flex-col lg:flex-row lg:space-x-4 space-y-4 lg:space-y-0">
+                        <div className="lg:w-1/2">
+                            <LatestSnapshotsMetagraph metagraphId={id} metagraphSymbol={metagraphSymbol} />
+                        </div>
+                        <div className="lg:w-1/2">
+                            <LatestTransactionsMetagraph metagraphId={id} metagraphSymbol={metagraphSymbol} />
+                        </div>
+                    </div>
+                </TabsContent>
+                <TabsContent value="wallets">
+                    <div className="mb-4">
+                        <GridWallets metagraphSymbol={metagraphSymbol} />
+                    </div>
+                </TabsContent>
+            </Tabs>
         </div>
     )
 }
