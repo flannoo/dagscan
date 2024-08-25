@@ -19,6 +19,16 @@ export function MainNavLinks({ setIsOpen }: MainNavLinksProps) {
 
     return (
         <>
+            <Link href="/" passHref>
+                <span
+                    onClick={handleClick}
+                    className={`ml-1 w-max rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${
+                        pathname === "/" ? "bg-accent text-accent-foreground active" : ""
+                    }`}
+                >
+                    Overview
+                </span>
+            </Link>
             <Link href="/metagraphs" passHref>
                 <span
                     onClick={handleClick}

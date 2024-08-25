@@ -25,7 +25,7 @@ export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElemen
                             </button>
                         </SheetTrigger>
                         <SheetContent side="left" className="p-4">
-                            <div className="mb-4 text-xl font-bold">Dag Scan</div>
+                            <div className="mb-4 text-xl font-bold">DAG Scan</div>
                             <NavigationMenu>
                                 <NavigationMenuList className="flex flex-col items-start space-y-4">
                                     <MainNavLinks setIsOpen={setIsOpen} />
