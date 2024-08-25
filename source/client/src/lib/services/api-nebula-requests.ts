@@ -83,17 +83,6 @@ export async function getSnapshotCount() {
     return snapshotCount;
 }
 
-export async function getDagWallets() {
-    const res = await fetch(`https://api.nebula-tech.io/dag/v1/dag/wallets`);
-
-    if (!res.ok) {
-        throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
-    }
-
-    const data = await res.json();
-    const wallets = data as Wallet[];
-    return wallets;
-}
 
 export async function getMetagraphWallets(metagraphSymbol: string) {
     if (!metagraphSymbol) {

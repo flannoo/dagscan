@@ -46,7 +46,7 @@ export function LatestSnapshotsMetagraph({ metagraphId, metagraphSymbol }: { met
                                 {data?.map((snapshot) => (
                                     <TableRow key={snapshot.ordinal}>
                                         <TableCell>
-                                            <Link href={`/snapshots/${metagraphId}/${snapshot.ordinal}`} className="hover:underline" prefetch={false}>
+                                            <Link href={`/metagraphs/${metagraphId}/snapshots/${snapshot.ordinal}`} className="hover:underline" prefetch={false}>
                                                 {snapshot.ordinal}
                                             </Link>
                                         </TableCell>

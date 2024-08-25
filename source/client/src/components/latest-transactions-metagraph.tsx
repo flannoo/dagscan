@@ -45,7 +45,7 @@ export function LatestTransactionsMetagraph({ metagraphId, metagraphSymbol }: { 
                                 {data?.map((transaction) => (
                                     <TableRow key={transaction.hash}>
                                         <TableCell>
-                                            <Link href={`/transactions/${metagraphId}/${transaction.hash}`} className="hover:underline" prefetch={false}>
+                                            <Link href={`/metagraphs/${metagraphId}/transactions/${transaction.hash}`} className="hover:underline" prefetch={false}>
                                                 {transaction.hash.slice(0, 6)}...{transaction.hash.slice(-6)}
                                             </Link>
                                         </TableCell>
