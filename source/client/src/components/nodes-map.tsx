@@ -52,7 +52,6 @@ const createCustomIcon = (size: number) => {
 };
 
 export default function NodesMap({ nodesData }: NodesMapProps) {
-  const groupedVpsData = groupDataByCoordinates(nodesData); // Group VPS data by coordinates
   const nodesByCountry = groupDataByProperty(nodesData, "country"); // Group VPS data by country
   const nodesByIsp = groupDataByProperty(nodesData, "serviceProvider"); // Group VPS data by isp
 

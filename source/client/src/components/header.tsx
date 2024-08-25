@@ -9,7 +9,11 @@ export function Header() {
             <div className="flex h-16 items-center justify-between w-full">
                 {/* Logo or branding */}
                 <Link href="/" className="text-xl font-bold hidden lg:block">
-                    DagScan
+                    <img
+                        src="/logo/fireflight.svg"
+                        alt="Logo"
+                        className="h-8 w-auto"
+                    />
                 </Link>
 
                 {/* Main navigation with Search and Theme Toggle */}

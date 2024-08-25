@@ -76,6 +76,10 @@ export const columns: ColumnDef<Reward>[] = [
         header: "TransactionRef",
         cell: ({ row }) => {
             const transactionRef: string = row.getValue("TransactionHash");
+            if (!transactionRef) {
+                return null;
+            }
+
             return <Link href={`/transactions/${transactionRef}`} className="hover:underline" prefetch={false}>
                 {transactionRef.slice(0, 6)}...{transactionRef.slice(-6)}
             </Link>
