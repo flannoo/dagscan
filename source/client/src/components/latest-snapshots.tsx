@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getLatestSnapshots } from "@/lib/services/api-blockexplorer-requests";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 import { AlertCircle } from "lucide-react";
+import { formatDate } from "@/lib/utils";
 
 export function LatestSnapshots() {
     const { data, isLoading, isError } = useQuery({
@@ -50,7 +51,7 @@ export function LatestSnapshots() {
                                                 {snapshot.ordinal}
                                             </Link>
                                         </TableCell>
-                                        <TableCell>{new Date(snapshot.timestamp).toLocaleString()}</TableCell>
+                                        <TableCell>{formatDate(snapshot.timestamp)}</TableCell>
                                         <TableCell>{snapshot.blocks.length}</TableCell>
                                         <TableCell>{snapshot.rewards.length} recipients</TableCell>
                                     </TableRow>

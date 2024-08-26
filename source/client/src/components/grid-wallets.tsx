@@ -4,8 +4,9 @@ import { getMetagraphWallets, Wallet } from "@/lib/services/api-nebula-requests"
 import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { DataTable } from "@/components/ui/data-table";
+import { DataTableWithSearch } from "@/components/ui/data-table-with-search";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
+import { formatAmount } from "@/lib/utils";
 
 export const columns: ColumnDef<Wallet>[] = [
     {
@@ -30,16 +31,7 @@ export const columns: ColumnDef<Wallet>[] = [
         accessorKey: "Balance",
         header: "Balance",
         cell: ({ row }) => {
-            const parsedAmount = parseFloat(row.getValue("Balance"));
-            if (isNaN(parsedAmount)) {
-                return "";
-            }
-            const formattedAmount = new Intl.NumberFormat('en-US', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 8,
-            }).format(parsedAmount)
-
-            return formattedAmount;
+            return formatAmount(row.getValue("Balance"));
         },
     },
     {
@@ -102,7 +94,7 @@ export default function GridWallets({ metagraphSymbol }: { metagraphSymbol: stri
             ) : isError ? (
                 <p className="text-red-500">Error loading wallet data.</p>
             ) : (
-                <DataTable columns={columns} data={wallets ?? []} />
+                <DataTableWithSearch columns={columns} data={wallets ?? []} />
             )}
         </div>
     )

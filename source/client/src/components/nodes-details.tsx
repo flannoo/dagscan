@@ -1,10 +1,9 @@
 import { ValidatorNode } from "@/lib/shared/types";
 import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
-import { DataTable } from "@/components/ui/data-table";
+import { DataTableWithSearch } from "@/components/ui/data-table-with-search";
 import { ArrowUpDown, CheckCircle, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 export const columns: ColumnDef<ValidatorNode>[] = [
     {
@@ -129,7 +128,7 @@ interface NodesDetailsProps {
 export default function NodesDetails({ nodesData }: NodesDetailsProps) {
     return (
         <div>
-            <DataTable columns={columns} data={nodesData ?? []} />
+            <DataTableWithSearch columns={columns} data={nodesData ?? []} />
         </div>
     )
 }

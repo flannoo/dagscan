@@ -7,6 +7,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import ReactQueryProvider from "@/lib/providers/reactQueryProvider";
 import { Toaster } from "@/components/ui/toaster";
+import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,11 +29,14 @@ export default function RootLayout({
         </head>
         <body>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            <div className={cn("w-full bg-yellow-400 text-black text-center py-2 font-semibold")}>
+              🚧 This website is in beta and under construction. Some features may not be available. 🚧
+            </div>
             <Header />
             <ReactQueryProvider>
               {children}
             </ReactQueryProvider>
-            <Toaster  />
+            <Toaster />
             <Footer />
           </ThemeProvider>
         </body>

@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getLatestTransactions } from "@/lib/services/api-blockexplorer-requests";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 import { AlertCircle } from "lucide-react";
+import { formatDagAmount, formatDate } from "@/lib/utils";
 
 export function LatestTransactions() {
     const { data, isLoading, isError } = useQuery({
@@ -49,13 +50,8 @@ export function LatestTransactions() {
                                                 {transaction.hash.slice(0, 6)}...{transaction.hash.slice(-6)}
                                             </Link>
                                         </TableCell>
-                                        <TableCell>{new Date(transaction.timestamp).toLocaleString()}</TableCell>
-                                        <TableCell>{
-                                            new Intl.NumberFormat('en-US', {
-                                                minimumFractionDigits: 0,
-                                                maximumFractionDigits: 8,
-                                            }).format(transaction.amount / 1e8)
-                                        } DAG</TableCell>
+                                        <TableCell>{formatDate(transaction.timestamp)}</TableCell>
+                                        <TableCell>{formatDagAmount(transaction.amount)}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

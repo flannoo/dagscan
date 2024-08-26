@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getLatestTransactionsMetagraph } from "@/lib/services/api-blockexplorer-requests";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 import { AlertCircle } from "lucide-react";
+import { formatDate, formatMetagraphAmount } from "@/lib/utils";
 
 export function LatestTransactionsMetagraph({ metagraphId, metagraphSymbol }: { metagraphId: string, metagraphSymbol: string }) {
     const { data, isLoading, isError } = useQuery({
@@ -49,13 +50,8 @@ export function LatestTransactionsMetagraph({ metagraphId, metagraphSymbol }: { 
                                                 {transaction.hash.slice(0, 6)}...{transaction.hash.slice(-6)}
                                             </Link>
                                         </TableCell>
-                                        <TableCell>{new Date(transaction.timestamp).toLocaleString()}</TableCell>
-                                        <TableCell>{
-                                            new Intl.NumberFormat('en-US', {
-                                                minimumFractionDigits: 0,
-                                                maximumFractionDigits: 8,
-                                            }).format(transaction.amount / 1e8)
-                                        } {metagraphSymbol}</TableCell>
+                                        <TableCell>{formatDate(transaction.timestamp)}</TableCell>
+                                        <TableCell>{formatMetagraphAmount(transaction.amount)} {metagraphSymbol}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

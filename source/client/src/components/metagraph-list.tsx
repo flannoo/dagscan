@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react"
+import React from "react"
 import Link from "next/link"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { useQuery } from "@tanstack/react-query";
 import { SkeletonCard } from "@/components/ui/skeleton-card";

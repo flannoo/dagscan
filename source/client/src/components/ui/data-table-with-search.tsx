@@ -30,6 +30,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import React from "react"
 
 declare module '@tanstack/react-table' {
@@ -56,7 +57,7 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   return itemRank.passed
 }
 
-interface DataTableProps<TData, TValue> {
+interface DataTableWithSearchProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
@@ -77,12 +78,13 @@ const fuzzySort: SortingFn<any> = (rowA, rowB, columnId) => {
   return dir === 0 ? sortingFns.alphanumeric(rowA, rowB, columnId) : dir
 }
 
-export function DataTable<TData, TValue>({
+export function DataTableWithSearch<TData, TValue>({
   columns,
   data,
-}: DataTableProps<TData, TValue>) {
+}: DataTableWithSearchProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [globalFilter, setGlobalFilter] = React.useState('')
 
   const table = useReactTable({
     data,
@@ -97,6 +99,7 @@ export function DataTable<TData, TValue>({
     state: {
       sorting,
       columnFilters,
+      globalFilter
     },
     filterFns: {
       fuzzy: fuzzyFilter, 
@@ -105,6 +108,14 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
+      <div className="flex items-center py-4">
+        <Input
+          placeholder="Search..."
+          value={globalFilter ?? ''}
+          onChange={e => setGlobalFilter(String(e.target.value))}
+          className="max-w-sm"
+        />
+      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>

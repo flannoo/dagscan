@@ -7,7 +7,8 @@ import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 import Link from "next/link";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
-import { DataTable } from "@/components/ui/data-table"
+import { DataTableWithSearch } from "@/components/ui/data-table-with-search"
+import { formatDate, formatMetagraphAmount } from "@/lib/utils";
 
 export const columns: ColumnDef<Reward>[] = [
     {
@@ -21,9 +22,7 @@ export const columns: ColumnDef<Reward>[] = [
             )
         },
         cell: ({ row }) => {
-            const timestamp = new Date(row.getValue("Timestamp"));
-
-            return new Date(timestamp).toLocaleString()
+            return formatDate(row.getValue("Timestamp"))
         }
     },
     {
@@ -45,16 +44,7 @@ export const columns: ColumnDef<Reward>[] = [
         accessorKey: "Amount",
         header: "Amount",
         cell: ({ row }) => {
-            const parsedAmount = parseFloat(row.getValue("Amount"));
-            if (isNaN(parsedAmount)) {
-                return "";
-            }
-            const formattedAmount = new Intl.NumberFormat('en-US', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 8,
-            }).format(parsedAmount)
-
-            return formattedAmount;
+            return formatMetagraphAmount(row.getValue("Amount"));
         },
     },
     {
@@ -99,7 +89,7 @@ export default function GridRewards({ addresses }: { addresses: string }) {
             ) : isError ? (
                 <p className="text-red-500">Error loading reward data.</p>
             ) : (
-                <DataTable columns={columns} data={rewards ?? []} />
+                <DataTableWithSearch columns={columns} data={rewards ?? []} />
             )}
         </div>
     )

@@ -1,3 +1,5 @@
+"use client";
+
 import { ChartSnapshotCount } from "@/components/chart-snapshotcount";
 import { ChartSnapshotFees } from "@/components/chart-snapshotfees";
 import GridWallets from "@/components/grid-wallets";
@@ -6,9 +8,10 @@ import { LatestTransactions } from "@/components/latest-transactions";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export default function Home() {
+
   return (
     <div className="container mx-auto px-4 lg:px-8 mb-4 mt-4">
-      <h1 className="text-2xl font-bold mb-4">Hypergraph</h1>
+      <h1 className="text-2xl font-bold mb-4">DAG Hypergraph</h1>
 
       <Tabs defaultValue="overview" className="w-full">
         <TabsList className="w-full justify-start">
