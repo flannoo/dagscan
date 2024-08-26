@@ -112,24 +112,6 @@ export async function getLatestSnapshots() {
     return snapshots;
 }
 
-export async function getSnapshots(metagraphId: string, next: string) {
-    let res;
-    
-    if (metagraphId === '' || metagraphId === 'DAG') {
-        res = await fetch(`https://be-mainnet.constellationnetwork.io/global-snapshots/${snapshotId}`);
-    } else {
-        res = await fetch(`https://be-mainnet.constellationnetwork.io/currency/${metagraphId}/snapshots/${snapshotId}`);
-    }
-
-    if (!res.ok) {
-        throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
-    }
-
-    const data = await res.json();
-    const snapshot = data.data as Snapshot;
-    return snapshot;
-}
-
 export async function getLatestTransactionsMetagraph(metagraphId : string) {
     const res = await fetch(`https://be-mainnet.constellationnetwork.io/currency/${metagraphId}/transactions?limit=5`);
 
