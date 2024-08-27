@@ -10,10 +10,10 @@ import { SkeletonCard } from "@/components/ui/skeleton-card";
 import { AlertCircle } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
-export function LatestSnapshots() {
+export function LatestSnapshots({ metagraphId, metagraphSymbol }: { metagraphId?: string, metagraphSymbol?: string }) {
     const { data, isLoading, isError } = useQuery({
-        queryKey: ['latestSnapshots'],
-        queryFn: async () => getLatestSnapshots(),
+        queryKey: ['latestSnapshots' + metagraphId],
+        queryFn: async () => getLatestSnapshots(metagraphId),
         staleTime: 10 * 1000,
         refetchInterval: 10 * 1000,
         refetchOnWindowFocus: true,
@@ -23,7 +23,7 @@ export function LatestSnapshots() {
         <div>
             <Card>
                 <CardHeader>
-                    <CardTitle>Latest Snapshots</CardTitle>
+                <CardTitle>{metagraphSymbol ? `Latest ${metagraphSymbol} Snapshots` : "Latest L0 Snapshots"}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     {isLoading ? (
@@ -40,16 +40,22 @@ export function LatestSnapshots() {
                                     <TableHead>Ordinal</TableHead>
                                     <TableHead>Timestamp</TableHead>
                                     <TableHead>Blocks</TableHead>
-                                    <TableHead>Protocol Rewards</TableHead>
+                                    <TableHead>Rewards</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {data?.map((snapshot) => (
                                     <TableRow key={snapshot.ordinal}>
                                         <TableCell>
-                                            <Link href={`/snapshots/${snapshot.ordinal}`} className="hover:underline" prefetch={false}>
-                                                {snapshot.ordinal}
-                                            </Link>
+                                            {metagraphId ? (
+                                                <Link href={`/metagraphs/${metagraphId}/snapshots/${snapshot.ordinal}`} className="hover:underline" prefetch={false}>
+                                                    {snapshot.ordinal}
+                                                </Link>
+                                            ) : (
+                                                <Link href={`/snapshots/${snapshot.ordinal}`} className="hover:underline" prefetch={false}>
+                                                    {snapshot.ordinal}
+                                                </Link>
+                                            )}
                                         </TableCell>
                                         <TableCell>{formatDate(snapshot.timestamp)}</TableCell>
                                         <TableCell>{snapshot.blocks.length}</TableCell>

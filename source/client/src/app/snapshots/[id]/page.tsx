@@ -8,13 +8,13 @@ export default function SnapshotDetailPage({ params }: { params: { id: string } 
     return (
         <div className="container mx-auto px-4 lg:px-8 mb-4 mt-4">
             <div className="mb-4">
-                <SnapshotDetail snapshotId={id} metagraphId="" />
+                <SnapshotDetail snapshotId={id} />
             </div>
             <div className="mb-4">
-                <SnapshotTransactions snapshotId={id} metagraphId="" />
+                <SnapshotTransactions snapshotId={id} />
             </div>
             <div className="mb-4">
-                <SnapshotRewards snapshotId={id} metagraphId="" />
+                <SnapshotRewards snapshotId={id} />
             </div>
         </div>
     )

@@ -2,7 +2,7 @@ export type Transaction = {
     hash: string;
     timestamp: string;
     amount: number;
-    fee: number; 
+    fee: number;
     source: string;
     destination: string;
     blockHash: string;
@@ -36,8 +36,22 @@ export type Snapshots = {
     };
 };
 
-export async function getLatestTransactions() {
-    const res = await fetch('https://be-mainnet.constellationnetwork.io/transactions?limit=5');
+export type Transactions = {
+    data: Transaction[];
+    meta: {
+        next: string;
+    };
+};
+
+export async function getLatestTransactions(metagraphId?: string) {
+    const apiUrl = process.env.NEXT_PUBLIC_API_BLOCKEXPLORER_URL;
+
+    let res;
+    if (!metagraphId) {
+        res = await fetch(`${apiUrl}/transactions?limit=5`);
+    } else {
+        res = await fetch(`${apiUrl}/currency/${metagraphId}/transactions?limit=5`);
+    }
 
     if (!res.ok) {
         throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
@@ -47,13 +61,71 @@ export async function getLatestTransactions() {
     return transactions;
 }
 
-export async function getSnapshotDetail(snapshotId: string, metagraphId: string) {
-    let res;
-    
-    if (metagraphId === '' || metagraphId === 'DAG') {
-        res = await fetch(`https://be-mainnet.constellationnetwork.io/global-snapshots/${snapshotId}`);
+export async function getTransactions(metagraphId?: string, next?: string) {
+    const apiUrl = process.env.NEXT_PUBLIC_API_BLOCKEXPLORER_URL;
+
+    let url: string;
+    if (!metagraphId) {
+        url = `${apiUrl}/transactions?limit=14${next ? `&next=${next}` : ''}`;
     } else {
-        res = await fetch(`https://be-mainnet.constellationnetwork.io/currency/${metagraphId}/snapshots/${snapshotId}`);
+        url = `${apiUrl}/currency/${metagraphId}/transactions?limit=14${next ? `&next=${next}` : ''}`;
+    }
+
+    const res = await fetch(url);
+    if (!res.ok) {
+        throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
+    }
+    const data = await res.json();
+    const transactions = data as Transactions;
+    return transactions;
+}
+
+export async function getLatestSnapshots(metagraphId?: string) {
+    const apiUrl = process.env.NEXT_PUBLIC_API_BLOCKEXPLORER_URL;
+
+    let res;
+    if (!metagraphId) {
+        res = await fetch(`${apiUrl}/global-snapshots?limit=5`);
+    } else {
+        res = await fetch(`${apiUrl}/currency/${metagraphId}/snapshots?limit=5`);
+    }
+
+    if (!res.ok) {
+        throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
+    }
+    const data = await res.json();
+    const snapshots = data.data as Snapshot[];
+    return snapshots;
+}
+
+export async function getSnapshots(metagraphId?: string, next?: string) {
+    const apiUrl = process.env.NEXT_PUBLIC_API_BLOCKEXPLORER_URL;
+
+    let url: string;
+    if (!metagraphId) {
+        url = `${apiUrl}/global-snapshots?limit=14${next ? `&next=${next}` : ''}`;
+    } else {
+        url = `${apiUrl}/currency/${metagraphId}/snapshots?limit=14${next ? `&next=${next}` : ''}`;
+    }
+
+    const res = await fetch(url);
+
+    if (!res.ok) {
+        throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
+    }
+    const data = await res.json();
+    const snapshots = data as Snapshots;
+    return snapshots;
+}
+
+export async function getSnapshotDetail(snapshotId: string, metagraphId?: string) {
+    const apiUrl = process.env.NEXT_PUBLIC_API_BLOCKEXPLORER_URL;
+
+    let res;
+    if (!metagraphId) {
+        res = await fetch(`${apiUrl}/global-snapshots/${snapshotId}`);
+    } else {
+        res = await fetch(`${apiUrl}/currency/${metagraphId}/snapshots/${snapshotId}`);
     }
 
     if (!res.ok) {
@@ -65,13 +137,14 @@ export async function getSnapshotDetail(snapshotId: string, metagraphId: string)
     return snapshot;
 }
 
-export async function getSnapshotDetailRewards(snapshotId: string, metagraphId: string) {
+export async function getSnapshotDetailRewards(snapshotId: string, metagraphId?: string) {
+    const apiUrl = process.env.NEXT_PUBLIC_API_BLOCKEXPLORER_URL;
+
     let res;
-    
-    if (metagraphId === '' || metagraphId === 'DAG') {
-        res = await fetch(`https://be-mainnet.constellationnetwork.io/global-snapshots/${snapshotId}/rewards`);
+    if (!metagraphId) {
+        res = await fetch(`${apiUrl}/global-snapshots/${snapshotId}/rewards`);
     } else {
-        res = await fetch(`https://be-mainnet.constellationnetwork.io/currency/${metagraphId}/snapshots/${snapshotId}/rewards`);
+        res = await fetch(`${apiUrl}/currency/${metagraphId}/snapshots/${snapshotId}/rewards`);
     }
 
     if (!res.ok) {
@@ -83,13 +156,14 @@ export async function getSnapshotDetailRewards(snapshotId: string, metagraphId: 
     return rewards;
 }
 
-export async function getSnapshotDetailTransactions(snapshotId: string, metagraphId: string) {
+export async function getSnapshotDetailTransactions(snapshotId: string, metagraphId?: string) {
+    const apiUrl = process.env.NEXT_PUBLIC_API_BLOCKEXPLORER_URL;
+
     let res;
-    
-    if (metagraphId === '' || metagraphId === 'DAG') {
-        res = await fetch(`https://be-mainnet.constellationnetwork.io/global-snapshots/${snapshotId}/transactions`);
+    if (!metagraphId) {
+        res = await fetch(`${apiUrl}/global-snapshots/${snapshotId}/transactions`);
     } else {
-        res = await fetch(`https://be-mainnet.constellationnetwork.io/currency/${metagraphId}/snapshots/${snapshotId}/transactions`);
+        res = await fetch(`${apiUrl}/currency/${metagraphId}/snapshots/${snapshotId}/transactions`);
     }
 
     if (!res.ok) {
@@ -101,46 +175,13 @@ export async function getSnapshotDetailTransactions(snapshotId: string, metagrap
     return transactions;
 }
 
-export async function getLatestSnapshots() {
-    const res = await fetch('https://be-mainnet.constellationnetwork.io/global-snapshots?limit=5');
-
-    if (!res.ok) {
-        throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
-    }
-    const data = await res.json();
-    const snapshots = data.data as Snapshot[];
-    return snapshots;
-}
-
-export async function getLatestTransactionsMetagraph(metagraphId : string) {
-    const res = await fetch(`https://be-mainnet.constellationnetwork.io/currency/${metagraphId}/transactions?limit=5`);
-
-    if (!res.ok) {
-        throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
-    }
-    const data = await res.json();
-    const transactions = data.data as Transaction[];
-    return transactions;
-}
-
-export async function getLatestSnapshotsMetagraph(metagraphId : string) {
-    const res = await fetch(`https://be-mainnet.constellationnetwork.io/currency/${metagraphId}/snapshots?limit=5`);
-
-    if (!res.ok) {
-        throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
-    }
-    const data = await res.json();
-    const snapshots = data.data as Snapshot[];
-    return snapshots;
-}
-
-export async function getTransactionDetail(transactionId: string, metagraphId: string) {
+export async function getTransactionDetail(transactionId: string, metagraphId?: string) {
+    const apiUrl = process.env.NEXT_PUBLIC_API_BLOCKEXPLORER_URL;
     let res;
-    
-    if (metagraphId === '' || metagraphId === 'DAG') {
-        res = await fetch(`https://be-mainnet.constellationnetwork.io/transactions/${transactionId}`);
+    if (!metagraphId) {
+        res = await fetch(`${apiUrl}/transactions/${transactionId}`);
     } else {
-        res = await fetch(`https://be-mainnet.constellationnetwork.io/currency/${metagraphId}/transactions/${transactionId}`);
+        res = await fetch(`${apiUrl}/currency/${metagraphId}/transactions/${transactionId}`);
     }
 
     if (!res.ok) {

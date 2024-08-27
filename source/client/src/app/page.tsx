@@ -5,6 +5,8 @@ import { ChartSnapshotFees } from "@/components/chart-snapshotfees";
 import GridWallets from "@/components/grid-wallets";
 import { LatestSnapshots } from "@/components/latest-snapshots";
 import { LatestTransactions } from "@/components/latest-transactions";
+import { SnapshotList } from "@/components/snapshot-list";
+import { TransactionList } from "@/components/transaction-list";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export default function Home() {
@@ -16,7 +18,9 @@ export default function Home() {
       <Tabs defaultValue="overview" className="w-full">
         <TabsList className="w-full justify-start">
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="wallets">Wallet Explorer</TabsTrigger>
+          <TabsTrigger value="wallets">Wallets</TabsTrigger>
+          <TabsTrigger value="snapshots">Snapshots</TabsTrigger>
+          <TabsTrigger value="transactions">Transactions</TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
           <div className="flex flex-col lg:flex-row lg:space-x-4 space-y-4 lg:space-y-0 mb-4">
@@ -39,6 +43,16 @@ export default function Home() {
         <TabsContent value="wallets">
           <div className="mb-4">
             <GridWallets metagraphSymbol="DAG" />
+          </div>
+        </TabsContent>
+        <TabsContent value="snapshots">
+          <div className="mb-4">
+            <SnapshotList />
+          </div>
+        </TabsContent>
+        <TabsContent value="transactions">
+          <div className="mb-4">
+            <TransactionList />
           </div>
         </TabsContent>
       </Tabs>

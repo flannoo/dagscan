@@ -6,15 +6,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 import { AlertCircle } from "lucide-react";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { formatDagAmount, formatDate } from "@/lib/utils";
+import { formatDate, formatMetagraphAmount } from "@/lib/utils";
 import Link from "next/link";
 
 interface TransactionDetailProps {
     transactionId: string;
-    metagraphId: string;
+    metagraphId?: string;
+    metagraphSymbol?: string;
 }
 
-export default function TransactionDetail({ transactionId, metagraphId }: TransactionDetailProps) {
+export default function TransactionDetail({ transactionId, metagraphId, metagraphSymbol }: TransactionDetailProps) {
     const { data, isLoading, isError } = useQuery({
         queryKey: ['transactiondetail-' + transactionId + '-' + metagraphId],
         queryFn: async () => getTransactionDetail(transactionId, metagraphId),
@@ -52,7 +53,7 @@ export default function TransactionDetail({ transactionId, metagraphId }: Transa
                                         Amount
                                     </TableCell>
                                     <TableCell>
-                                        {formatDagAmount(data?.amount)}
+                                        {formatMetagraphAmount(data?.amount)} {metagraphSymbol ? metagraphSymbol : "DAG"}
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>
@@ -60,7 +61,7 @@ export default function TransactionDetail({ transactionId, metagraphId }: Transa
                                         Fee
                                     </TableCell>
                                     <TableCell>
-                                        {formatDagAmount(data?.fee)}
+                                        {formatMetagraphAmount(data?.fee)} {metagraphSymbol ? metagraphSymbol : "DAG"}
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>

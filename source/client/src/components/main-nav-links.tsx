@@ -22,9 +22,10 @@ export function MainNavLinks({ setIsOpen }: MainNavLinksProps) {
             <Link href="/" passHref>
                 <span
                     onClick={handleClick}
-                    className={`ml-1 w-max rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${
-                        pathname === "/" ? "bg-accent text-accent-foreground active" : ""
-                    }`}
+                    className={`ml-1 w-max rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${pathname === "/" || pathname.startsWith("/snapshots/") || pathname.startsWith("/transactions/")
+                            ? "bg-accent text-accent-foreground active"
+                            : ""
+                        }`}
                 >
                     Hypergraph
                 </span>
@@ -32,9 +33,8 @@ export function MainNavLinks({ setIsOpen }: MainNavLinksProps) {
             <Link href="/metagraphs" passHref>
                 <span
                     onClick={handleClick}
-                    className={`w-max rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${
-                        pathname.startsWith("/metagraphs") ? "bg-accent text-accent-foreground active" : ""
-                    }`}
+                    className={`w-max rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${pathname.startsWith("/metagraphs") ? "bg-accent text-accent-foreground active" : ""
+                        }`}
                 >
                     Metagraphs
                 </span>
@@ -42,9 +42,8 @@ export function MainNavLinks({ setIsOpen }: MainNavLinksProps) {
             <Link href="/rewards" passHref>
                 <span
                     onClick={handleClick}
-                    className={`w-max rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${
-                        pathname.startsWith("/rewards") ? "bg-accent text-accent-foreground" : ""
-                    }`}
+                    className={`w-max rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${pathname.startsWith("/rewards") ? "bg-accent text-accent-foreground" : ""
+                        }`}
                 >
                     Reward Explorer
                 </span>
@@ -52,9 +51,8 @@ export function MainNavLinks({ setIsOpen }: MainNavLinksProps) {
             <Link href="/nodes" passHref>
                 <span
                     onClick={handleClick}
-                    className={`w-max rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${
-                        pathname.startsWith("/nodes") ? "bg-accent text-accent-foreground" : ""
-                    }`}
+                    className={`w-max rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${pathname.startsWith("/nodes") ? "bg-accent text-accent-foreground" : ""
+                        }`}
                 >
                     Node Explorer
                 </span>

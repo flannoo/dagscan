@@ -48,7 +48,7 @@ export default function Nodes() {
                             <span>Failed to fetch data</span>
                         </div>
                     ) : data ? (
-                        <NodesMap nodesData={data} />
+                        <NodesMap nodesData={data.filter(node => node.nodeStatus !== "Offline")} />
                     ) : null}
                 </TabsContent>
                 <TabsContent value="detail">
@@ -62,7 +62,7 @@ export default function Nodes() {
                                 <span>Failed to fetch data</span>
                             </div>
                         ) : data ? (
-                            <NodesDetails nodesData={data} />
+                            <NodesDetails nodesData={data.filter(node => node.nodeStatus !== "Offline")} />
                         ) : null}
                     </div>
                 </TabsContent>

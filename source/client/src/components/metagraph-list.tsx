@@ -7,7 +7,7 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@
 import { useQuery } from "@tanstack/react-query";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 import { AlertCircle } from "lucide-react";
-import { getMetagraphs } from "@/lib/services/api-nebula-requests";
+import { getMetagraphs } from "@/lib/services/api-dagscan-request";
 
 export function MetagraphList() {
     const { data, isLoading, isError } = useQuery({
@@ -15,6 +15,9 @@ export function MetagraphList() {
         queryFn: async () => getMetagraphs(),
         staleTime: 24 * 60 * 60 * 1000, // Cache data for 24 hours
     });
+
+    // we only show metagraphs that have a metagraphAddress
+    const filteredData = data?.filter(metagraph => metagraph.metagraphAddress);
 
     return (
         <div>
@@ -37,29 +40,28 @@ export function MetagraphList() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {data?.map((metagraph) => (
-                                    <TableRow key={metagraph.MetagraphName}>
+                                {filteredData?.map((metagraph) => (
+                                    <TableRow key={metagraph.name}>
                                         <TableCell>
-                                            <Link href={`/metagraphs/${metagraph.MetagraphAddress}`} className="hover:underline" prefetch={false}>
-                                                {metagraph.MetagraphName}
+                                            <Link href={`/metagraphs/${metagraph.metagraphAddress}`} className="hover:underline" prefetch={false}>
+                                                {metagraph.name}
                                             </Link>
                                         </TableCell>
                                         <TableCell>
-                                            <Link href={`/metagraphs/${metagraph.MetagraphAddress}`} className="hover:underline" prefetch={false}>
-                                                {metagraph.MetagraphAddress.slice(0, 6)}...{metagraph.MetagraphAddress.slice(-6)}
+                                            <Link href={`/metagraphs/${metagraph.metagraphAddress}`} className="hover:underline" prefetch={false}>
+                                                {metagraph.metagraphAddress}
                                             </Link>
                                         </TableCell>
                                         <TableCell>
-                                            <a href={`${metagraph.Website}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                                                {metagraph.Website}
+                                            <a href={`${metagraph.website}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                                {metagraph.website}
                                             </a>
                                         </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
-                    )
-                    }
+                    )}
                 </CardContent>
             </Card>
         </div>

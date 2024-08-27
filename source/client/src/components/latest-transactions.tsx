@@ -10,10 +10,10 @@ import { SkeletonCard } from "@/components/ui/skeleton-card";
 import { AlertCircle } from "lucide-react";
 import { formatDagAmount, formatDate } from "@/lib/utils";
 
-export function LatestTransactions() {
+export function LatestTransactions({ metagraphId, metagraphSymbol }: { metagraphId?: string, metagraphSymbol?: string }) {
     const { data, isLoading, isError } = useQuery({
-        queryKey: ['latestTransactions'],
-        queryFn: async () => getLatestTransactions(),
+        queryKey: ['latestTransactions-' + metagraphId],
+        queryFn: async () => getLatestTransactions(metagraphId),
         staleTime: 10 * 1000,
         refetchInterval: 10 * 1000,
         refetchOnWindowFocus: true,
@@ -23,7 +23,7 @@ export function LatestTransactions() {
         <div>
             <Card>
                 <CardHeader>
-                    <CardTitle>Latest Transactions</CardTitle>
+                    <CardTitle>{metagraphSymbol ? `${metagraphSymbol} Transactions` : "DAG Transactions"}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     {isLoading ? (
@@ -46,9 +46,15 @@ export function LatestTransactions() {
                                 {data?.map((transaction) => (
                                     <TableRow key={transaction.hash}>
                                         <TableCell>
-                                            <Link href={`/transactions/${transaction.hash}`} className="hover:underline" prefetch={false}>
-                                                {transaction.hash.slice(0, 6)}...{transaction.hash.slice(-6)}
-                                            </Link>
+                                            {metagraphId ? (
+                                                <Link href={`/metagraphs/${metagraphId}/transactions/${transaction.hash}`} className="hover:underline" prefetch={false}>
+                                                    {transaction.hash.slice(0, 6)}...{transaction.hash.slice(-6)}
+                                                </Link>
+                                            ) : (
+                                                <Link href={`/transactions/${transaction.hash}`} className="hover:underline" prefetch={false}>
+                                                    {transaction.hash.slice(0, 6)}...{transaction.hash.slice(-6)}
+                                                </Link>
+                                            )}
                                         </TableCell>
                                         <TableCell>{formatDate(transaction.timestamp)}</TableCell>
                                         <TableCell>{formatDagAmount(transaction.amount)}</TableCell>

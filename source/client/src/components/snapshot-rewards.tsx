@@ -10,59 +10,61 @@ import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableWithSearch } from "@/components/ui/data-table-with-search"
 import { Button } from "@/components/ui/button";
-import { formatDagAmount } from "@/lib/utils";
-
-export const columns: ColumnDef<Reward>[] = [
-    {
-        accessorKey: "destination",
-        header: ({ column }) => {
-            return (
-                <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-                    Destination
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
-        cell: ({ row }) => {
-            const address: string = row.getValue("destination");
-            return <Link href={`/addresses/${address}`} className="hover:underline" prefetch={false}>
-                {address}
-            </Link>
-        },
-    },
-    {
-        accessorKey: "amount",
-        header: ({ column }) => {
-            return (
-                <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-                    Amount
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
-        cell: ({ row }) => {
-            return formatDagAmount(row.getValue("amount"));
-        },
-    },
-]
+import { formatMetagraphAmount } from "@/lib/utils";
 
 interface SnapshotRewardsProps {
     snapshotId: string;
-    metagraphId: string;
+    metagraphId?: string;
+    metagraphSymbol?: string;
 }
 
-export default function SnapshotRewards({ snapshotId, metagraphId }: SnapshotRewardsProps) {
+export default function SnapshotRewards({ snapshotId, metagraphId, metagraphSymbol }: SnapshotRewardsProps) {
     const { data, isLoading, isError } = useQuery({
         queryKey: ['snapshotrewards-' + snapshotId + '-' + metagraphId],
         queryFn: async () => getSnapshotDetailRewards(snapshotId, metagraphId),
     });
+
+    const columns: ColumnDef<Reward>[] = [
+        {
+            accessorKey: "destination",
+            header: ({ column }) => {
+                return (
+                    <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                        Destination
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                )
+            },
+            cell: ({ row }) => {
+                const address: string = row.getValue("destination");
+                return <Link href={`/addresses/${address}`} className="hover:underline" prefetch={false}>
+                    {address}
+                </Link>
+            },
+        },
+        {
+            accessorKey: "amount",
+            header: ({ column }) => {
+                return (
+                    <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                        Amount
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                )
+            },
+            cell: ({ row }) => {
+                const amount = formatMetagraphAmount(row.getValue("amount"));
+                return `${amount} ${metagraphSymbol ?? 'DAG'}`;
+            },
+        },
+    ]
 
     return (
         <div>
             <Card>
                 <CardHeader>
                     <CardTitle>
-                        Rewards
+                        {metagraphSymbol} Rewards
                     </CardTitle>
                 </CardHeader>
                 <CardContent>

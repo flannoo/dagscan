@@ -64,9 +64,9 @@ export const columns: ColumnDef<Wallet>[] = [
             const formattedAmount = new Intl.NumberFormat('en-US', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 8,
-            }).format(parsedAmount)
+            }).format(parsedAmount * 100)
 
-            return `${formattedAmount}%`;
+            return `${formattedAmount} %`;
         },
     },
     {

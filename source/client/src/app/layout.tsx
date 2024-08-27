@@ -30,7 +30,7 @@ export default function RootLayout({
         <body>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             <div className={cn("w-full bg-yellow-400 text-black text-center py-2 font-semibold")}>
-              🚧 This website is in beta and under construction. Some features may not be available. 🚧
+              🚧 This website is in beta and under construction. Some features or data may not be available yet. 🚧
             </div>
             <Header />
             <ReactQueryProvider>

@@ -11,10 +11,11 @@ import { formatDate } from "@/lib/utils";
 
 interface SnapshotDetailProps {
     snapshotId: string;
-    metagraphId: string;
+    metagraphId?: string;
+    metagraphSymbol?: string;
 }
 
-export default function SnapshotDetail({ snapshotId, metagraphId }: SnapshotDetailProps) {
+export default function SnapshotDetail({ snapshotId, metagraphId, metagraphSymbol }: SnapshotDetailProps) {
     const { data, isLoading, isError } = useQuery({
         queryKey: ['snapshotdetail-' + snapshotId + '-' + metagraphId],
         queryFn: async () => getSnapshotDetail(snapshotId, metagraphId),
@@ -25,7 +26,7 @@ export default function SnapshotDetail({ snapshotId, metagraphId }: SnapshotDeta
             <Card>
                 <CardHeader>
                     <CardTitle>
-                        Snapshot Details
+                        {metagraphSymbol} Snapshot Details
                     </CardTitle>
                 </CardHeader>
                 <CardContent>

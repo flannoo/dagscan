@@ -10,3 +10,13 @@ export type ValidatorNode = {
     latitude: number;
     longitude: number;
 };
+
+export type Metagraph = {
+    metagraphAddress: string;
+    name: string;
+    symbol: string;
+    feeAddress: string;
+    companyName: string;
+    website: string;
+    description: string;
+}
