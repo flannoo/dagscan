@@ -5,7 +5,7 @@ import { SkeletonCard } from "@/components/ui/skeleton-card";
 import { getMetagraphs } from "@/lib/services/api-dagscan-request";
 import { useQuery } from "@tanstack/react-query";
 
-export default function Snapshots({ params }: { params: { id: string } }) {
+export default function SnapshotsPage({ params }: { params: { id: string } }) {
     const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
     const { data: metagraphs } = useQuery({

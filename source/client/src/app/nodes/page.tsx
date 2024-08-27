@@ -10,7 +10,7 @@ import { getHypergraphValidatorNodes } from "@/lib/services/api-dagscan-request"
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 import NodesDetails from "@/components/nodes-details";
 
-export default function Nodes() {
+export default function NodesPage() {
     const { data, isLoading, isError } = useQuery({
         queryKey: ['hypergraphnodes'],
         queryFn: async () => getHypergraphValidatorNodes(),

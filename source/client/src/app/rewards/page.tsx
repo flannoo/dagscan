@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
-export default function Rewards() {
+export default function RewardsPage() {
     const [walletAddresses, setWalletAddresses] = useState("");
 
     return (

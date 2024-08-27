@@ -10,7 +10,7 @@ import { getMetagraphs } from "@/lib/services/api-dagscan-request";
 import { SnapshotList } from "@/components/snapshot-list";
 import { TransactionList } from "@/components/transaction-list";
 
-export default function Metagraph({ params }: { params: { id: string } }) {
+export default function MetagraphPage({ params }: { params: { id: string } }) {
     const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
     const { data: metagraphs } = useQuery({

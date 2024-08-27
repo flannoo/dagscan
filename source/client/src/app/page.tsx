@@ -9,7 +9,7 @@ import { SnapshotList } from "@/components/snapshot-list";
 import { TransactionList } from "@/components/transaction-list";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
-export default function Home() {
+export default function HomePage() {
 
   return (
     <div className="container mx-auto px-4 lg:px-8 mb-4 mt-4">

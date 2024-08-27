@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import GridRewards from "@/components/grid-rewards";
 
-export default function Reward({ params }: { params: { addresses: string } }) {
+export default function RewardPage({ params }: { params: { addresses: string } }) {
     const [walletAddresses, setWalletAddresses] = useState(params.addresses);
 
     return <div className="container mx-auto px-4 lg:px-8 mb-4 mt-4">

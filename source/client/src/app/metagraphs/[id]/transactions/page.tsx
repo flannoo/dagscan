@@ -5,7 +5,7 @@ import { SkeletonCard } from "@/components/ui/skeleton-card";
 import { getMetagraphs } from "@/lib/services/api-dagscan-request";
 import { useQuery } from "@tanstack/react-query";
 
-export default function Transactions({ params }: { params: { id: string } }) {
+export default function TransactionsPage({ params }: { params: { id: string } }) {
     const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
     const { data: metagraphs } = useQuery({
