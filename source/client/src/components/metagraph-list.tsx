@@ -31,7 +31,7 @@ export function MetagraphList() {
                             <span>Failed to fetch data</span>
                         </div>
                     ) : (
-                        <Table>
+                        <Table className="mt-4">
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Metagraph</TableHead>

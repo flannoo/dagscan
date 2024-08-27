@@ -10,6 +10,7 @@ import { TableRow, TableBody, TableCell, Table } from "@/components/ui/table";
 import { formatDate, getConvertedStringFromByteArray, getRawStringFromByteArray } from "@/lib/utils";
 import { getOnChainDataSnapshot } from "@/lib/services/api-metagraph-requests";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import ReactJsonPretty from 'react-json-pretty';
 
 interface SnapshotDetailProps {
     snapshotId: string;
@@ -113,7 +114,7 @@ export default function SnapshotDetail({ snapshotId, metagraphId, metagraphSymbo
                                     <TableBody>
                                         <TableRow>
                                             <TableCell>
-                                                {getConvertedStringFromByteArray(onchainData.dataApplication.onChainState)}
+                                                <ReactJsonPretty data={JSON.parse(getConvertedStringFromByteArray(onchainData.dataApplication.onChainState))} />
                                             </TableCell>
                                         </TableRow>
                                     </TableBody>
