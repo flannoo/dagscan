@@ -1,4 +1,5 @@
 ﻿using DagScan.Application.Data;
+using DagScan.Application.Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,7 +30,13 @@ internal sealed class GetMetagraphsQueryHandler(ReadOnlyDagContext dagContext)
             FeeAddress: metagraph.FeeAddress?.Value,
             CompanyName: metagraph.CompanyName,
             Website: metagraph.Website,
-            Description: metagraph.Description
+            Description: metagraph.Description,
+            L0ApiUrl: metagraph.MetagraphEndpoints.FirstOrDefault(x => x.MetagraphType == MetagraphTypes.MetagraphL0)
+                ?.ApiBaseAddress,
+            L1DataApiUrl: metagraph.MetagraphEndpoints
+                .FirstOrDefault(x => x.MetagraphType == MetagraphTypes.MetagraphDataL1)?.ApiBaseAddress,
+            L1CurrencyApiUrl: metagraph.MetagraphEndpoints
+                .FirstOrDefault(x => x.MetagraphType == MetagraphTypes.MetagraphCurrencyL1)?.ApiBaseAddress
         )).ToList();
 
         return metagraphDtos;

@@ -7,4 +7,7 @@ public sealed record MetagraphsDto(
     string? FeeAddress,
     string? CompanyName,
     string? Website,
-    string? Description);
+    string? Description,
+    string? L0ApiUrl,
+    string? L1DataApiUrl,
+    string? L1CurrencyApiUrl);
