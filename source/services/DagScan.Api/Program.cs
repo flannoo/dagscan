@@ -1,3 +1,12 @@
+using System.Reflection;
+using Carter;
+using DagScan.Application;
+using DagScan.Application.Data;
+using DagScan.Core.CQRS;
+using Hangfire;
+using Hangfire.Dashboard;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -17,16 +26,51 @@ builder.Services.AddCors(options =>
     });
 });
 
+var databaseConnectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") ??
+                               throw new ArgumentException("DB_CONNECTION_STRING environment variable not found.");
+
+builder.Services.AddDbContext<DagContext>(options => { options.UseSqlServer(databaseConnectionString); });
+builder.Services.AddDbContext<ReadOnlyDagContext>(options => { options.UseSqlServer(databaseConnectionString); });
+
+builder.Services.AddHangfire(configuration => configuration
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(databaseConnectionString));
+
+builder.Services
+    .AddCqrs(
+        new[] { Assembly.GetExecutingAssembly(), typeof(IApplicationMarker).Assembly }
+    );
+
+builder.Services.AddCarter();
+
+builder.Services.AddHttpClient();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    app.UseHangfireDashboard("/hangfire", new DashboardOptions
+    {
+        Authorization = new [] { new HangfireAuthFilter() }
+    });
 }
 
 app.UseHttpsRedirection();
 app.UseCors(defaultCorsPolicyName);
 
+app.MapCarter();
+
 app.Run();
+
+internal class HangfireAuthFilter : IDashboardAuthorizationFilter
+{
+    public bool Authorize(DashboardContext context)
+    {
+        return true;
+    }
+}

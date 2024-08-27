@@ -21,6 +21,7 @@ builder.Services.AddDbContext<DagContext>(options => { options.UseSqlServer(data
 builder.Services.AddDbContext<ReadOnlyDagContext>(options => { options.UseSqlServer(databaseConnectionString); });
 
 builder.Services.AddScoped<IRequiredDataSeeder, HypergraphDataSeeder>();
+builder.Services.AddScoped<IRequiredDataSeeder, MetagraphDataSeeder>();
 
 builder.Services
     .AddCqrs(

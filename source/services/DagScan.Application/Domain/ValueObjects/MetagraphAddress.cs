@@ -3,13 +3,13 @@ using DagScan.Core.DDD;
 
 namespace DagScan.Application.Domain.ValueObjects;
 
-public sealed class MetagraphId : ValueObject
+public sealed class MetagraphAddress : ValueObject
 {
-    public Guid Value { get; }
+    public string Value { get; }
 
-    public MetagraphId(Guid value)
+    public MetagraphAddress(string value)
     {
-        Guard.Against.Default(value, nameof(value));
+        Guard.Against.NullOrWhiteSpace(value, nameof(value));
 
         Value = value;
     }

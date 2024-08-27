@@ -1,25 +1,23 @@
 ﻿using System.Net.Http.Json;
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using DagScan.Application.Data;
-using DagScan.Application.Domain;
 using DagScan.Application.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace DagScan.Application.Features.UpdateValidatorNodeLocations;
 
-public sealed class UpdateHypergraphValidatorNodeLocationJob(
+public sealed class UpdateMetagraphValidatorNodeLocationJob(
     DagContext dagContext,
     IHttpClientFactory httpClientFactory)
 {
-    public async Task Execute(HypergraphValidatorNodeId hypergraphValidatorNodeId)
+    public async Task Execute(MetagraphValidatorNodeId metagraphValidatorNodeId)
     {
-        var validatorNode = await dagContext.HypergraphValidatorNodes.FirstOrDefaultAsync(x =>
-            x.Id == hypergraphValidatorNodeId);
+        var validatorNode = await dagContext.MetagraphValidatorNodes.FirstOrDefaultAsync(x =>
+            x.Id == metagraphValidatorNodeId);
 
         if (validatorNode == null)
         {
-            throw new Exception($"Hypergraph validator node '{hypergraphValidatorNodeId.Value}' could not be found");
+            throw new Exception($"Metagraph validator node '{metagraphValidatorNodeId.Value}' could not be found");
         }
 
         using var httpClient = httpClientFactory.CreateClient();

@@ -32,7 +32,9 @@ public sealed class HypergraphValidatorNodeEntityTypeConfiguration : IEntityType
 
         builder.HasKey(h => h.Id);
 
-        builder.HasIndex(h => new { WalletHash = h.WalletAddress, h.WalletId }).IsUnique();
+        builder.HasIndex(h => new { h.WalletId, h.HypergraphId }).IsUnique();
+        builder.HasIndex(h => h.WalletId);
+        builder.HasIndex(h => h.WalletAddress);
 
         builder.Property(h => h.WalletAddress)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.WalletText)
@@ -44,7 +46,11 @@ public sealed class HypergraphValidatorNodeEntityTypeConfiguration : IEntityType
 
         builder.Property(h => h.WalletId)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.LongText)
-            .IsRequired();
+            .IsRequired()
+            .HasConversion(
+                id => id.Value,
+                value => new WalletId(value)
+            );
 
         builder.Property(h => h.IpAddress)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)

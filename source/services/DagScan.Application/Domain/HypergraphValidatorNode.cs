@@ -10,7 +10,7 @@ public sealed class HypergraphValidatorNode : Aggregate<HypergraphValidatorNodeI
 {
     public HypergraphId HypergraphId { get; private init; } = default!;
     public WalletAddress WalletAddress { get; private init; } = default!;
-    public string WalletId { get; private init; } = default!;
+    public WalletId WalletId { get; private init; } = default!;
     public string IpAddress { get; private set; } = default!;
     public string NodeStatus { get; private set; } = default!;
     public bool IsInConsensus { get; private set; }
@@ -21,13 +21,15 @@ public sealed class HypergraphValidatorNode : Aggregate<HypergraphValidatorNodeI
     public Coordinate? Coordinates { get; private set; }
     public NodeOperator? NodeOperator { get; private set; }
 
-    public static HypergraphValidatorNode Create(HypergraphId hypergraphId, string walletId, WalletAddress walletAddress,
-        string state, string ipAddress, bool isInConsensus)
+    public static HypergraphValidatorNode Create(HypergraphId hypergraphId, WalletId walletId,
+        WalletAddress walletAddress,
+        string nodeStatus, string ipAddress, bool isInConsensus)
     {
-        Guard.Against.NullOrWhiteSpace(walletId, nameof(walletId));
-        Guard.Against.NullOrWhiteSpace(state, nameof(state));
+        Guard.Against.NullOrWhiteSpace(nodeStatus, nameof(nodeStatus));
         Guard.Against.NullOrWhiteSpace(ipAddress, nameof(ipAddress));
         Guard.Against.Null(hypergraphId, nameof(hypergraphId));
+        Guard.Against.Null(walletId, nameof(walletId));
+        Guard.Against.Null(walletAddress, nameof(walletAddress));
 
         return new HypergraphValidatorNode()
         {
@@ -35,7 +37,7 @@ public sealed class HypergraphValidatorNode : Aggregate<HypergraphValidatorNodeI
             HypergraphId = hypergraphId,
             WalletAddress = walletAddress,
             WalletId = walletId,
-            NodeStatus = state,
+            NodeStatus = nodeStatus,
             IpAddress = ipAddress,
             IsInConsensus = isInConsensus,
             LastModifiedUtc = DateTime.UtcNow
@@ -44,7 +46,7 @@ public sealed class HypergraphValidatorNode : Aggregate<HypergraphValidatorNodeI
 
     public void Created()
     {
-        AddDomainEvent(new HypergraphValidatorNodeAdded(HypergraphId, Id));
+        AddDomainEvent(new HypergraphValidatorNodeAdded(Id));
     }
 
     public void UpdateNodeStatus(string nodeStatus, bool isInConsensus)
@@ -62,13 +64,8 @@ public sealed class HypergraphValidatorNode : Aggregate<HypergraphValidatorNodeI
 
         IpAddress = ipAddress;
         LastModifiedUtc = DateTime.UtcNow;
-    }
 
-    public void MarkAsOffline()
-    {
-        NodeStatus = "Offline";
-        IsInConsensus = false;
-        LastModifiedUtc = DateTime.UtcNow;
+        AddDomainEvent(new HypergraphValidatorNodeIpAddressChanged(Id));
     }
 
     public void UpdateServiceProviderInfo(string serviceProvider, string country, string city, Coordinate coordinates)
@@ -91,6 +88,9 @@ public sealed class HypergraphValidatorNode : Aggregate<HypergraphValidatorNodeI
 }
 
 public sealed record HypergraphValidatorNodeAdded(
-    HypergraphId HypergraphId,
+    HypergraphValidatorNodeId HypergraphValidatorNodeId)
+    : DomainEvent, INotification;
+
+public sealed record HypergraphValidatorNodeIpAddressChanged(
     HypergraphValidatorNodeId HypergraphValidatorNodeId)
     : DomainEvent, INotification;

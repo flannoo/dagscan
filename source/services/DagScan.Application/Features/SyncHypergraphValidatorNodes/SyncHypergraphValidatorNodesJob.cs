@@ -13,7 +13,7 @@ public sealed class SyncHypergraphValidatorNodesJob(
     IMediator mediator,
     ILogger<SyncHypergraphValidatorNodesJob> logger) : IJob
 {
-    public string Schedule => Cron.Minutely();
+    public string Schedule => Cron.Hourly();
 
     public async Task Execute()
     {
@@ -36,7 +36,7 @@ public sealed class SyncHypergraphValidatorNodesJob(
 
             if (!response)
             {
-                logger.LogError("Something went wrong while syncing Hypergraph Validator Nodes");
+                logger.LogError("Something went wrong while syncing Hypergraph Validator Nodes for hypergraph {HypergraphName}", hypergraph.Name);
             }
         }
 

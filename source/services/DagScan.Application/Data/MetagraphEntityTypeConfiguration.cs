@@ -14,13 +14,13 @@ public sealed class MetagraphEntityTypeConfiguration : IEntityTypeConfiguration<
 
         builder.Property(m => m.Id)
             .ValueGeneratedNever()
-            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
             .HasConversion(
                 id => id.Value,
                 value => new MetagraphId(value)
             );
 
         builder.HasKey(m => m.Id);
+        builder.HasIndex(m => new { m.HypergraphId, m.MetagraphAddress }).IsUnique();
 
         builder.Property(m => m.HypergraphId)
             .ValueGeneratedNever()
@@ -33,15 +33,15 @@ public sealed class MetagraphEntityTypeConfiguration : IEntityTypeConfiguration<
             .WithMany()
             .HasForeignKey(m => m.HypergraphId);
 
-        builder.Property(h => h.FeeAddress)
-            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.WalletText)
+        builder.Property(m => m.MetagraphAddress)
+            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
             .IsRequired(false)
             .HasConversion(
                 id => id!.Value,
-                value => new WalletAddress(value)
+                value => new MetagraphAddress(value)
             );
 
-        builder.Property(h => h.StakingAddress)
+        builder.Property(m => m.FeeAddress)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.WalletText)
             .IsRequired(false)
             .HasConversion(
@@ -59,7 +59,7 @@ public sealed class MetagraphEntityTypeConfiguration : IEntityTypeConfiguration<
 
         builder.Property(m => m.CompanyName)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.Property(m => m.Description)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.ExtraLongText)
@@ -72,7 +72,7 @@ public sealed class MetagraphEntityTypeConfiguration : IEntityTypeConfiguration<
         builder.Property(m => m.DataSyncEnabled)
             .HasDefaultValue(false);
 
-        builder.OwnsMany<MetagraphEndpoint>(m => m.MetagraphEndpoint, endpointBuilder =>
+        builder.OwnsMany<MetagraphEndpoint>(m => m.MetagraphEndpoints, endpointBuilder =>
         {
             endpointBuilder.ToJson();
 

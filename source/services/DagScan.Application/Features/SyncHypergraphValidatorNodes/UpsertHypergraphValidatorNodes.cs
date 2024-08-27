@@ -4,7 +4,6 @@ using DagScan.Application.Data;
 using DagScan.Application.Domain;
 using DagScan.Application.Domain.ValueObjects;
 using DagScan.Core.CQRS;
-using DagScan.Core.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -45,17 +44,18 @@ public sealed class UpsertHypergraphValidatorNodesCommandHandler(
         }
 
         var hypergraphNodes =
-            await dagContext.HypergraphValidatorNodes.ToListAsync(cancellationToken: cancellationToken);
+            await dagContext.HypergraphValidatorNodes.Where(x => x.HypergraphId == hypergraph.Id)
+                .ToListAsync(cancellationToken: cancellationToken);
 
         foreach (var validatorNode in validatorNodes.ToList())
         {
-            var persistedNode = hypergraphNodes.FirstOrDefault(x => x.WalletId == validatorNode.Id);
+            var persistedNode = hypergraphNodes.FirstOrDefault(x => x.WalletId.Value == validatorNode.Id);
             var nodeIsInConsensus = inConsensusNodes.Peers.Any(x => x.Id == validatorNode.Id);
 
             if (persistedNode is null)
             {
-                var newNode = HypergraphValidatorNode.Create(hypergraph.Id, validatorNode.Id,
-                    new WalletAddress(validatorNode.Id.ConvertNodeIdToWalletHash()),
+                var newNode = HypergraphValidatorNode.Create(hypergraph.Id, new WalletId(validatorNode.Id),
+                    WalletAddress.CreateFromWalletId(validatorNode.Id),
                     validatorNode.State, validatorNode.Ip, nodeIsInConsensus);
 
                 await dagContext.HypergraphValidatorNodes.AddAsync(newNode, cancellationToken);
@@ -80,7 +80,7 @@ public sealed class UpsertHypergraphValidatorNodesCommandHandler(
         {
             if (!hypergraphNodes.Select(x => x.WalletId).Contains(persistedNode.WalletId))
             {
-                persistedNode.MarkAsOffline();
+                persistedNode.UpdateNodeStatus("Offline", false);
             }
         }
 

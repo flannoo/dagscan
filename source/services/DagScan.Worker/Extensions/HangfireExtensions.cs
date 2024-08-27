@@ -23,7 +23,14 @@ public static class HangfireExtensions
         builder.Services.AddHangfireServer((options) =>
             {
                 options.WorkerCount = 4;
-                options.Queues = ["default", "ip-lookup"];
+                options.Queues = ["default"];
+            }
+        );
+
+        builder.Services.AddHangfireServer((options) =>
+            {
+                options.WorkerCount = 4;
+                options.Queues = ["ip-lookup"];
             }
         );
 
@@ -34,6 +41,7 @@ public static class HangfireExtensions
             .WithTransientLifetime());
 
         builder.Services.AddTransient<UpdateHypergraphValidatorNodeLocationJob>();
+        builder.Services.AddTransient<UpdateMetagraphValidatorNodeLocationJob>();
 
         return builder;
     }

@@ -20,7 +20,7 @@ public sealed class HypergraphDataSeeder(
 
         logger.LogInformation("Seeding Hypergraph data");
 
-        var hypergraph = Hypergraph.Create("Mainnet", "https://l0-lb-mainnet.constellationnetwork.io/", "https://be-mainnet.constellationnetwork.io/", true);
+        var hypergraph = Hypergraph.Create("mainnet", "https://l0-lb-mainnet.constellationnetwork.io/", "https://be-mainnet.constellationnetwork.io/", true);
         await dagContext.AddAsync(hypergraph);
         await dagContext.SaveChangesAsync();
 

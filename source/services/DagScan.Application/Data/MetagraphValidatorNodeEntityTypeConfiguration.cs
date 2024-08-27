@@ -21,7 +21,9 @@ public sealed class MetagraphValidatorNodeEntityTypeConfiguration : IEntityTypeC
 
         builder.HasKey(v => v.Id);
 
-        builder.HasIndex(v => new { v.WalletAddress, v.MetagraphType }).IsUnique();
+        builder.HasIndex(v => new { v.WalletId, v.MetagraphType, v.MetagraphId }).IsUnique();
+        builder.HasIndex(v => v.WalletId);
+        builder.HasIndex(v => v.WalletAddress);
 
         builder.Property(v => v.MetagraphId)
             .ValueGeneratedNever()
@@ -44,15 +46,15 @@ public sealed class MetagraphValidatorNodeEntityTypeConfiguration : IEntityTypeC
 
         builder.Property(v => v.WalletId)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.LongText)
-            .IsRequired();
+            .IsRequired()
+            .HasConversion(
+                id => id.Value,
+                value => new WalletId(value)
+            );
 
         builder.Property(v => v.IpAddress)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
             .IsRequired();
-
-        builder.Property(v => v.Version)
-            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.ShortText)
-            .IsRequired(false);
 
         builder.Property(v => v.NodeStatus)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.ShortText)
