@@ -17,6 +17,7 @@ export default function SnapshotDetailPage({ params }: { params: { id: string, s
         staleTime: 24 * 60 * 60 * 1000, // Cache data for 24 hours
     });
     const metagraphSymbol = metagraphs?.find(metagraph => metagraph.metagraphAddress === metagraphId)?.symbol || '';
+    const metagraphApiUrl = metagraphs?.find(metagraph => metagraph.metagraphAddress === metagraphId)?.l0ApiUrl || '';
 
     return (
         <div className="container mx-auto px-4 lg:px-8 mb-4 mt-4">
@@ -24,7 +25,7 @@ export default function SnapshotDetailPage({ params }: { params: { id: string, s
             <div className="container mx-auto px-4 lg:px-8 mb-4 mt-4">
                 <div className="mb-4">
                     {metagraphSymbol ? (
-                        <SnapshotDetail snapshotId={snapid} metagraphId={metagraphId} metagraphSymbol={metagraphSymbol} />
+                        <SnapshotDetail snapshotId={snapid} metagraphId={metagraphId} metagraphSymbol={metagraphSymbol} onchainApiUrl={metagraphApiUrl} />
                     ) : (<SkeletonCard />)}
                 </div>
                 <div className="mb-4">

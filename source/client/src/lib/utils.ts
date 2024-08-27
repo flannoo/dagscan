@@ -93,3 +93,12 @@ export const formatDdagAmount = (amount: number | undefined) => {
 
   return `${formattedAmount} dDAG`;
 };
+
+export const getRawStringFromByteArray = (byteArray: string[]) => {
+  return "[" + byteArray.join(',') + "]";
+};
+
+export const getConvertedStringFromByteArray = (byteArray: string[]) => {
+  const jsonString = String.fromCharCode(...byteArray.map(byte => parseInt(byte, 10)));
+  return jsonString;
+};

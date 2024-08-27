@@ -7,23 +7,31 @@ import { AlertCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 import { TableRow, TableBody, TableCell, Table } from "@/components/ui/table";
-import { formatDate } from "@/lib/utils";
+import { formatDate, getConvertedStringFromByteArray, getRawStringFromByteArray } from "@/lib/utils";
+import { getOnChainDataSnapshot } from "@/lib/services/api-metagraph-requests";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 interface SnapshotDetailProps {
     snapshotId: string;
     metagraphId?: string;
     metagraphSymbol?: string;
+    onchainApiUrl?: string;
 }
 
-export default function SnapshotDetail({ snapshotId, metagraphId, metagraphSymbol }: SnapshotDetailProps) {
+export default function SnapshotDetail({ snapshotId, metagraphId, metagraphSymbol, onchainApiUrl }: SnapshotDetailProps) {
     const { data, isLoading, isError } = useQuery({
         queryKey: ['snapshotdetail-' + snapshotId + '-' + metagraphId],
         queryFn: async () => getSnapshotDetail(snapshotId, metagraphId),
     });
 
+    const { data: onchainData } = useQuery({
+        queryKey: ['snapshotdetaildata-' + snapshotId + '-' + metagraphId],
+        queryFn: async () => getOnChainDataSnapshot(snapshotId, onchainApiUrl),
+    });
+
     return (
         <div>
-            <Card>
+            <Card className="mb-4">
                 <CardHeader>
                     <CardTitle>
                         {metagraphSymbol} Snapshot Details
@@ -86,6 +94,46 @@ export default function SnapshotDetail({ snapshotId, metagraphId, metagraphSymbo
                     }
                 </CardContent>
             </Card>
+
+            {onchainData && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>
+                            Snapshot Data
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Tabs defaultValue="pretty" className="w-full">
+                            <TabsList className="w-full justify-start">
+                                <TabsTrigger value="pretty">Pretty</TabsTrigger>
+                                <TabsTrigger value="raw">Raw</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="pretty">
+                                <Table>
+                                    <TableBody>
+                                        <TableRow>
+                                            <TableCell>
+                                                {getConvertedStringFromByteArray(onchainData.dataApplication.onChainState)}
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                            </TabsContent>
+                            <TabsContent value="raw">
+                                <Table>
+                                    <TableBody>
+                                        <TableRow>
+                                            <TableCell>
+                                                {getRawStringFromByteArray(onchainData.dataApplication.onChainState)}
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                            </TabsContent>
+                        </Tabs>
+                    </CardContent>
+                </Card>
+            )}
         </div>
     )
 }

@@ -19,4 +19,17 @@ export type Metagraph = {
     companyName: string;
     website: string;
     description: string;
+    l0ApiUrl: string;
+    l1DataApiUrl: string;
+    l1CurrencyApiUrl: string;
+}
+
+export type OnChainSnapshot = {
+    ordinal: number;
+    dataApplication: DataApplication;
+    messages: any[];
+};
+
+export type DataApplication = {
+    onChainState: string[];
 }
