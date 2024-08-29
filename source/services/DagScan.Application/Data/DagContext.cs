@@ -19,9 +19,11 @@ public sealed class DagContext(DbContextOptions<DagContext> options) : DbContext
     }
 
     public DbSet<Hypergraph> Hypergraphs => Set<Hypergraph>();
+    public DbSet<HypergraphBalance> HypergraphBalances => Set<HypergraphBalance>();
     public DbSet<HypergraphValidatorNode> HypergraphValidatorNodes => Set<HypergraphValidatorNode>();
     public DbSet<NodeOperator> ValidatorNodeOperators => Set<NodeOperator>();
     public DbSet<Metagraph> Metagraphs => Set<Metagraph>();
+    public DbSet<MetagraphBalance> MetagraphBalances => Set<MetagraphBalance>();
     public DbSet<MetagraphValidatorNode> MetagraphValidatorNodes => Set<MetagraphValidatorNode>();
 }
 
@@ -45,9 +47,11 @@ public sealed class ReadOnlyDagContext : DbContext
     }
 
     public DbSet<Hypergraph> Hypergraphs => Set<Hypergraph>();
+    public DbSet<HypergraphBalance> HypergraphBalances => Set<HypergraphBalance>();
     public DbSet<HypergraphValidatorNode> HypergraphValidatorNodes => Set<HypergraphValidatorNode>();
     public DbSet<NodeOperator> ValidatorNodeOperators => Set<NodeOperator>();
     public DbSet<Metagraph> Metagraphs => Set<Metagraph>();
+    public DbSet<MetagraphBalance> MetagraphBalances => Set<MetagraphBalance>();
     public DbSet<MetagraphValidatorNode> MetagraphValidatorNodes => Set<MetagraphValidatorNode>();
 }
 

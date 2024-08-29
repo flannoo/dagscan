@@ -257,6 +257,37 @@ namespace DagScan.Application.Data.Migrations
                     b.ToTable("NodeOperators", (string)null);
                 });
 
+            modelBuilder.Entity("DagScan.Application.Domain.Hypergraph", b =>
+                {
+                    b.OwnsMany("DagScan.Application.Domain.HypergraphBalance", "HypergraphBalances", b1 =>
+                        {
+                            b1.Property<Guid>("Id")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<long>("Balance")
+                                .HasColumnType("bigint");
+
+                            b1.Property<Guid>("HypergraphId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("WalletAddress")
+                                .IsRequired()
+                                .HasMaxLength(51)
+                                .HasColumnType("nvarchar(51)");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("HypergraphId");
+
+                            b1.ToTable("HypergraphBalances", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("HypergraphId");
+                        });
+
+                    b.Navigation("HypergraphBalances");
+                });
+
             modelBuilder.Entity("DagScan.Application.Domain.HypergraphValidatorNode", b =>
                 {
                     b.HasOne("DagScan.Application.Domain.Hypergraph", null)
@@ -303,6 +334,37 @@ namespace DagScan.Application.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.OwnsMany("DagScan.Application.Domain.MetagraphBalance", "MetagraphBalances", b1 =>
+                        {
+                            b1.Property<Guid>("Id")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<long>("Balance")
+                                .HasColumnType("bigint");
+
+                            b1.Property<string>("MetagraphAddress")
+                                .IsRequired()
+                                .HasMaxLength(50)
+                                .HasColumnType("nvarchar(50)");
+
+                            b1.Property<Guid>("MetagraphId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("WalletAddress")
+                                .IsRequired()
+                                .HasMaxLength(51)
+                                .HasColumnType("nvarchar(51)");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("MetagraphId");
+
+                            b1.ToTable("MetagraphBalances", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("MetagraphId");
+                        });
+
                     b.OwnsMany("DagScan.Application.Domain.ValueObjects.MetagraphEndpoint", "MetagraphEndpoints", b1 =>
                         {
                             b1.Property<Guid>("MetagraphId")
@@ -331,6 +393,8 @@ namespace DagScan.Application.Data.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("MetagraphId");
                         });
+
+                    b.Navigation("MetagraphBalances");
 
                     b.Navigation("MetagraphEndpoints");
                 });

@@ -35,7 +35,7 @@ public sealed class MetagraphDataSeeder(
 
         var dorMetagraph = Metagraph.Create(hypergraph.Id,
             new MetagraphAddress("DAG0CyySf35ftDQDQBnd1bdQ9aPyUdacMghpnCuM"), "DOR", "DOR",
-            new WalletAddress("DAG0o6WSyvc7XfzujwJB1e25mfyzgXoLYDD6wqnk"), false);
+            new WalletAddress("DAG0o6WSyvc7XfzujwJB1e25mfyzgXoLYDD6wqnk"), true);
 
         dorMetagraph.AddMetagraphEndpoint(new MetagraphEndpoint("http://dor-metagraph-mainnet-l0-1396659502.us-west-2.elb.amazonaws.com:7000",
             MetagraphTypes.MetagraphL0));
@@ -46,7 +46,7 @@ public sealed class MetagraphDataSeeder(
 
         var elPacaMetagraph = Metagraph.Create(hypergraph.Id,
             new MetagraphAddress("DAG7ChnhUF7uKgn8tXy45aj4zn9AFuhaZr8VXY43"), "El Paca", "PACA",
-            new WalletAddress("DAG5VxUBiDx24wZgBwjJ1FeuVP1HHVjz6EzXa3z6"), false);
+            new WalletAddress("DAG5VxUBiDx24wZgBwjJ1FeuVP1HHVjz6EzXa3z6"), true);
 
         elPacaMetagraph.AddMetagraphEndpoint(new MetagraphEndpoint("http://elpaca-l0-2006678808.us-west-1.elb.amazonaws.com:9100",
             MetagraphTypes.MetagraphL0));

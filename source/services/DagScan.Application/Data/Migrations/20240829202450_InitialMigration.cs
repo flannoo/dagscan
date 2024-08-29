@@ -41,6 +41,26 @@ namespace DagScan.Application.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "HypergraphBalances",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    HypergraphId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    WalletAddress = table.Column<string>(type: "nvarchar(51)", maxLength: 51, nullable: false),
+                    Balance = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HypergraphBalances", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_HypergraphBalances_Hypergraphs_HypergraphId",
+                        column: x => x.HypergraphId,
+                        principalTable: "Hypergraphs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Metagraphs",
                 columns: table => new
                 {
@@ -103,6 +123,27 @@ namespace DagScan.Application.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MetagraphBalances",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MetagraphId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MetagraphAddress = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    WalletAddress = table.Column<string>(type: "nvarchar(51)", maxLength: 51, nullable: false),
+                    Balance = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MetagraphBalances", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MetagraphBalances_Metagraphs_MetagraphId",
+                        column: x => x.MetagraphId,
+                        principalTable: "Metagraphs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MetagraphValidatorNodes",
                 columns: table => new
                 {
@@ -138,6 +179,11 @@ namespace DagScan.Application.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_HypergraphBalances_HypergraphId",
+                table: "HypergraphBalances",
+                column: "HypergraphId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_HypergraphValidatorNodes_HypergraphId",
                 table: "HypergraphValidatorNodes",
                 column: "HypergraphId");
@@ -162,6 +208,11 @@ namespace DagScan.Application.Data.Migrations
                 table: "HypergraphValidatorNodes",
                 columns: new[] { "WalletId", "HypergraphId" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MetagraphBalances_MetagraphId",
+                table: "MetagraphBalances",
+                column: "MetagraphId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Metagraphs_HypergraphId_MetagraphAddress",
@@ -201,7 +252,13 @@ namespace DagScan.Application.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "HypergraphBalances");
+
+            migrationBuilder.DropTable(
                 name: "HypergraphValidatorNodes");
+
+            migrationBuilder.DropTable(
+                name: "MetagraphBalances");
 
             migrationBuilder.DropTable(
                 name: "MetagraphValidatorNodes");

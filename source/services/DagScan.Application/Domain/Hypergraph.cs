@@ -10,8 +10,10 @@ public sealed class Hypergraph : Aggregate<HypergraphId>
     public string ApiBaseAddress { get; private init; } = default!;
     public string? BlockExplorerApiBaseAddress { get; private init; }
     public bool DataSyncEnabled { get; private init; }
+    public List<HypergraphBalance> HypergraphBalances { get; private set; } = [];
 
-    public static Hypergraph Create(string name, string apiBaseAddress, string? blockExplorerApiAddress, bool dataSyncEnabled)
+    public static Hypergraph Create(string name, string apiBaseAddress, string? blockExplorerApiAddress,
+        bool dataSyncEnabled)
     {
         Guard.Against.NullOrWhiteSpace(name, nameof(name));
         Guard.Against.NullOrWhiteSpace(apiBaseAddress, nameof(apiBaseAddress));
@@ -24,5 +26,11 @@ public sealed class Hypergraph : Aggregate<HypergraphId>
             BlockExplorerApiBaseAddress = blockExplorerApiAddress,
             DataSyncEnabled = dataSyncEnabled
         };
+    }
+
+    public void RefreshBalances(List<HypergraphBalance> balances)
+    {
+        Guard.Against.Null(balances, nameof(balances));
+        HypergraphBalances = balances;
     }
 }

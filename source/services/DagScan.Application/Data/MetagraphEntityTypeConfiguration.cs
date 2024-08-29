@@ -85,5 +85,42 @@ public sealed class MetagraphEntityTypeConfiguration : IEntityTypeConfiguration<
                 .HasConversion<string>()
                 .IsRequired();
         });
+
+        builder.OwnsMany<MetagraphBalance>(m => m.MetagraphBalances, balanceBuilder =>
+        {
+            balanceBuilder.ToTable("MetagraphBalances");
+
+            balanceBuilder.Property(x => x.Id)
+                .ValueGeneratedNever()
+                .HasConversion(
+                    id => id.Value,
+                    value => new MetagraphBalanceId(value)
+                );
+
+            balanceBuilder.Property(x => x.MetagraphId)
+                .ValueGeneratedNever()
+                .HasConversion(
+                    id => id.Value,
+                    value => new MetagraphId(value)
+                );
+
+            balanceBuilder.Property(x => x.MetagraphAddress)
+                .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
+                .IsRequired()
+                .HasConversion(
+                    id => id.Value,
+                    value => new MetagraphAddress(value)
+                );
+
+            balanceBuilder.HasKey(x => x.Id);
+
+            balanceBuilder.Property(x => x.WalletAddress)
+                .HasMaxLength(DatabaseConstants.ColumnTypeLengths.WalletText)
+                .IsRequired()
+                .HasConversion(
+                    id => id.Value,
+                    value => new WalletAddress(value)
+                );
+        });
     }
 }
