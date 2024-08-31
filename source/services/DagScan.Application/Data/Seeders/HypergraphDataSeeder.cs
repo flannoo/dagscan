@@ -7,7 +7,7 @@ namespace DagScan.Application.Data.Seeders;
 public sealed class HypergraphDataSeeder(
     DagContext dagContext,
     ILogger<HypergraphDataSeeder> logger)
-    : IRequiredDataSeeder
+    : IDataSeeder
 {
     public int Order => 1;
 
@@ -20,7 +20,7 @@ public sealed class HypergraphDataSeeder(
 
         logger.LogInformation("Seeding Hypergraph data");
 
-        var hypergraph = Hypergraph.Create("mainnet", "https://l0-lb-mainnet.constellationnetwork.io/", "https://be-mainnet.constellationnetwork.io/", true);
+        var hypergraph = Hypergraph.Create("mainnet", "https://l0-lb-mainnet.constellationnetwork.io/", "https://be-mainnet.constellationnetwork.io/", true, 2694019);
         await dagContext.AddAsync(hypergraph);
         await dagContext.SaveChangesAsync();
 

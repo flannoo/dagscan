@@ -3,6 +3,7 @@ using DagScan.Application;
 using DagScan.Application.Data;
 using DagScan.Application.Data.Seeders;
 using DagScan.Application.Extensions;
+using DagScan.Application.Features.SyncGlobalSnapshots;
 using DagScan.Core.CQRS;
 using DagScan.Core.Messaging;
 using DagScan.Core.Persistence;
@@ -17,11 +18,15 @@ builder.Services.AddScoped<IEfUnitOfWork, EfUnitOfWork<DagContext>>();
 var databaseConnectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") ??
                                throw new ArgumentException("DB_CONNECTION_STRING environment variable not found.");
 
-builder.Services.AddDbContext<DagContext>(options => { options.UseSqlServer(databaseConnectionString); });
+builder.Services.AddDbContext<DagContext>(options =>
+{
+    options.UseSqlServer(databaseConnectionString);
+    options.AddInterceptors(new ConcurrencyInterceptor());
+});
 builder.Services.AddDbContext<ReadOnlyDagContext>(options => { options.UseSqlServer(databaseConnectionString); });
 
-builder.Services.AddScoped<IRequiredDataSeeder, HypergraphDataSeeder>();
-builder.Services.AddScoped<IRequiredDataSeeder, MetagraphDataSeeder>();
+builder.Services.AddScoped<IDataSeeder, HypergraphDataSeeder>();
+builder.Services.AddScoped<IDataSeeder, MetagraphDataSeeder>();
 
 builder.Services
     .AddCqrs(
@@ -33,6 +38,8 @@ builder.AddHangfire(databaseConnectionString);
 
 builder.Services.AddHttpClient();
 
+builder.Services.AddHostedService<SyncGlobalSnapshotsWorker>();
+
 var host = builder.Build();
 
 if (bool.TryParse(Environment.GetEnvironmentVariable("ENABLE_DB_MIGRATION") ?? "false", out var migrationEnabled) &&
@@ -41,14 +48,13 @@ if (bool.TryParse(Environment.GetEnvironmentVariable("ENABLE_DB_MIGRATION") ?? "
     await host.Services.ApplyDatabaseMigrations();
 }
 
-await host.Services.ApplyRequiredSeedData();
-
 if (bool.TryParse(Environment.GetEnvironmentVariable("ENABLE_DB_SEEDER") ?? "false", out var seedDataEnabled) &&
     seedDataEnabled)
 {
     await host.Services.ApplySeedDatabase();
 }
 
-host.Services.InitRecurringJobs();
+//host.Services.InitRecurringJobs();
+
 
 host.Run();

@@ -16,8 +16,8 @@ public sealed class HypergraphNodeAddedNotificationHandler(
             "HypergraphNode with ID {HypergraphValidatorNodeId} added, enriching location information",
             notification.HypergraphValidatorNodeId.Value);
 
-        backgroundJobClient.Enqueue<UpdateHypergraphValidatorNodeLocationJob>("ip-lookup", job =>
-            job.Execute(notification.HypergraphValidatorNodeId));
+        backgroundJobClient.Schedule<UpdateHypergraphValidatorNodeLocationJob>("ip-lookup", job =>
+            job.Execute(notification.HypergraphValidatorNodeId), TimeSpan.FromSeconds(30));
 
         return Task.CompletedTask;
     }

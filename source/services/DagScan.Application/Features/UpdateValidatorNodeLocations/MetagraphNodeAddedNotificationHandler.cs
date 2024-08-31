@@ -16,8 +16,8 @@ public sealed class MetagraphNodeAddedNotificationHandler(
             "MetagraphNode with ID {MetagraphValidatorNodeId} added, enriching location information",
             notification.MetagraphValidatorNodeId.Value);
 
-        backgroundJobClient.Enqueue<UpdateMetagraphValidatorNodeLocationJob>("ip-lookup", job =>
-            job.Execute(notification.MetagraphValidatorNodeId));
+        backgroundJobClient.Schedule<UpdateMetagraphValidatorNodeLocationJob>("ip-lookup", job =>
+            job.Execute(notification.MetagraphValidatorNodeId), TimeSpan.FromSeconds(30));
 
         return Task.CompletedTask;
     }

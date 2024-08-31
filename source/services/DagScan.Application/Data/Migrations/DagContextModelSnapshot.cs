@@ -23,6 +23,86 @@ namespace DagScan.Application.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("DagScan.Application.Domain.GlobalSnapshot", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ConcurrencyVersion")
+                        .HasColumnType("int");
+
+                    b.Property<long?>("FeeAmount")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Hash")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<Guid>("HypergraphId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsSynced")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsTimeTriggeredSnapshot")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MetagraphAddress")
+                        .HasMaxLength(51)
+                        .HasColumnType("nvarchar(51)");
+
+                    b.Property<long>("Ordinal")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MetagraphAddress");
+
+                    b.HasIndex("HypergraphId", "Ordinal")
+                        .IsUnique();
+
+                    b.ToTable("GlobalSnapshots", (string)null);
+                });
+
+            modelBuilder.Entity("DagScan.Application.Domain.GlobalSnapshotReward", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ConcurrencyVersion")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("HypergraphId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("LastReceivedUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("RewardAmount")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateOnly>("RewardDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("WalletAddress")
+                        .IsRequired()
+                        .HasMaxLength(51)
+                        .HasColumnType("nvarchar(51)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WalletAddress");
+
+                    b.HasIndex("HypergraphId", "RewardDate", "WalletAddress")
+                        .IsUnique();
+
+                    b.ToTable("GlobalSnapshotRewards", (string)null);
+                });
+
             modelBuilder.Entity("DagScan.Application.Domain.Hypergraph", b =>
                 {
                     b.Property<Guid>("Id")
@@ -37,8 +117,14 @@ namespace DagScan.Application.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int>("ConcurrencyVersion")
+                        .HasColumnType("int");
+
                     b.Property<bool>("DataSyncEnabled")
                         .HasColumnType("bit");
+
+                    b.Property<long>("LastSnapshotSynced")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -58,6 +144,9 @@ namespace DagScan.Application.Data.Migrations
                     b.Property<string>("City")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("ConcurrencyVersion")
+                        .HasColumnType("int");
 
                     b.Property<string>("Country")
                         .HasMaxLength(50)
@@ -124,6 +213,9 @@ namespace DagScan.Application.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int>("ConcurrencyVersion")
+                        .HasColumnType("int");
+
                     b.Property<bool>("DataSyncEnabled")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -175,6 +267,9 @@ namespace DagScan.Application.Data.Migrations
                     b.Property<string>("City")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("ConcurrencyVersion")
+                        .HasColumnType("int");
 
                     b.Property<string>("Country")
                         .HasMaxLength(50)

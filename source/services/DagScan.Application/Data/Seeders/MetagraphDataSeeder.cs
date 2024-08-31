@@ -9,7 +9,7 @@ namespace DagScan.Application.Data.Seeders;
 public sealed class MetagraphDataSeeder(
     DagContext dagContext,
     ILogger<MetagraphDataSeeder> logger)
-    : IRequiredDataSeeder
+    : IDataSeeder
 {
     public int Order => 2;
 

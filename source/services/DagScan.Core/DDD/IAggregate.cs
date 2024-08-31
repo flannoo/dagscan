@@ -4,6 +4,6 @@ public interface IAggregate<out TId> : IEntity<TId>, IHaveAggregate
 {
 }
 
-public interface IHaveAggregate : IHaveDomainEvents
+public interface IHaveAggregate : IHaveDomainEvents, IHaveAggregateVersion
 {
 }

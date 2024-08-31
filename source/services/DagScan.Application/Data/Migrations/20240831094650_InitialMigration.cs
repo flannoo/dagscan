@@ -12,6 +12,43 @@ namespace DagScan.Application.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "GlobalSnapshotRewards",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    HypergraphId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RewardDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    WalletAddress = table.Column<string>(type: "nvarchar(51)", maxLength: 51, nullable: false),
+                    RewardAmount = table.Column<long>(type: "bigint", nullable: false),
+                    LastReceivedUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ConcurrencyVersion = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GlobalSnapshotRewards", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GlobalSnapshots",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    HypergraphId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Ordinal = table.Column<long>(type: "bigint", nullable: false),
+                    Hash = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsTimeTriggeredSnapshot = table.Column<bool>(type: "bit", nullable: false),
+                    FeeAmount = table.Column<long>(type: "bigint", nullable: true),
+                    MetagraphAddress = table.Column<string>(type: "nvarchar(51)", maxLength: 51, nullable: true),
+                    IsSynced = table.Column<bool>(type: "bit", nullable: false),
+                    ConcurrencyVersion = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GlobalSnapshots", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Hypergraphs",
                 columns: table => new
                 {
@@ -19,7 +56,9 @@ namespace DagScan.Application.Data.Migrations
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     ApiBaseAddress = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     BlockExplorerApiBaseAddress = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    DataSyncEnabled = table.Column<bool>(type: "bit", nullable: false)
+                    DataSyncEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LastSnapshotSynced = table.Column<long>(type: "bigint", nullable: false),
+                    ConcurrencyVersion = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -74,6 +113,7 @@ namespace DagScan.Application.Data.Migrations
                     Website = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     DataSyncEnabled = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    ConcurrencyVersion = table.Column<int>(type: "int", nullable: false),
                     MetagraphEndpoints = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -104,7 +144,8 @@ namespace DagScan.Application.Data.Migrations
                     City = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Latitude = table.Column<double>(type: "float", nullable: true),
                     Longitude = table.Column<double>(type: "float", nullable: true),
-                    NodeOperatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    NodeOperatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ConcurrencyVersion = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -160,7 +201,8 @@ namespace DagScan.Application.Data.Migrations
                     City = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Latitude = table.Column<double>(type: "float", nullable: true),
                     Longitude = table.Column<double>(type: "float", nullable: true),
-                    NodeOperatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    NodeOperatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ConcurrencyVersion = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -177,6 +219,28 @@ namespace DagScan.Application.Data.Migrations
                         principalTable: "NodeOperators",
                         principalColumn: "Id");
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GlobalSnapshotRewards_HypergraphId_RewardDate_WalletAddress",
+                table: "GlobalSnapshotRewards",
+                columns: new[] { "HypergraphId", "RewardDate", "WalletAddress" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GlobalSnapshotRewards_WalletAddress",
+                table: "GlobalSnapshotRewards",
+                column: "WalletAddress");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GlobalSnapshots_HypergraphId_Ordinal",
+                table: "GlobalSnapshots",
+                columns: new[] { "HypergraphId", "Ordinal" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GlobalSnapshots_MetagraphAddress",
+                table: "GlobalSnapshots",
+                column: "MetagraphAddress");
 
             migrationBuilder.CreateIndex(
                 name: "IX_HypergraphBalances_HypergraphId",
@@ -251,6 +315,12 @@ namespace DagScan.Application.Data.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "GlobalSnapshotRewards");
+
+            migrationBuilder.DropTable(
+                name: "GlobalSnapshots");
+
             migrationBuilder.DropTable(
                 name: "HypergraphBalances");
 

@@ -8,6 +8,8 @@ public abstract class Aggregate<TId> : Entity<TId>, IAggregate<TId>
 {
     [NonSerialized] private readonly ConcurrentQueue<IDomainEvent> _domainEvents = new();
 
+    public int ConcurrencyVersion { get; private set; } = default!;
+
     public IReadOnlyList<IDomainEvent> GetDomainEvents()
     {
         return _domainEvents.ToImmutableList();

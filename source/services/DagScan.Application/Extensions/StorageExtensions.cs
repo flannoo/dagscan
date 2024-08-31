@@ -36,20 +36,4 @@ public static class StorageExtensions
             logger.LogInformation("Seeding '{Seed}' ended...", seeder.GetType().Name);
         }
     }
-
-    public static async Task ApplyRequiredSeedData(this IServiceProvider serviceProvider)
-    {
-        using var serviceScope = serviceProvider.CreateScope();
-        var seeders = serviceScope.ServiceProvider.GetServices<IRequiredDataSeeder>();
-        var logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<DagContext>>();
-
-        foreach (var seeder in seeders.OrderBy(x => x.Order))
-        {
-            logger.LogInformation("Seeding '{Seed}' started...", seeder.GetType().Name);
-
-            await seeder.SeedAsync();
-
-            logger.LogInformation("Seeding '{Seed}' ended...", seeder.GetType().Name);
-        }
-    }
 }
