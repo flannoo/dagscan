@@ -5,6 +5,7 @@ using DagScan.Application.Data.Seeders;
 using DagScan.Application.Extensions;
 using DagScan.Application.Features.SyncHypergraphSnapshots;
 using DagScan.Application.Features.SyncHypergraphSnapshotsMetadata;
+using DagScan.Application.Features.SyncMetagraphSnapshotRewards;
 using DagScan.Core.CQRS;
 using DagScan.Core.Messaging;
 using DagScan.Core.Persistence;
@@ -41,6 +42,7 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddHostedService<SyncHypergraphSnapshotsWorker>();
 builder.Services.AddHostedService<SyncHypergraphSnapshotsMetadataWorker>();
+builder.Services.AddHostedService<SyncMetagraphSnapshotRewardsWorker>();
 
 var host = builder.Build();
 

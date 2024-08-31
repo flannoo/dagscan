@@ -25,8 +25,10 @@ public sealed class Metagraph : Aggregate<MetagraphId>
     public string? Description { get; private init; }
     public bool DataSyncEnabled { get; private init; }
     public List<MetagraphBalance> MetagraphBalances { get; private set; } = [];
+    public long LastSnapshotSynced { get; private set; }
 
-    public static Metagraph Create(HypergraphId hypergraphId, MetagraphAddress? metagraphAddress, string name, string symbol, WalletAddress? feeAddress, bool dataSyncEnabled)
+    public static Metagraph Create(HypergraphId hypergraphId, MetagraphAddress? metagraphAddress, string name,
+        string symbol, WalletAddress? feeAddress, bool dataSyncEnabled, long lastSnapshotSynced)
     {
         Guard.Against.NullOrWhiteSpace(name, nameof(name));
         Guard.Against.NullOrWhiteSpace(symbol, nameof(symbol));
@@ -39,7 +41,8 @@ public sealed class Metagraph : Aggregate<MetagraphId>
             Name = name,
             Symbol = symbol,
             FeeAddress = feeAddress,
-            DataSyncEnabled = dataSyncEnabled
+            DataSyncEnabled = dataSyncEnabled,
+            LastSnapshotSynced = lastSnapshotSynced
         };
     }
 
@@ -53,5 +56,10 @@ public sealed class Metagraph : Aggregate<MetagraphId>
     {
         Guard.Against.Null(balances, nameof(balances));
         MetagraphBalances = balances;
+    }
+
+    public void UpdateLastSnapshotSynced(long ordinal)
+    {
+        LastSnapshotSynced = ordinal;
     }
 }

@@ -11,6 +11,7 @@ public sealed class GlobalSnapshotDtoData
 {
     public string Hash { get; init; } = default!;
     public long Ordinal { get; init; }
+    public List<string> Blocks { get; init; } = [];
     [JsonPropertyName("rewards")] public List<GlobalSnapshotDtoReward> GlobalSnapshotRewards { get; init; } = [];
     public DateTime Timestamp { get; init; }
 }
@@ -19,11 +20,4 @@ public sealed class GlobalSnapshotDtoReward
 {
     public string Destination { get; init; } = default!;
     public long Amount { get; init; }
-}
-
-public class ErrorResponse
-{
-    public string Message { get; init; } = default!;
-
-    public List<string> Errors { get; init; } = [];
 }

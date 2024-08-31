@@ -28,6 +28,10 @@ public sealed class HypergraphSnapshotEntityTypeConfiguration : IEntityTypeConfi
                 value => new HypergraphId(value)
             );
 
+        builder.HasOne<Hypergraph>()
+            .WithMany()
+            .HasForeignKey(h => h.HypergraphId);
+
         builder.Property(x => x.Hash)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.LongText)
             .IsRequired();

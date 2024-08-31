@@ -28,6 +28,7 @@ public sealed class DagContext(DbContextOptions<DagContext> options) : DbContext
     public DbSet<NodeOperator> ValidatorNodeOperators => Set<NodeOperator>();
     public DbSet<Metagraph> Metagraphs => Set<Metagraph>();
     public DbSet<MetagraphBalance> MetagraphBalances => Set<MetagraphBalance>();
+    public DbSet<MetagraphSnapshotReward> MetagraphSnapshotRewards => Set<MetagraphSnapshotReward>();
     public DbSet<MetagraphValidatorNode> MetagraphValidatorNodes => Set<MetagraphValidatorNode>();
 }
 
@@ -60,6 +61,7 @@ public sealed class ReadOnlyDagContext : DbContext
     public DbSet<NodeOperator> ValidatorNodeOperators => Set<NodeOperator>();
     public DbSet<Metagraph> Metagraphs => Set<Metagraph>();
     public DbSet<MetagraphBalance> MetagraphBalances => Set<MetagraphBalance>();
+    public DbSet<MetagraphSnapshotReward> MetagraphSnapshotRewards => Set<MetagraphSnapshotReward>();
     public DbSet<MetagraphValidatorNode> MetagraphValidatorNodes => Set<MetagraphValidatorNode>();
 }
 

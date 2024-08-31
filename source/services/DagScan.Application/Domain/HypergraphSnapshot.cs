@@ -7,6 +7,7 @@ public sealed class HypergraphSnapshot : Entity<HypergraphSnapshotId>
 {
     public HypergraphId HypergraphId { get; private init; } = default!;
     public long Ordinal { get; private init; }
+    public int Blocks { get; private init; }
     public string Hash { get; private init; } = default!;
     public DateTime Timestamp { get; private init; }
     public bool IsTimeTriggeredSnapshot { get; private init; }
@@ -14,13 +15,14 @@ public sealed class HypergraphSnapshot : Entity<HypergraphSnapshotId>
     public WalletAddress? MetagraphAddress { get; private set; }
     public bool IsMetadataSynced { get; private set; }
 
-    public static HypergraphSnapshot Create(HypergraphId hypergraphId, long ordinal, string hash, DateTime timestamp, bool isTimeTriggeredSnapshot, bool isMetadataSynced)
+    public static HypergraphSnapshot Create(HypergraphId hypergraphId, long ordinal, int blocks, string hash, DateTime timestamp, bool isTimeTriggeredSnapshot, bool isMetadataSynced)
     {
         return new HypergraphSnapshot()
         {
             Id = new HypergraphSnapshotId(Guid.NewGuid()),
             HypergraphId = hypergraphId,
             Ordinal = ordinal,
+            Blocks = blocks,
             Hash = hash,
             IsTimeTriggeredSnapshot = isTimeTriggeredSnapshot,
             Timestamp = timestamp,

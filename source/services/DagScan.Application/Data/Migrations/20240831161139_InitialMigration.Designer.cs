@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DagScan.Application.Data.Migrations
 {
     [DbContext(typeof(DagContext))]
-    [Migration("20240831141621_InitialMigration")]
+    [Migration("20240831161139_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -66,6 +66,9 @@ namespace DagScan.Application.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Blocks")
+                        .HasColumnType("int");
 
                     b.Property<long?>("FeeAmount")
                         .HasColumnType("bigint");
@@ -264,6 +267,9 @@ namespace DagScan.Application.Data.Migrations
                     b.Property<Guid>("HypergraphId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<long>("LastSnapshotSynced")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("MetagraphAddress")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -289,6 +295,43 @@ namespace DagScan.Application.Data.Migrations
                         .HasFilter("[MetagraphAddress] IS NOT NULL");
 
                     b.ToTable("Metagraphs", (string)null);
+                });
+
+            modelBuilder.Entity("DagScan.Application.Domain.MetagraphSnapshotReward", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("MetagraphAddress")
+                        .IsRequired()
+                        .HasMaxLength(51)
+                        .HasColumnType("nvarchar(51)");
+
+                    b.Property<Guid>("MetagraphId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<long>("RewardAmount")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("RewardDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("SnapshotOrdinal")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("WalletAddress")
+                        .IsRequired()
+                        .HasMaxLength(51)
+                        .HasColumnType("nvarchar(51)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WalletAddress");
+
+                    b.HasIndex("MetagraphId", "SnapshotOrdinal", "WalletAddress")
+                        .IsUnique();
+
+                    b.ToTable("MetagraphSnapshotRewards", (string)null);
                 });
 
             modelBuilder.Entity("DagScan.Application.Domain.MetagraphValidatorNode", b =>
@@ -415,6 +458,24 @@ namespace DagScan.Application.Data.Migrations
                     b.Navigation("HypergraphBalances");
                 });
 
+            modelBuilder.Entity("DagScan.Application.Domain.HypergraphSnapshot", b =>
+                {
+                    b.HasOne("DagScan.Application.Domain.Hypergraph", null)
+                        .WithMany()
+                        .HasForeignKey("HypergraphId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DagScan.Application.Domain.HypergraphSnapshotReward", b =>
+                {
+                    b.HasOne("DagScan.Application.Domain.Hypergraph", null)
+                        .WithMany()
+                        .HasForeignKey("HypergraphId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("DagScan.Application.Domain.HypergraphValidatorNode", b =>
                 {
                     b.HasOne("DagScan.Application.Domain.Hypergraph", null)
@@ -451,6 +512,15 @@ namespace DagScan.Application.Data.Migrations
                     b.Navigation("Coordinates");
 
                     b.Navigation("NodeOperator");
+                });
+
+            modelBuilder.Entity("DagScan.Application.Domain.HypergraphValidatorNodeParticipant", b =>
+                {
+                    b.HasOne("DagScan.Application.Domain.Hypergraph", null)
+                        .WithMany()
+                        .HasForeignKey("HypergraphId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DagScan.Application.Domain.Metagraph", b =>
@@ -524,6 +594,15 @@ namespace DagScan.Application.Data.Migrations
                     b.Navigation("MetagraphBalances");
 
                     b.Navigation("MetagraphEndpoints");
+                });
+
+            modelBuilder.Entity("DagScan.Application.Domain.MetagraphSnapshotReward", b =>
+                {
+                    b.HasOne("DagScan.Application.Domain.Metagraph", null)
+                        .WithMany()
+                        .HasForeignKey("MetagraphId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DagScan.Application.Domain.MetagraphValidatorNode", b =>

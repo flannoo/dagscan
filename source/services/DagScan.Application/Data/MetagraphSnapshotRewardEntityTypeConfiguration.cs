@@ -6,31 +6,31 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DagScan.Application.Data;
 
-public sealed class HypergraphSnapshotRewardEntityTypeConfiguration : IEntityTypeConfiguration<HypergraphSnapshotReward>
+public sealed class MetagraphSnapshotRewardEntityTypeConfiguration : IEntityTypeConfiguration<MetagraphSnapshotReward>
 {
-    public void Configure(EntityTypeBuilder<HypergraphSnapshotReward> builder)
+    public void Configure(EntityTypeBuilder<MetagraphSnapshotReward> builder)
     {
-        builder.ToTable("HypergraphSnapshotRewards");
+        builder.ToTable("MetagraphSnapshotRewards");
 
         builder.Property(x => x.Id)
             .ValueGeneratedNever()
             .HasConversion(
                 id => id.Value,
-                value => new HypergraphSnapshotRewardId(value)
+                value => new MetagraphSnapshotRewardId(value)
             );
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.HypergraphId)
+        builder.Property(x => x.MetagraphId)
             .ValueGeneratedNever()
             .HasConversion(
                 id => id.Value,
-                value => new HypergraphId(value)
+                value => new MetagraphId(value)
             );
 
-        builder.HasOne<Hypergraph>()
+        builder.HasOne<Metagraph>()
             .WithMany()
-            .HasForeignKey(h => h.HypergraphId);
+            .HasForeignKey(x => x.MetagraphId);
 
         builder.Property(x => x.WalletAddress)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.WalletText)
@@ -40,7 +40,15 @@ public sealed class HypergraphSnapshotRewardEntityTypeConfiguration : IEntityTyp
                 value => new WalletAddress(value)
             );
 
+        builder.Property(x => x.MetagraphAddress)
+            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.WalletText)
+            .IsRequired()
+            .HasConversion(
+                id => id.Value,
+                value => new MetagraphAddress(value)
+            );
+
         builder.HasIndex(x => x.WalletAddress);
-        builder.HasIndex(x => new { x.HypergraphId, x.RewardDate, x.WalletAddress }).IsUnique();
+        builder.HasIndex(x => new { x.MetagraphId, x.SnapshotOrdinal, x.WalletAddress }).IsUnique();
     }
 }

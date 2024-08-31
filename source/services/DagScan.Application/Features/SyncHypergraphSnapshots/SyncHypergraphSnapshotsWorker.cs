@@ -119,7 +119,8 @@ public sealed class InsertGlobalSnapshotsCommandHandler(
 
         foreach (var globalSnapshot in request.GlobalSnapshots)
         {
-            var snapshot = HypergraphSnapshot.Create(hypergraph.Id, globalSnapshot.Ordinal, globalSnapshot.Hash,
+            var snapshot = HypergraphSnapshot.Create(hypergraph.Id, globalSnapshot.Ordinal, globalSnapshot.Blocks.Count,
+                globalSnapshot.Hash,
                 globalSnapshot.Timestamp,
                 globalSnapshot.GlobalSnapshotRewards.Count > 0,
                 globalSnapshot.Ordinal < hypergraph.StartSnapshotMetadataOrdinal);

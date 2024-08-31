@@ -28,6 +28,10 @@ public sealed class HypergraphValidatorNodeParticipantEntityTypeConfiguration : 
                 value => new HypergraphId(value)
             );
 
+        builder.HasOne<Hypergraph>()
+            .WithMany()
+            .HasForeignKey(h => h.HypergraphId);
+
         builder.Property(x => x.WalletAddress)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.WalletText)
             .IsRequired()
