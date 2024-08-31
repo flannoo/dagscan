@@ -3,11 +3,11 @@ using DagScan.Core.DDD;
 
 namespace DagScan.Application.Domain.ValueObjects;
 
-public sealed class GlobalSnapshotId : ValueObject
+public sealed class HypergraphSnapshotRewardId : ValueObject
 {
     public Guid Value { get; }
 
-    public GlobalSnapshotId(Guid value)
+    public HypergraphSnapshotRewardId(Guid value)
     {
         Guard.Against.Default(value, nameof(value));
 

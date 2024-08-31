@@ -3,7 +3,7 @@ using DagScan.Core.DDD;
 
 namespace DagScan.Application.Domain;
 
-public sealed class GlobalSnapshotReward : Aggregate<GlobalSnapshotRewardId>
+public sealed class HypergraphSnapshotReward : Entity<HypergraphSnapshotRewardId>
 {
     public HypergraphId HypergraphId { get; private set; } = default!;
     public DateOnly RewardDate { get; private set; }
@@ -11,12 +11,12 @@ public sealed class GlobalSnapshotReward : Aggregate<GlobalSnapshotRewardId>
     public long RewardAmount { get; private set; }
     public DateTime LastReceivedUtc { get; private set; }
 
-    public static GlobalSnapshotReward Create(HypergraphId hypergraphId, DateOnly rewardDate, WalletAddress walletAddress, long rewardAmount,
+    public static HypergraphSnapshotReward Create(HypergraphId hypergraphId, DateOnly rewardDate, WalletAddress walletAddress, long rewardAmount,
         DateTime lastReceivedUtc)
     {
-        return new GlobalSnapshotReward()
+        return new HypergraphSnapshotReward()
         {
-            Id = new GlobalSnapshotRewardId(Guid.NewGuid()),
+            Id = new HypergraphSnapshotRewardId(Guid.NewGuid()),
             HypergraphId = hypergraphId,
             RewardDate = rewardDate,
             WalletAddress = walletAddress,

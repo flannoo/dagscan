@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text.Json;
 using DagScan.Application.Data;
 using DagScan.Application.Domain;
@@ -34,6 +35,8 @@ public sealed class UpsertMetagraphValidatorNodesCommandHandler(
         foreach (var metagraphEndpoint in metagraph.MetagraphEndpoints)
         {
             httpClient.BaseAddress = new Uri(metagraphEndpoint.ApiBaseAddress);
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             var validatorNodes = await httpClient.GetFromJsonAsync<MetagraphClusterInfo[]>("cluster/info",
                 new JsonSerializerOptions(JsonSerializerDefaults.Web), cancellationToken: cancellationToken) ?? [];
 

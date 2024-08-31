@@ -26,7 +26,7 @@ public sealed class Metagraph : Aggregate<MetagraphId>
     public bool DataSyncEnabled { get; private init; }
     public List<MetagraphBalance> MetagraphBalances { get; private set; } = [];
 
-    public static Metagraph Create(HypergraphId hypergraphId, MetagraphAddress metagraphAddress, string name, string symbol, WalletAddress? feeAddress, bool dataSyncEnabled)
+    public static Metagraph Create(HypergraphId hypergraphId, MetagraphAddress? metagraphAddress, string name, string symbol, WalletAddress? feeAddress, bool dataSyncEnabled)
     {
         Guard.Against.NullOrWhiteSpace(name, nameof(name));
         Guard.Against.NullOrWhiteSpace(symbol, nameof(symbol));

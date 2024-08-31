@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text.Json;
 using DagScan.Application.Data;
 using DagScan.Application.Domain;
@@ -32,6 +33,8 @@ public sealed class UpsertHypergraphValidatorNodesCommandHandler(
         }
 
         httpClient.BaseAddress = new Uri(hypergraph.ApiBaseAddress);
+        httpClient.DefaultRequestHeaders.Accept.Clear();
+        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         var validatorNodes = await httpClient.GetFromJsonAsync<HypergraphClusterInfo[]>("cluster/info",
             new JsonSerializerOptions(JsonSerializerDefaults.Web), cancellationToken: cancellationToken) ?? [];
 

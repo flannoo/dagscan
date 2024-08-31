@@ -1,13 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace DagScan.Application.Features.SyncGlobalSnapshots;
-
-public class GlobalSnapshotResponse
-{
-    public GlobalSnapshotDto? Snapshots { get; set; }
-    public ErrorResponse? Error { get; set; }
-    public bool IsSuccess => Snapshots != null;
-}
+namespace DagScan.Application.Features.SyncHypergraphSnapshots;
 
 public sealed class GlobalSnapshotDto
 {

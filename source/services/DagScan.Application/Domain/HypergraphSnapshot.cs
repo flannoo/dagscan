@@ -3,7 +3,7 @@ using DagScan.Core.DDD;
 
 namespace DagScan.Application.Domain;
 
-public sealed class GlobalSnapshot : Aggregate<GlobalSnapshotId>
+public sealed class HypergraphSnapshot : Entity<HypergraphSnapshotId>
 {
     public HypergraphId HypergraphId { get; private init; } = default!;
     public long Ordinal { get; private init; }
@@ -12,19 +12,19 @@ public sealed class GlobalSnapshot : Aggregate<GlobalSnapshotId>
     public bool IsTimeTriggeredSnapshot { get; private init; }
     public long? FeeAmount { get; private set; }
     public WalletAddress? MetagraphAddress { get; private set; }
-    public bool IsSynced { get; private set; }
+    public bool IsMetadataSynced { get; private set; }
 
-    public static GlobalSnapshot Create(HypergraphId hypergraphId, long ordinal, string hash, DateTime timestamp, bool isTimeTriggeredSnapshot)
+    public static HypergraphSnapshot Create(HypergraphId hypergraphId, long ordinal, string hash, DateTime timestamp, bool isTimeTriggeredSnapshot, bool isMetadataSynced)
     {
-        return new GlobalSnapshot()
+        return new HypergraphSnapshot()
         {
-            Id = new GlobalSnapshotId(Guid.NewGuid()),
+            Id = new HypergraphSnapshotId(Guid.NewGuid()),
             HypergraphId = hypergraphId,
             Ordinal = ordinal,
             Hash = hash,
             IsTimeTriggeredSnapshot = isTimeTriggeredSnapshot,
             Timestamp = timestamp,
-            IsSynced = false
+            IsMetadataSynced = isMetadataSynced
         };
     }
 
@@ -38,8 +38,8 @@ public sealed class GlobalSnapshot : Aggregate<GlobalSnapshotId>
         MetagraphAddress = walletAddress;
     }
 
-    public void MarkAsSynced()
+    public void MarkMetadataAsSynced()
     {
-        IsSynced = true;
+        IsMetadataSynced = true;
     }
 }

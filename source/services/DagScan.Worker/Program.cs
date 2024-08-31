@@ -3,7 +3,8 @@ using DagScan.Application;
 using DagScan.Application.Data;
 using DagScan.Application.Data.Seeders;
 using DagScan.Application.Extensions;
-using DagScan.Application.Features.SyncGlobalSnapshots;
+using DagScan.Application.Features.SyncHypergraphSnapshots;
+using DagScan.Application.Features.SyncHypergraphSnapshotsMetadata;
 using DagScan.Core.CQRS;
 using DagScan.Core.Messaging;
 using DagScan.Core.Persistence;
@@ -38,7 +39,8 @@ builder.AddHangfire(databaseConnectionString);
 
 builder.Services.AddHttpClient();
 
-builder.Services.AddHostedService<SyncGlobalSnapshotsWorker>();
+builder.Services.AddHostedService<SyncHypergraphSnapshotsWorker>();
+builder.Services.AddHostedService<SyncHypergraphSnapshotsMetadataWorker>();
 
 var host = builder.Build();
 
@@ -54,7 +56,6 @@ if (bool.TryParse(Environment.GetEnvironmentVariable("ENABLE_DB_SEEDER") ?? "fal
     await host.Services.ApplySeedDatabase();
 }
 
-//host.Services.InitRecurringJobs();
-
+host.Services.InitRecurringJobs();
 
 host.Run();

@@ -6,17 +6,17 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DagScan.Application.Data;
 
-public sealed class GlobalSnapshotRewardEntityTypeConfiguration : IEntityTypeConfiguration<GlobalSnapshotReward>
+public sealed class HypergraphSnapshotEntityTypeConfiguration : IEntityTypeConfiguration<HypergraphSnapshot>
 {
-    public void Configure(EntityTypeBuilder<GlobalSnapshotReward> builder)
+    public void Configure(EntityTypeBuilder<HypergraphSnapshot> builder)
     {
-        builder.ToTable("GlobalSnapshotRewards");
+        builder.ToTable("HypergraphSnapshots");
 
         builder.Property(x => x.Id)
             .ValueGeneratedNever()
             .HasConversion(
                 id => id.Value,
-                value => new GlobalSnapshotRewardId(value)
+                value => new HypergraphSnapshotId(value)
             );
 
         builder.HasKey(x => x.Id);
@@ -28,15 +28,20 @@ public sealed class GlobalSnapshotRewardEntityTypeConfiguration : IEntityTypeCon
                 value => new HypergraphId(value)
             );
 
-        builder.Property(x => x.WalletAddress)
+        builder.Property(x => x.Hash)
+            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.LongText)
+            .IsRequired();
+
+        builder.Property(x => x.MetagraphAddress)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.WalletText)
-            .IsRequired()
+            .IsRequired(false)
             .HasConversion(
-                id => id.Value,
+                id => id!.Value,
                 value => new WalletAddress(value)
             );
 
-        builder.HasIndex(x => x.WalletAddress);
-        builder.HasIndex(x => new { x.HypergraphId, x.RewardDate, x.WalletAddress }).IsUnique();
+        builder.HasIndex(x => x.MetagraphAddress);
+
+        builder.HasIndex(x => new { x.HypergraphId, x.Ordinal }).IsUnique();
     }
 }

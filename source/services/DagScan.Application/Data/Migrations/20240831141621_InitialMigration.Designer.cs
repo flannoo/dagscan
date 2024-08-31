@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DagScan.Application.Data.Migrations
 {
     [DbContext(typeof(DagContext))]
-    [Migration("20240831094650_InitialMigration")]
+    [Migration("20240831141621_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -25,86 +25,6 @@ namespace DagScan.Application.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("DagScan.Application.Domain.GlobalSnapshot", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("ConcurrencyVersion")
-                        .HasColumnType("int");
-
-                    b.Property<long?>("FeeAmount")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Hash")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<Guid>("HypergraphId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsSynced")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsTimeTriggeredSnapshot")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("MetagraphAddress")
-                        .HasMaxLength(51)
-                        .HasColumnType("nvarchar(51)");
-
-                    b.Property<long>("Ordinal")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MetagraphAddress");
-
-                    b.HasIndex("HypergraphId", "Ordinal")
-                        .IsUnique();
-
-                    b.ToTable("GlobalSnapshots", (string)null);
-                });
-
-            modelBuilder.Entity("DagScan.Application.Domain.GlobalSnapshotReward", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("ConcurrencyVersion")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("HypergraphId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("LastReceivedUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long>("RewardAmount")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateOnly>("RewardDate")
-                        .HasColumnType("date");
-
-                    b.Property<string>("WalletAddress")
-                        .IsRequired()
-                        .HasMaxLength(51)
-                        .HasColumnType("nvarchar(51)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("WalletAddress");
-
-                    b.HasIndex("HypergraphId", "RewardDate", "WalletAddress")
-                        .IsUnique();
-
-                    b.ToTable("GlobalSnapshotRewards", (string)null);
-                });
 
             modelBuilder.Entity("DagScan.Application.Domain.Hypergraph", b =>
                 {
@@ -134,9 +54,86 @@ namespace DagScan.Application.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<long>("StartSnapshotMetadataOrdinal")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
                     b.ToTable("Hypergraphs", (string)null);
+                });
+
+            modelBuilder.Entity("DagScan.Application.Domain.HypergraphSnapshot", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<long?>("FeeAmount")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Hash")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<Guid>("HypergraphId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsMetadataSynced")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsTimeTriggeredSnapshot")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MetagraphAddress")
+                        .HasMaxLength(51)
+                        .HasColumnType("nvarchar(51)");
+
+                    b.Property<long>("Ordinal")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MetagraphAddress");
+
+                    b.HasIndex("HypergraphId", "Ordinal")
+                        .IsUnique();
+
+                    b.ToTable("HypergraphSnapshots", (string)null);
+                });
+
+            modelBuilder.Entity("DagScan.Application.Domain.HypergraphSnapshotReward", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("HypergraphId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("LastReceivedUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("RewardAmount")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateOnly>("RewardDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("WalletAddress")
+                        .IsRequired()
+                        .HasMaxLength(51)
+                        .HasColumnType("nvarchar(51)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WalletAddress");
+
+                    b.HasIndex("HypergraphId", "RewardDate", "WalletAddress")
+                        .IsUnique();
+
+                    b.ToTable("HypergraphSnapshotRewards", (string)null);
                 });
 
             modelBuilder.Entity("DagScan.Application.Domain.HypergraphValidatorNode", b =>
@@ -205,6 +202,38 @@ namespace DagScan.Application.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("HypergraphValidatorNodes", (string)null);
+                });
+
+            modelBuilder.Entity("DagScan.Application.Domain.HypergraphValidatorNodeParticipant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("HypergraphId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<long>("SnapshotCount")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateOnly>("SnapshotDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("WalletAddress")
+                        .IsRequired()
+                        .HasMaxLength(51)
+                        .HasColumnType("nvarchar(51)");
+
+                    b.Property<string>("WalletId")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HypergraphId", "WalletId", "SnapshotDate")
+                        .IsUnique();
+
+                    b.ToTable("HypergraphValidatorNodeParticipants", (string)null);
                 });
 
             modelBuilder.Entity("DagScan.Application.Domain.Metagraph", b =>

@@ -1,21 +1,21 @@
-﻿using System.Net.Http.Json;
-using System.Text.Json;
+﻿using System.Text.Json;
 using DagScan.Application.Data;
 using DagScan.Application.Domain;
 using DagScan.Application.Domain.ValueObjects;
 using DagScan.Core.CQRS;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace DagScan.Application.Features.SyncGlobalSnapshots;
+namespace DagScan.Application.Features.SyncHypergraphSnapshots;
 
-public sealed class SyncGlobalSnapshotsWorker(
-    DagContext dagContext,
+public sealed class SyncHypergraphSnapshotsWorker(
+    IServiceScopeFactory scopeFactory,
     IHttpClientFactory httpClientFactory,
     IMediator mediator,
-    ILogger<SyncGlobalSnapshotsWorker> logger) : BackgroundService
+    ILogger<SyncHypergraphSnapshotsWorker> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
@@ -23,15 +23,19 @@ public sealed class SyncGlobalSnapshotsWorker(
         {
             try
             {
+                await using var scope = scopeFactory.CreateAsyncScope();
+                var dagContext = scope.ServiceProvider.GetRequiredService<DagContext>();
+
+                var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
                 var errorOccurred = false;
                 var hypergraphs = await dagContext.Hypergraphs.ToListAsync(cancellationToken);
 
                 foreach (var hypergraph in hypergraphs)
                 {
-                    if (hypergraph.BlockExplorerApiBaseAddress is null)
+                    if (hypergraph.BlockExplorerApiBaseAddress is null || !hypergraph.DataSyncEnabled)
                     {
                         logger.LogInformation(
-                            "Skipping snapshot sync for {Hypergraph} because no blockExplorer API is configured.",
+                            "Skipping snapshot sync for {Hypergraph} because no blockExplorer API is configured or datasync is disabled.",
                             hypergraph.Name);
                         continue;
                     }
@@ -45,29 +49,17 @@ public sealed class SyncGlobalSnapshotsWorker(
                         cancellationToken);
 
                     var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
-                    var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-                    var result = new GlobalSnapshotResponse();
 
-                    try
+                    if (!response.IsSuccessStatusCode)
                     {
-                        if (response.IsSuccessStatusCode)
-                        {
-                            result.Snapshots = JsonSerializer.Deserialize<GlobalSnapshotDto>(responseBody, options);
-                        }
-                        else
-                        {
-                            result.Error = JsonSerializer.Deserialize<ErrorResponse>(responseBody, options);
-                            errorOccurred = true;
-                        }
-                    }
-                    catch (JsonException)
-                    {
-                        logger.LogError("Unable to parse response body: {ResponseBody}", responseBody);
+                        logger.LogError("Error occurred while retrieving snapshot: {ResponseBody}", responseBody);
                         errorOccurred = true;
                         continue;
                     }
 
-                    if (result.Snapshots is null)
+                    var result = JsonSerializer.Deserialize<GlobalSnapshotDto>(responseBody, options);
+
+                    if (result is null)
                     {
                         logger.LogError("No snapshots returned from API: {ResponseBody}", responseBody);
                         errorOccurred = true;
@@ -78,7 +70,7 @@ public sealed class SyncGlobalSnapshotsWorker(
                         await mediator.Send(
                             new InsertGlobalSnapshotsCommand()
                             {
-                                HypergraphId = hypergraph.Id, GlobalSnapshots = result.Snapshots.GlobalSnapshotData
+                                HypergraphId = hypergraph.Id, GlobalSnapshots = result.GlobalSnapshotData
                             }, cancellationToken);
 
                     if (!commandResponse)
@@ -127,11 +119,12 @@ public sealed class InsertGlobalSnapshotsCommandHandler(
 
         foreach (var globalSnapshot in request.GlobalSnapshots)
         {
-            var snapshot = GlobalSnapshot.Create(hypergraph.Id, globalSnapshot.Ordinal, globalSnapshot.Hash,
+            var snapshot = HypergraphSnapshot.Create(hypergraph.Id, globalSnapshot.Ordinal, globalSnapshot.Hash,
                 globalSnapshot.Timestamp,
-                globalSnapshot.GlobalSnapshotRewards.Count > 0);
+                globalSnapshot.GlobalSnapshotRewards.Count > 0,
+                globalSnapshot.Ordinal < hypergraph.StartSnapshotMetadataOrdinal);
 
-            await dagContext.GlobalSnapshots.AddAsync(snapshot, cancellationToken);
+            await dagContext.HypergraphSnapshots.AddAsync(snapshot, cancellationToken);
         }
 
         // group snapshots by date for reward aggregation
@@ -172,7 +165,7 @@ public sealed class InsertGlobalSnapshotsCommandHandler(
 
                 var lastReceivedRewardDate = lastReceivedByAddress[rewardByAddress.Key];
 
-                var globalSnapshotReward = await dagContext.GlobalSnapshotRewards
+                var globalSnapshotReward = await dagContext.HypergraphSnapshotRewards
                     .FirstOrDefaultAsync(x =>
                             x.HypergraphId == hypergraph.Id &&
                             x.WalletAddress == walletAddress &&
@@ -181,10 +174,10 @@ public sealed class InsertGlobalSnapshotsCommandHandler(
 
                 if (globalSnapshotReward is null)
                 {
-                    var newGlobalSnapshotReward = GlobalSnapshotReward.Create(hypergraph.Id,
+                    var newGlobalSnapshotReward = HypergraphSnapshotReward.Create(hypergraph.Id,
                         DateOnly.FromDateTime(dateGroup.Key), walletAddress, rewardAmount, lastReceivedRewardDate);
 
-                    await dagContext.GlobalSnapshotRewards.AddAsync(newGlobalSnapshotReward, cancellationToken);
+                    await dagContext.HypergraphSnapshotRewards.AddAsync(newGlobalSnapshotReward, cancellationToken);
                 }
                 else
                 {

@@ -21,8 +21,10 @@ public sealed class DagContext(DbContextOptions<DagContext> options) : DbContext
     public DbSet<Hypergraph> Hypergraphs => Set<Hypergraph>();
     public DbSet<HypergraphBalance> HypergraphBalances => Set<HypergraphBalance>();
     public DbSet<HypergraphValidatorNode> HypergraphValidatorNodes => Set<HypergraphValidatorNode>();
-    public DbSet<GlobalSnapshot> GlobalSnapshots => Set<GlobalSnapshot>();
-    public DbSet<GlobalSnapshotReward> GlobalSnapshotRewards => Set<GlobalSnapshotReward>();
+    public DbSet<HypergraphSnapshot> HypergraphSnapshots => Set<HypergraphSnapshot>();
+    public DbSet<HypergraphSnapshotReward> HypergraphSnapshotRewards => Set<HypergraphSnapshotReward>();
+    public DbSet<HypergraphValidatorNodeParticipant> HypergraphValidatorNodesParticipants =>
+        Set<HypergraphValidatorNodeParticipant>();
     public DbSet<NodeOperator> ValidatorNodeOperators => Set<NodeOperator>();
     public DbSet<Metagraph> Metagraphs => Set<Metagraph>();
     public DbSet<MetagraphBalance> MetagraphBalances => Set<MetagraphBalance>();
@@ -51,8 +53,10 @@ public sealed class ReadOnlyDagContext : DbContext
     public DbSet<Hypergraph> Hypergraphs => Set<Hypergraph>();
     public DbSet<HypergraphBalance> HypergraphBalances => Set<HypergraphBalance>();
     public DbSet<HypergraphValidatorNode> HypergraphValidatorNodes => Set<HypergraphValidatorNode>();
-    public DbSet<GlobalSnapshot> GlobalSnapshots => Set<GlobalSnapshot>();
-    public DbSet<GlobalSnapshotReward> GlobalSnapshotRewards => Set<GlobalSnapshotReward>();
+    public DbSet<HypergraphSnapshot> HypergraphSnapshots => Set<HypergraphSnapshot>();
+    public DbSet<HypergraphSnapshotReward> HypergraphSnapshotReward => Set<HypergraphSnapshotReward>();
+    public DbSet<HypergraphValidatorNodeParticipant> HypergraphValidatorNodesParticipants =>
+        Set<HypergraphValidatorNodeParticipant>();
     public DbSet<NodeOperator> ValidatorNodeOperators => Set<NodeOperator>();
     public DbSet<Metagraph> Metagraphs => Set<Metagraph>();
     public DbSet<MetagraphBalance> MetagraphBalances => Set<MetagraphBalance>();

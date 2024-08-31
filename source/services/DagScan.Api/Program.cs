@@ -67,7 +67,7 @@ app.MapCarter();
 
 app.Run();
 
-internal class HangfireAuthFilter : IDashboardAuthorizationFilter
+internal sealed class HangfireAuthFilter : IDashboardAuthorizationFilter
 {
     public bool Authorize(DashboardContext context)
     {

@@ -30,7 +30,7 @@ public sealed class MetagraphDataSeeder(
         }
 
         var dagMetagraph = Metagraph.Create(hypergraph.Id, null, "DAG", "DAG", null, true);
-        dagMetagraph.AddMetagraphEndpoint(new MetagraphEndpoint("https://l1-lb-mainnet.constellationnetwork.io/",
+        dagMetagraph.AddMetagraphEndpoint(new MetagraphEndpoint("http://54.215.18.98:9010/",
             MetagraphTypes.DagL1));
 
         var dorMetagraph = Metagraph.Create(hypergraph.Id,
