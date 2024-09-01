@@ -15,17 +15,18 @@ namespace DagScan.Application.Features.SyncHypergraphSnapshotsMetadata;
 public sealed class SyncHypergraphSnapshotsMetadataWorker(
     IServiceScopeFactory scopeFactory,
     IHttpClientFactory httpClientFactory,
-    IMediator mediator,
     ILogger<SyncHypergraphSnapshotsMetadataWorker> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
         {
+            const int parallelProcessingCount = 20;
             try
             {
                 await using var scope = scopeFactory.CreateAsyncScope();
                 var dagContext = scope.ServiceProvider.GetRequiredService<DagContext>();
+                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
                 var errorOccurred = false;
                 var hypergraphs = await dagContext.Hypergraphs.ToListAsync(cancellationToken);
@@ -41,69 +42,89 @@ public sealed class SyncHypergraphSnapshotsMetadataWorker(
                     var snapshotsToSync = await dagContext.HypergraphSnapshots
                         .Where(x => !x.IsMetadataSynced && x.HypergraphId == hypergraph.Id)
                         .OrderBy(x => x.Ordinal)
-                        .Take(50)
+                        .Take(parallelProcessingCount)
                         .ToListAsync(cancellationToken);
 
-                    foreach (var snapshotToSync in snapshotsToSync)
+                    var commandTasks = snapshotsToSync.Select(async snapshotToSync =>
+                        await ProcessSnapshotAsync(snapshotToSync, hypergraph, options, cancellationToken));
+
+                    var mediatorCommands = await Task.WhenAll(commandTasks);
+
+                    foreach (var command in mediatorCommands)
                     {
-                        if (snapshotsToSync == null)
+                        if (command is null)
                         {
-                            continue;
-                        }
-
-                        using var httpClient = httpClientFactory.CreateClient();
-                        httpClient.DefaultRequestHeaders.Accept.Clear();
-                        httpClient.DefaultRequestHeaders.Accept.Add(
-                            new MediaTypeWithQualityHeaderValue("application/json"));
-                        httpClient.BaseAddress = new Uri(hypergraph.ApiBaseAddress);
-
-                        var response = await httpClient.GetAsync($"global-snapshots/{snapshotToSync.Ordinal}",
-                            cancellationToken);
-                        var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
-
-                        if (!response.IsSuccessStatusCode)
-                        {
-                            logger.LogError("Error occurred while retrieving snapshot info: {ResponseBody}",
-                                responseBody);
                             errorOccurred = true;
                             continue;
                         }
 
-                        var result = JsonSerializer.Deserialize<NodeSnapshotDto>(responseBody, options);
-
-                        if (result is null)
-                        {
-                            logger.LogError("No snapshots returned from API: {ResponseBody}", responseBody);
-                            errorOccurred = true;
-                            continue;
-                        }
-
-                        var commandResponse =
-                            await mediator.Send(
-                                new InsertGlobalSnapshotMetadataCommand()
-                                {
-                                    HypergraphSnapshotId = snapshotToSync.Id, NodeSnapshot = result
-                                }, cancellationToken);
+                        var commandResponse = await mediator.Send(command, cancellationToken);
 
                         if (!commandResponse)
                         {
+                            errorOccurred = true;
                             logger.LogError(
                                 "Something went wrong while syncing snapshot metadata for hypergraph {HypergraphName}, snapshot ordinal {SnapshotId}",
-                                hypergraph.Name, snapshotToSync.Ordinal);
+                                hypergraph.Name, command.HypergraphSnapshotId);
                         }
+                    }
+
+                    if (snapshotsToSync.Count < parallelProcessingCount)
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(20), cancellationToken);
                     }
                 }
 
                 if (errorOccurred)
                 {
-                    await Task.Delay(30_000, cancellationToken);
+                    await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
                 }
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error while syncing snapshot metadata");
-                await Task.Delay(30_000, cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
             }
+        }
+    }
+
+    private async Task<InsertGlobalSnapshotMetadataCommand?> ProcessSnapshotAsync(HypergraphSnapshot snapshotToSync,
+        Hypergraph hypergraph, JsonSerializerOptions options, CancellationToken cancellationToken)
+    {
+        try
+        {
+            using var httpClient = httpClientFactory.CreateClient();
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            httpClient.BaseAddress = new Uri(hypergraph.ApiBaseAddress);
+
+            var response = await httpClient.GetAsync($"global-snapshots/{snapshotToSync.Ordinal}", cancellationToken);
+            var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                logger.LogError("Error occurred while retrieving snapshot info: {ResponseBody}", responseBody);
+                return null;
+            }
+
+            var result = JsonSerializer.Deserialize<NodeSnapshotDto>(responseBody, options);
+            if (result is null)
+            {
+                logger.LogError("No snapshots returned from API: {ResponseBody}", responseBody);
+                return null;
+            }
+
+            return new InsertGlobalSnapshotMetadataCommand
+            {
+                HypergraphSnapshotId = snapshotToSync.Id, NodeSnapshot = result
+            };
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex,
+                "Error processing snapshot for hypergraph {HypergraphName}, snapshot ordinal {SnapshotId}",
+                hypergraph.Name, snapshotToSync.Ordinal);
+            return null;
         }
     }
 }
@@ -121,6 +142,8 @@ public sealed class InsertGlobalSnapshotMetadataCommandHandler(
 {
     public async Task<bool> Handle(InsertGlobalSnapshotMetadataCommand request, CancellationToken cancellationToken)
     {
+        logger.LogInformation("Processing metadata for snapshot {SnapshotOrdinal}", request.HypergraphSnapshotId.Value);
+
         var snapshot = await dagContext.HypergraphSnapshots
             .FirstOrDefaultAsync(x => x.Id == request.HypergraphSnapshotId, cancellationToken);
 

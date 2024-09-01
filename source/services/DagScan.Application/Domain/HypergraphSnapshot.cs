@@ -11,10 +11,10 @@ public sealed class HypergraphSnapshot : Entity<HypergraphSnapshotId>
     public string Hash { get; private init; } = default!;
     public DateTime Timestamp { get; private init; }
     public bool IsTimeTriggeredSnapshot { get; private init; }
-    public long FeeAmount { get; private set; }
-    public long TransactionCount { get; private set; }
-    public long TransactionAmount { get; private set; }
-    public long TransactionFeeAmount { get; private set; }
+    public long? FeeAmount { get; private set; }
+    public long? TransactionCount { get; private set; }
+    public long? TransactionAmount { get; private set; }
+    public long? TransactionFeeAmount { get; private set; }
     public WalletAddress? MetagraphAddress { get; private set; }
     public bool IsMetadataSynced { get; private set; }
 

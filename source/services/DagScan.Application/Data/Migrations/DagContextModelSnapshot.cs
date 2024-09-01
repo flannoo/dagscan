@@ -67,7 +67,7 @@ namespace DagScan.Application.Data.Migrations
                     b.Property<int>("Blocks")
                         .HasColumnType("int");
 
-                    b.Property<long>("FeeAmount")
+                    b.Property<long?>("FeeAmount")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Hash")
@@ -94,13 +94,13 @@ namespace DagScan.Application.Data.Migrations
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
 
-                    b.Property<long>("TransactionAmount")
+                    b.Property<long?>("TransactionAmount")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("TransactionCount")
+                    b.Property<long?>("TransactionCount")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("TransactionFeeAmount")
+                    b.Property<long?>("TransactionFeeAmount")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");

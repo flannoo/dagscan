@@ -14,7 +14,6 @@ namespace DagScan.Application.Features.SyncHypergraphSnapshots;
 public sealed class SyncHypergraphSnapshotsWorker(
     IServiceScopeFactory scopeFactory,
     IHttpClientFactory httpClientFactory,
-    IMediator mediator,
     ILogger<SyncHypergraphSnapshotsWorker> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -25,6 +24,7 @@ public sealed class SyncHypergraphSnapshotsWorker(
             {
                 await using var scope = scopeFactory.CreateAsyncScope();
                 var dagContext = scope.ServiceProvider.GetRequiredService<DagContext>();
+                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
                 var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
                 var errorOccurred = false;
@@ -79,6 +79,12 @@ public sealed class SyncHypergraphSnapshotsWorker(
                             "Something went wrong while syncing snapshots for hypergraph {HypergraphName}",
                             hypergraph.Name);
                     }
+
+                    // Sleep the worker for a minute
+                    if (result.GlobalSnapshotData.Count < 1000)
+                    {
+                        await Task.Delay(60_000, cancellationToken);
+                    }
                 }
 
                 if (errorOccurred)
@@ -116,6 +122,8 @@ public sealed class InsertGlobalSnapshotsCommandHandler(
             logger.LogError("Hypergraph {HypergraphId} not found", request.HypergraphId.Value);
             return false;
         }
+
+        logger.LogInformation("Processing {SnapshotCount} global snapshots", request.GlobalSnapshots.Count);
 
         foreach (var globalSnapshot in request.GlobalSnapshots)
         {

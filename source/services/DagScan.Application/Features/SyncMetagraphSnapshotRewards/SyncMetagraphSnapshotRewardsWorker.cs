@@ -14,7 +14,6 @@ namespace DagScan.Application.Features.SyncMetagraphSnapshotRewards;
 public sealed class SyncMetagraphSnapshotRewardsWorker(
     IServiceScopeFactory scopeFactory,
     IHttpClientFactory httpClientFactory,
-    IMediator mediator,
     ILogger<SyncMetagraphSnapshotRewardsWorker> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -25,6 +24,7 @@ public sealed class SyncMetagraphSnapshotRewardsWorker(
             {
                 await using var scope = scopeFactory.CreateAsyncScope();
                 var dagContext = scope.ServiceProvider.GetRequiredService<DagContext>();
+                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
                 var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
                 var errorOccurred = false;
@@ -123,6 +123,8 @@ public sealed class InsertMetagraphSnapshotsCommandHandler(
 {
     public async Task<bool> Handle(InsertMetagraphSnapshotsCommand request, CancellationToken cancellationToken)
     {
+        logger.LogInformation("Processing {SnapshotCount} metagraph snapshots for {MetagraphAddress}", request.MetagraphSnapshots.Count, request.MetagraphAddress.Value);
+
         var metagraph =
             await dagContext.Metagraphs.FirstOrDefaultAsync(x => x.Id == request.MetagraphId, cancellationToken);
 

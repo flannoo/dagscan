@@ -1,10 +1,9 @@
 ﻿using DagScan.Core.CQRS;
-using DagScan.Core.DDD;
 using MediatR;
 
 namespace DagScan.Core.Persistence;
 
-public sealed class UnitOfWorkBehavior<TCommand, TResponse>(IEfUnitOfWork unitOfWork, IMediator mediator) :
+public sealed class UnitOfWorkBehavior<TCommand, TResponse>(IEfUnitOfWork unitOfWork) :
     IPipelineBehavior<TCommand, TResponse>
     where TCommand : ICommand<TResponse>
 {
