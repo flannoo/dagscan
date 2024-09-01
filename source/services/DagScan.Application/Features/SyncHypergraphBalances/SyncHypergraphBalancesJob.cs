@@ -1,6 +1,6 @@
 ﻿using DagScan.Application.Data;
+using DagScan.Core.Constants;
 using DagScan.Core.Scheduling;
-using Hangfire;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -11,7 +11,7 @@ public sealed class SyncHypergraphBalancesJob(
     IMediator mediator,
     ILogger<SyncHypergraphBalancesJob> logger) : IJob
 {
-    public string Schedule => Cron.Hourly();
+    public string Schedule => Constants.CronExpression.EveryFifteenMinutes;
 
     public async Task Execute()
     {

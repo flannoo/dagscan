@@ -1,19 +1,17 @@
 ﻿using DagScan.Application.Data;
+using DagScan.Core.Constants;
 using DagScan.Core.Scheduling;
-using Hangfire;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace DagScan.Application.Features.SyncHypergraphValidatorNodes;
 
-[DisableConcurrentExecution(timeoutInSeconds: 3600)]
 public sealed class SyncHypergraphValidatorNodesJob(
     DagContext dagContext,
     IMediator mediator,
     ILogger<SyncHypergraphValidatorNodesJob> logger) : IJob
 {
-    public string Schedule => Cron.Hourly();
+    public string Schedule => Constants.CronExpression.EveryFiveMinutes;
 
     public async Task Execute()
     {

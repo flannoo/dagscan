@@ -288,11 +288,12 @@ namespace DagScan.Application.Data.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RewardCategory = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     MetagraphId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    MetagraphAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FromWalletAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ToWalletAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MetagraphAddress = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    FromWalletAddress = table.Column<string>(type: "nvarchar(51)", maxLength: 51, nullable: false),
+                    ToWalletAddress = table.Column<string>(type: "nvarchar(51)", maxLength: 51, nullable: true),
                     LastProcessedHash = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false)
+                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LastProcessedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -312,7 +313,7 @@ namespace DagScan.Application.Data.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RewardTransactionConfigId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     MetagraphId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    MetagraphAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MetagraphAddress = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     WalletAddress = table.Column<string>(type: "nvarchar(51)", maxLength: 51, nullable: false),
                     RewardCategory = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     TransactionHash = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),

@@ -7,6 +7,7 @@ using DagScan.Application.Domain.ValueObjects;
 using DagScan.Core.CQRS;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace DagScan.Application.Features.SyncMetagraphBalances;
 
@@ -17,15 +18,19 @@ public sealed record RefreshMetagraphBalancesCommand : ICommand<bool>
 
 public sealed class RefreshMetagraphBalancesCommandHandler(
     DagContext dagContext,
-    IHttpClientFactory httpClientFactory)
+    IHttpClientFactory httpClientFactory,
+    ILogger<RefreshMetagraphBalancesCommandHandler> logger)
     : IRequestHandler<RefreshMetagraphBalancesCommand, bool>
 {
     public async Task<bool> Handle(RefreshMetagraphBalancesCommand request, CancellationToken cancellationToken)
     {
+        logger.LogInformation("Refreshing balances for {MetagraphId}", request.MetagraphId);
+        
         using var httpClient = httpClientFactory.CreateClient();
 
         var metagraph = await dagContext.Metagraphs
-            .FirstOrDefaultAsync(x => x.Id == new MetagraphId(request.MetagraphId) && x.MetagraphAddress != null, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == new MetagraphId(request.MetagraphId) && x.MetagraphAddress != null,
+                cancellationToken);
 
         if (metagraph is null || metagraph.MetagraphAddress is null)
         {

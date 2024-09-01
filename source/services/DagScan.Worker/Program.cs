@@ -40,8 +40,8 @@ builder.AddHangfire(databaseConnectionString);
 
 builder.Services.AddHttpClient();
 
-builder.Services.AddHostedService<SyncHypergraphSnapshotsWorker>();
-builder.Services.AddHostedService<SyncHypergraphSnapshotsMetadataWorker>();
+//builder.Services.AddHostedService<SyncHypergraphSnapshotsWorker>();
+//builder.Services.AddHostedService<SyncHypergraphSnapshotsMetadataWorker>();
 //builder.Services.AddHostedService<SyncMetagraphSnapshotRewardsWorker>();
 
 var host = builder.Build();
@@ -58,6 +58,6 @@ if (bool.TryParse(Environment.GetEnvironmentVariable("ENABLE_DB_SEEDER") ?? "fal
     await host.Services.ApplySeedDatabase();
 }
 
-//host.Services.InitRecurringJobs();
+host.Services.InitRecurringJobs();
 
 host.Run();

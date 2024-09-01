@@ -30,70 +30,66 @@ public sealed class SyncMetagraphSnapshotRewardsWorker(
                 var errorOccurred = false;
                 var metagraphs = dagContext.Metagraphs.ToList();
 
-                foreach (var metagraph in metagraphs)
-                {
-                    if (!metagraph.DataSyncEnabled || metagraph.MetagraphAddress is null)
+                var tasks = metagraphs
+                    .Where(x => x is { DataSyncEnabled: true, MetagraphAddress: not null })
+                    .Select(async metagraph =>
                     {
-                        logger.LogInformation(
-                            "Skipping snapshot reward sync for {Metagraph} because datasync is disabled or metagraph address is empty.",
-                            metagraph.Name);
-                        continue;
-                    }
+                        var lastSyncedSnapshot = metagraph.LastSnapshotSynced;
 
-                    var lastSyncedSnapshot = metagraph.LastSnapshotSynced;
+                        var hypergraph =
+                            await dagContext.Hypergraphs.FirstOrDefaultAsync(x => x.Id == metagraph.HypergraphId,
+                                cancellationToken);
 
-                    var hypergraph =
-                        await dagContext.Hypergraphs.FirstOrDefaultAsync(x => x.Id == metagraph.HypergraphId,
+                        if (hypergraph == null || hypergraph.BlockExplorerApiBaseAddress == null)
+                        {
+                            logger.LogInformation(
+                                "Skipping snapshot reward sync for {Metagraph} because the hypergraph with Id {HypergraphId} was not found or the blockexplorer API is not configured.",
+                                metagraph.Name, metagraph.HypergraphId);
+                            return;
+                        }
+
+                        using var httpClient = httpClientFactory.CreateClient();
+                        httpClient.BaseAddress = new Uri(hypergraph.BlockExplorerApiBaseAddress);
+                        var response = await httpClient.GetAsync(
+                            $"currency/{metagraph.MetagraphAddress.Value}/snapshots?limit=1000&search_after={lastSyncedSnapshot}",
                             cancellationToken);
 
-                    if (hypergraph == null || hypergraph.BlockExplorerApiBaseAddress == null)
-                    {
-                        logger.LogInformation(
-                            "Skipping snapshot reward sync for {Metagraph} because the hypergraph with Id {HypergraphId} was not found or the blockexplorer API is not configured.",
-                            metagraph.Name, metagraph.HypergraphId);
-                        continue;
-                    }
+                        var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
-                    using var httpClient = httpClientFactory.CreateClient();
-                    httpClient.BaseAddress = new Uri(hypergraph.BlockExplorerApiBaseAddress);
-                    var response = await httpClient.GetAsync(
-                        $"currency/{metagraph.MetagraphAddress.Value}/snapshots?limit=1000&search_after={lastSyncedSnapshot}",
-                        cancellationToken);
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            logger.LogError("Error occurred while retrieving snapshots: {ResponseBody}", responseBody);
+                            errorOccurred = true;
+                            return;
+                        }
 
-                    var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+                        var result = JsonSerializer.Deserialize<MetagraphSnapshotDto>(responseBody, options);
 
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        logger.LogError("Error occurred while retrieving snapshots: {ResponseBody}", responseBody);
-                        errorOccurred = true;
-                        continue;
-                    }
+                        if (result is null)
+                        {
+                            logger.LogError("No snapshots returned from API: {ResponseBody}", responseBody);
+                            errorOccurred = true;
+                            return;
+                        }
 
-                    var result = JsonSerializer.Deserialize<MetagraphSnapshotDto>(responseBody, options);
+                        var commandResponse =
+                            await mediator.Send(
+                                new InsertMetagraphSnapshotsCommand()
+                                {
+                                    MetagraphId = metagraph.Id,
+                                    MetagraphAddress = metagraph.MetagraphAddress,
+                                    MetagraphSnapshots = result.MetagraphSnapshotData
+                                }, cancellationToken);
 
-                    if (result is null)
-                    {
-                        logger.LogError("No snapshots returned from API: {ResponseBody}", responseBody);
-                        errorOccurred = true;
-                        continue;
-                    }
+                        if (!commandResponse)
+                        {
+                            logger.LogError(
+                                "Something went wrong while syncing snapshot rewards for metagraph {MetagraphName}",
+                                metagraph.Name);
+                        }
+                    });
 
-                    var commandResponse =
-                        await mediator.Send(
-                            new InsertMetagraphSnapshotsCommand()
-                            {
-                                MetagraphId = metagraph.Id,
-                                MetagraphAddress = metagraph.MetagraphAddress,
-                                MetagraphSnapshots = result.MetagraphSnapshotData
-                            }, cancellationToken);
-
-                    if (!commandResponse)
-                    {
-                        logger.LogError(
-                            "Something went wrong while syncing snapshot rewards for metagraph {MetagraphName}",
-                            metagraph.Name);
-                    }
-                }
+                await Task.WhenAll(tasks);
 
                 if (errorOccurred)
                 {
@@ -123,7 +119,8 @@ public sealed class InsertMetagraphSnapshotsCommandHandler(
 {
     public async Task<bool> Handle(InsertMetagraphSnapshotsCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Processing {SnapshotCount} metagraph snapshots for {MetagraphAddress}", request.MetagraphSnapshots.Count, request.MetagraphAddress.Value);
+        logger.LogInformation("Processing {SnapshotCount} metagraph snapshots for {MetagraphAddress}",
+            request.MetagraphSnapshots.Count, request.MetagraphAddress.Value);
 
         var metagraph =
             await dagContext.Metagraphs.FirstOrDefaultAsync(x => x.Id == request.MetagraphId, cancellationToken);

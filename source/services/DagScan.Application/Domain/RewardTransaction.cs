@@ -15,7 +15,7 @@ public sealed class RewardTransaction : Entity<RewardTransactionId>
     public DateTime TransactionDate { get; init; }
 
     public static RewardTransaction Create(RewardTransactionConfigId rewardTransactionConfigId, MetagraphId metagraphId,
-        MetagraphAddress metagraphAddress, WalletAddress walletAddress, string rewardCategory, string transactionHash,
+        MetagraphAddress? metagraphAddress, WalletAddress walletAddress, string rewardCategory, string transactionHash,
         long amount, DateTime transactionDate)
     {
         return new RewardTransaction()

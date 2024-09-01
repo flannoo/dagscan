@@ -52,6 +52,14 @@ public class RewardTransactionEntityTypeConfiguration: IEntityTypeConfiguration<
                 value => new WalletAddress(value)
             );
 
+        builder.Property(x => x.MetagraphAddress)
+            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
+            .IsRequired()
+            .HasConversion(
+                id => id!.Value,
+                value => new MetagraphAddress(value)
+            );
+
         builder.Property(x => x.RewardCategory)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.MediumText)
             .IsRequired();

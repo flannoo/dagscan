@@ -442,7 +442,9 @@ namespace DagScan.Application.Data.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("MetagraphAddress")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<Guid>("MetagraphId")
                         .HasColumnType("uniqueidentifier");
@@ -482,17 +484,23 @@ namespace DagScan.Application.Data.Migrations
 
                     b.Property<string>("FromWalletAddress")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(51)
+                        .HasColumnType("nvarchar(51)");
 
                     b.Property<bool>("IsEnabled")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastProcessedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("LastProcessedHash")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("MetagraphAddress")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<Guid>("MetagraphId")
                         .HasColumnType("uniqueidentifier");
@@ -503,7 +511,8 @@ namespace DagScan.Application.Data.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ToWalletAddress")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(51)
+                        .HasColumnType("nvarchar(51)");
 
                     b.HasKey("Id");
 

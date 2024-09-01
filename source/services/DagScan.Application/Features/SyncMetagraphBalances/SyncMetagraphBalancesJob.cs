@@ -1,6 +1,6 @@
 ﻿using DagScan.Application.Data;
+using DagScan.Core.Constants;
 using DagScan.Core.Scheduling;
-using Hangfire;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -11,7 +11,7 @@ public sealed class SyncMetagraphBalancesJob(
     IMediator mediator,
     ILogger<SyncMetagraphBalancesJob> logger) : IJob
 {
-    public string Schedule => Cron.Hourly();
+    public string Schedule => Constants.CronExpression.EveryFifteenMinutes;
 
     public async Task Execute()
     {
@@ -20,25 +20,29 @@ public sealed class SyncMetagraphBalancesJob(
         var metagraphs = dagContext.Metagraphs
             .ToList();
 
-        foreach (var metagraph in metagraphs)
-        {
-            if (!metagraph.DataSyncEnabled || metagraph.MetagraphAddress is null)
+        var tasks = metagraphs
+            .Where(metagraph => metagraph.DataSyncEnabled && metagraph.MetagraphAddress != null)
+            .Select(async metagraph =>
             {
-                continue;
-            }
+                if (!metagraph.DataSyncEnabled || metagraph.MetagraphAddress is null)
+                {
+                    return;
+                }
 
-            var response = await mediator.Send(new RefreshMetagraphBalancesCommand()
-            {
-                MetagraphId = metagraph.Id.Value
+                var response = await mediator.Send(new RefreshMetagraphBalancesCommand()
+                {
+                    MetagraphId = metagraph.Id.Value
+                });
+
+                if (!response)
+                {
+                    logger.LogError(
+                        "Something went wrong while syncing Metagraph Balances for metagraph {MetagraphName}",
+                        metagraph.Name);
+                }
             });
 
-            if (!response)
-            {
-                logger.LogError(
-                    "Something went wrong while syncing Metagraph Balances for metagraph {MetagraphName}",
-                    metagraph.Name);
-            }
-        }
+        await Task.WhenAll(tasks);
 
         logger.LogInformation("Completed {JobName} Execution", nameof(SyncMetagraphBalancesJob));
     }

@@ -12,6 +12,7 @@ public sealed class RewardTransactionConfig : Entity<RewardTransactionConfigId>
     public WalletAddress? ToWalletAddress { get; init; }
     public string? LastProcessedHash { get; set; }
     public bool IsEnabled { get; init; }
+    public DateTime LastProcessedDate { get; set; }
 
     public static RewardTransactionConfig Create(string rewardCategory, MetagraphId metagraphId,
         MetagraphAddress? metagraphAddress,
@@ -31,8 +32,9 @@ public sealed class RewardTransactionConfig : Entity<RewardTransactionConfigId>
         };
     }
 
-    public void UpdateLastProcessedHash(string hash)
+    public void UpdateLastProcessedHash(string hash, DateTime lastProcessedDate)
     {
         LastProcessedHash = hash;
+        LastProcessedDate = lastProcessedDate;
     }
 }

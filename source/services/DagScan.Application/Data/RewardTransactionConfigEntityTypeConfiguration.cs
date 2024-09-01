@@ -42,6 +42,7 @@ public sealed class RewardTransactionConfigEntityTypeConfiguration : IEntityType
             .IsRequired();
 
         builder.Property(x => x.FromWalletAddress)
+            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.WalletText)
             .ValueGeneratedNever()
             .HasConversion(
                 id => id!.Value,
@@ -49,10 +50,19 @@ public sealed class RewardTransactionConfigEntityTypeConfiguration : IEntityType
             );
 
         builder.Property(x => x.ToWalletAddress)
+            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.WalletText)
             .ValueGeneratedNever()
             .HasConversion(
                 id => id!.Value,
                 value => new WalletAddress(value)
+            );
+
+        builder.Property(x => x.MetagraphAddress)
+            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
+            .IsRequired()
+            .HasConversion(
+                id => id!.Value,
+                value => new MetagraphAddress(value)
             );
 
         builder.Property(x => x.LastProcessedHash)
