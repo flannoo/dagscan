@@ -12,7 +12,7 @@ public sealed class Value
     public long? Height { get; set; }
     public long? SubHeight { get; set; }
     public string? LastSnapshotHash { get; set; }
-    public List<object>? Blocks { get; set; }
+    public List<BlockContainer>? Blocks { get; set; }
     public Dictionary<string, List<StateChannelSnapshot>>? StateChannelSnapshots { get; set; }
     public List<object>? Rewards { get; set; }
     public long? EpochProgress { get; set; }
@@ -48,3 +48,38 @@ public sealed class StateProof
     public string? BalancesProof { get; set; }
     public object? LastCurrencySnapshotsProof { get; set; }
 }
+
+public class TransactionValue
+{
+    public string? Source { get; set; }
+    public string? Destination { get; set; }
+    public long? Amount { get; set; }
+    public long? Fee { get; set; }
+    public object? Parent { get; set; }
+    public object? Salt { get; set; }
+}
+
+public class Transaction
+{
+    public TransactionValue? Value { get; set; }
+    public List<object>? Proofs { get; set; }
+}
+
+public class BlockValue
+{
+    public List<object>? Parent { get; set; }
+    public List<Transaction>? Transactions { get; set; }
+}
+
+public class Block
+{
+    public BlockValue? Value { get; set; }
+    public List<object>? Proofs { get; set; }
+}
+
+public class BlockContainer
+{
+    public Block? Block { get; set; }
+    public long? UsageCount { get; set; }
+}
+

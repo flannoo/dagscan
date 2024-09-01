@@ -67,7 +67,7 @@ namespace DagScan.Application.Data.Migrations
                     b.Property<int>("Blocks")
                         .HasColumnType("int");
 
-                    b.Property<long?>("FeeAmount")
+                    b.Property<long>("FeeAmount")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Hash")
@@ -93,6 +93,15 @@ namespace DagScan.Application.Data.Migrations
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
+
+                    b.Property<long>("TransactionAmount")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TransactionCount")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TransactionFeeAmount")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -424,6 +433,85 @@ namespace DagScan.Application.Data.Migrations
                     b.ToTable("NodeOperators", (string)null);
                 });
 
+            modelBuilder.Entity("DagScan.Application.Domain.RewardTransaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<long>("Amount")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("MetagraphAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("MetagraphId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RewardCategory")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("RewardTransactionConfigId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TransactionHash")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("WalletAddress")
+                        .IsRequired()
+                        .HasMaxLength(51)
+                        .HasColumnType("nvarchar(51)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MetagraphId");
+
+                    b.ToTable("RewardTransactions", (string)null);
+                });
+
+            modelBuilder.Entity("DagScan.Application.Domain.RewardTransactionConfig", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FromWalletAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastProcessedHash")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("MetagraphAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("MetagraphId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RewardCategory")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ToWalletAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MetagraphId");
+
+                    b.ToTable("RewardTransactionConfigs", (string)null);
+                });
+
             modelBuilder.Entity("DagScan.Application.Domain.Hypergraph", b =>
                 {
                     b.OwnsMany("DagScan.Application.Domain.HypergraphBalance", "HypergraphBalances", b1 =>
@@ -638,6 +726,24 @@ namespace DagScan.Application.Data.Migrations
                     b.Navigation("Coordinates");
 
                     b.Navigation("NodeOperator");
+                });
+
+            modelBuilder.Entity("DagScan.Application.Domain.RewardTransaction", b =>
+                {
+                    b.HasOne("DagScan.Application.Domain.Metagraph", null)
+                        .WithMany()
+                        .HasForeignKey("MetagraphId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DagScan.Application.Domain.RewardTransactionConfig", b =>
+                {
+                    b.HasOne("DagScan.Application.Domain.Metagraph", null)
+                        .WithMany()
+                        .HasForeignKey("MetagraphId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

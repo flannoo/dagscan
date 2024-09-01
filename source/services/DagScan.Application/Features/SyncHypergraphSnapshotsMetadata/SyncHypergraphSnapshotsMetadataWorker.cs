@@ -148,6 +148,22 @@ public sealed class InsertGlobalSnapshotMetadataCommandHandler(
             }
         }
 
+        if (request.NodeSnapshot.Value.Blocks is not null && request.NodeSnapshot.Value.Blocks.Count != 0)
+        {
+            var transactions = request.NodeSnapshot.Value.Blocks.Where(x => x.Block?.Value?.Transactions != null)
+                .SelectMany(x => x.Block!.Value!.Transactions!).ToList();
+
+            var transactionCount = transactions.Count;
+            var transactionAmount = transactions.Sum(x => x.Value!.Amount ?? 0);
+            var transactionFeeAmount = transactions.Sum(x => x.Value!.Fee ?? 0);
+
+            snapshot.SetTransactionInfo(transactionCount, transactionAmount, transactionFeeAmount);
+        }
+        else
+        {
+            snapshot.SetTransactionInfo(0, 0, 0);
+        }
+
         snapshot.MarkMetadataAsSynced();
 
         return true;

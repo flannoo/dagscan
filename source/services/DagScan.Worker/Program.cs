@@ -58,6 +58,6 @@ if (bool.TryParse(Environment.GetEnvironmentVariable("ENABLE_DB_SEEDER") ?? "fal
     await host.Services.ApplySeedDatabase();
 }
 
-host.Services.InitRecurringJobs();
+//host.Services.InitRecurringJobs();
 
 host.Run();

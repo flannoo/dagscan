@@ -96,7 +96,10 @@ namespace DagScan.Application.Data.Migrations
                     Hash = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsTimeTriggeredSnapshot = table.Column<bool>(type: "bit", nullable: false),
-                    FeeAmount = table.Column<long>(type: "bigint", nullable: true),
+                    FeeAmount = table.Column<long>(type: "bigint", nullable: false),
+                    TransactionCount = table.Column<long>(type: "bigint", nullable: false),
+                    TransactionAmount = table.Column<long>(type: "bigint", nullable: false),
+                    TransactionFeeAmount = table.Column<long>(type: "bigint", nullable: false),
                     MetagraphAddress = table.Column<string>(type: "nvarchar(51)", maxLength: 51, nullable: true),
                     IsMetadataSynced = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -278,6 +281,55 @@ namespace DagScan.Application.Data.Migrations
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "RewardTransactionConfigs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RewardCategory = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    MetagraphId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MetagraphAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FromWalletAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ToWalletAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastProcessedHash = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    IsEnabled = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RewardTransactionConfigs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RewardTransactionConfigs_Metagraphs_MetagraphId",
+                        column: x => x.MetagraphId,
+                        principalTable: "Metagraphs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RewardTransactions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RewardTransactionConfigId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MetagraphId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MetagraphAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    WalletAddress = table.Column<string>(type: "nvarchar(51)", maxLength: 51, nullable: false),
+                    RewardCategory = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    TransactionHash = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                    Amount = table.Column<long>(type: "bigint", nullable: false),
+                    TransactionDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RewardTransactions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RewardTransactions_Metagraphs_MetagraphId",
+                        column: x => x.MetagraphId,
+                        principalTable: "Metagraphs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_HypergraphBalances_HypergraphId",
                 table: "HypergraphBalances",
@@ -385,6 +437,16 @@ namespace DagScan.Application.Data.Migrations
                 table: "MetagraphValidatorNodes",
                 columns: new[] { "WalletId", "MetagraphType", "MetagraphId" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RewardTransactionConfigs_MetagraphId",
+                table: "RewardTransactionConfigs",
+                column: "MetagraphId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RewardTransactions_MetagraphId",
+                table: "RewardTransactions",
+                column: "MetagraphId");
         }
 
         /// <inheritdoc />
@@ -415,10 +477,16 @@ namespace DagScan.Application.Data.Migrations
                 name: "MetagraphValidatorNodes");
 
             migrationBuilder.DropTable(
-                name: "Metagraphs");
+                name: "RewardTransactionConfigs");
+
+            migrationBuilder.DropTable(
+                name: "RewardTransactions");
 
             migrationBuilder.DropTable(
                 name: "NodeOperators");
+
+            migrationBuilder.DropTable(
+                name: "Metagraphs");
 
             migrationBuilder.DropTable(
                 name: "Hypergraphs");

@@ -11,7 +11,10 @@ public sealed class HypergraphSnapshot : Entity<HypergraphSnapshotId>
     public string Hash { get; private init; } = default!;
     public DateTime Timestamp { get; private init; }
     public bool IsTimeTriggeredSnapshot { get; private init; }
-    public long? FeeAmount { get; private set; }
+    public long FeeAmount { get; private set; }
+    public long TransactionCount { get; private set; }
+    public long TransactionAmount { get; private set; }
+    public long TransactionFeeAmount { get; private set; }
     public WalletAddress? MetagraphAddress { get; private set; }
     public bool IsMetadataSynced { get; private set; }
 
@@ -38,6 +41,13 @@ public sealed class HypergraphSnapshot : Entity<HypergraphSnapshotId>
     public void SetMetagraphAddress(WalletAddress walletAddress)
     {
         MetagraphAddress = walletAddress;
+    }
+
+    public void SetTransactionInfo(long transactionCount, long transactionAmount, long transactionFeeAmount)
+    {
+        TransactionCount = transactionCount;
+        TransactionAmount = transactionAmount;
+        TransactionFeeAmount = transactionFeeAmount;
     }
 
     public void MarkMetadataAsSynced()
