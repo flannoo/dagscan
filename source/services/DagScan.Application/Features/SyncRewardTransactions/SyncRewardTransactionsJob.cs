@@ -7,14 +7,15 @@ using DagScan.Core.Scheduling;
 using Hangfire;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace DagScan.Application.Features.SyncRewardTransactions;
 
 public sealed class SyncRewardTransactionsJob(
     DagContext dagContext,
-    IMediator mediator,
     IHttpClientFactory httpClientFactory,
+    IServiceScopeFactory scopeFactory,
     ILogger<SyncRewardTransactionsJob> logger) : IJob
 {
     public string Schedule => Cron.Hourly();
@@ -75,6 +76,9 @@ public sealed class SyncRewardTransactionsJob(
                     rewardTransactionConfig.Id);
                 return;
             }
+
+            await using var scope = scopeFactory.CreateAsyncScope();
+            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
             var commandResponse = await mediator.Send(
                 new InsertRewardTransactionsCommand()

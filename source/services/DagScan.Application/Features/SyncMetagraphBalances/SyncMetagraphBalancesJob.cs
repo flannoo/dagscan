@@ -2,13 +2,14 @@
 using DagScan.Core.Constants;
 using DagScan.Core.Scheduling;
 using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace DagScan.Application.Features.SyncMetagraphBalances;
 
 public sealed class SyncMetagraphBalancesJob(
     DagContext dagContext,
-    IMediator mediator,
+    IServiceScopeFactory scopeFactory,
     ILogger<SyncMetagraphBalancesJob> logger) : IJob
 {
     public string Schedule => Constants.CronExpression.EveryFifteenMinutes;
@@ -29,6 +30,8 @@ public sealed class SyncMetagraphBalancesJob(
                     return;
                 }
 
+                await using var scope = scopeFactory.CreateAsyncScope();
+                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
                 var response = await mediator.Send(new RefreshMetagraphBalancesCommand()
                 {
                     MetagraphId = metagraph.Id.Value

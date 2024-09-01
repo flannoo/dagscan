@@ -26,54 +26,25 @@ public sealed class SyncHypergraphSnapshotsMetadataWorker(
             {
                 await using var scope = scopeFactory.CreateAsyncScope();
                 var dagContext = scope.ServiceProvider.GetRequiredService<DagContext>();
-                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
                 var errorOccurred = false;
                 var hypergraphs = await dagContext.Hypergraphs.ToListAsync(cancellationToken);
                 var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
 
-                foreach (var hypergraph in hypergraphs)
-                {
-                    if (!hypergraph.DataSyncEnabled)
+                var tasks = hypergraphs.Where(x => x.DataSyncEnabled)
+                    .Select(async hypergraph =>
                     {
-                        continue;
-                    }
+                        var completedSuccessfully = await ProcessSnapshotsMetadata(cancellationToken, dagContext,
+                            hypergraph,
+                            parallelProcessingCount, options);
 
-                    var snapshotsToSync = await dagContext.HypergraphSnapshots
-                        .Where(x => !x.IsMetadataSynced && x.HypergraphId == hypergraph.Id)
-                        .OrderBy(x => x.Ordinal)
-                        .Take(parallelProcessingCount)
-                        .ToListAsync(cancellationToken);
-
-                    var commandTasks = snapshotsToSync.Select(async snapshotToSync =>
-                        await ProcessSnapshotAsync(snapshotToSync, hypergraph, options, cancellationToken));
-
-                    var mediatorCommands = await Task.WhenAll(commandTasks);
-
-                    foreach (var command in mediatorCommands)
-                    {
-                        if (command is null)
+                        if (!errorOccurred && !completedSuccessfully)
                         {
                             errorOccurred = true;
-                            continue;
                         }
+                    });
 
-                        var commandResponse = await mediator.Send(command, cancellationToken);
-
-                        if (!commandResponse)
-                        {
-                            errorOccurred = true;
-                            logger.LogError(
-                                "Something went wrong while syncing snapshot metadata for hypergraph {HypergraphName}, snapshot ordinal {SnapshotId}",
-                                hypergraph.Name, command.HypergraphSnapshotId);
-                        }
-                    }
-
-                    if (snapshotsToSync.Count < parallelProcessingCount)
-                    {
-                        await Task.Delay(TimeSpan.FromSeconds(20), cancellationToken);
-                    }
-                }
+                await Task.WhenAll(tasks);
 
                 if (errorOccurred)
                 {
@@ -85,6 +56,60 @@ public sealed class SyncHypergraphSnapshotsMetadataWorker(
                 logger.LogError(ex, "Error while syncing snapshot metadata");
                 await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
             }
+        }
+    }
+
+    private async Task<bool> ProcessSnapshotsMetadata(CancellationToken cancellationToken, DagContext dagContext,
+        Hypergraph hypergraph, int parallelProcessingCount, JsonSerializerOptions options)
+    {
+        try
+        {
+            var completedSuccessfully = true;
+
+            var snapshotsToSync = await dagContext.HypergraphSnapshots
+                .Where(x => !x.IsMetadataSynced && x.HypergraphId == hypergraph.Id)
+                .OrderBy(x => x.Ordinal)
+                .Take(parallelProcessingCount)
+                .ToListAsync(cancellationToken);
+
+            var commandTasks = snapshotsToSync.Select(async snapshotToSync =>
+                await ProcessSnapshotAsync(snapshotToSync, hypergraph, options, cancellationToken));
+
+            var mediatorCommands = await Task.WhenAll(commandTasks);
+
+            foreach (var command in mediatorCommands)
+            {
+                if (command is null)
+                {
+                    completedSuccessfully = false;
+                    continue;
+                }
+
+                await using var scope = scopeFactory.CreateAsyncScope();
+                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+                var commandResponse = await mediator.Send(command, cancellationToken);
+
+                if (!commandResponse)
+                {
+                    completedSuccessfully = false;
+                    logger.LogError(
+                        "Something went wrong while syncing snapshot metadata for hypergraph {HypergraphName}, snapshot ordinal {SnapshotId}",
+                        hypergraph.Name, command.HypergraphSnapshotId);
+                }
+            }
+
+            if (snapshotsToSync.Count < parallelProcessingCount)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(20), cancellationToken);
+            }
+
+            return completedSuccessfully;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Something went wrong while syncing snapshot metadata for hypergraph {HypergraphName}",
+                hypergraph.Name);
+            return false;
         }
     }
 
