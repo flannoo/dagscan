@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DagScan.Application.Data.Migrations
 {
     [DbContext(typeof(DagContext))]
-    [Migration("20240901121105_InitialMigration")]
+    [Migration("20240901173355_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -445,7 +445,6 @@ namespace DagScan.Application.Data.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("MetagraphAddress")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -501,7 +500,6 @@ namespace DagScan.Application.Data.Migrations
                         .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("MetagraphAddress")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 

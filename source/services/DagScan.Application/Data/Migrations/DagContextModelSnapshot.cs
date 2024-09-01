@@ -442,7 +442,6 @@ namespace DagScan.Application.Data.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("MetagraphAddress")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -498,7 +497,6 @@ namespace DagScan.Application.Data.Migrations
                         .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("MetagraphAddress")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 

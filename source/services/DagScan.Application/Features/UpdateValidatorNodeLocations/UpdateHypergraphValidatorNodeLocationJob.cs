@@ -23,9 +23,9 @@ public sealed class UpdateHypergraphValidatorNodeLocationJob(
         }
 
         using var httpClient = httpClientFactory.CreateClient();
-        // TODO: make it configurable and use free version if api key not found
-        httpClient.BaseAddress = new Uri("http://pro.ip-api.com");
-        var apiKey = Environment.GetEnvironmentVariable("APIKEY_IPAPI");
+        httpClient.BaseAddress = new Uri(Environment.GetEnvironmentVariable("IPAPI_URL") ??
+                                         throw new Exception("IP API URL environment variable is not set"));
+        var apiKey = Environment.GetEnvironmentVariable("IPAPI_KEY");
         var location = await httpClient.GetFromJsonAsync<IpGeolocationResponse>(
             $"json/{validatorNode.IpAddress}?key={apiKey}",
             new JsonSerializerOptions(JsonSerializerDefaults.Web));

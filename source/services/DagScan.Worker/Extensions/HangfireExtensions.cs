@@ -22,7 +22,7 @@ public static class HangfireExtensions
 
         builder.Services.AddHangfireServer((options) =>
             {
-                options.WorkerCount = 4;
+                options.WorkerCount = 5;
                 options.Queues = ["default"];
             }
         );

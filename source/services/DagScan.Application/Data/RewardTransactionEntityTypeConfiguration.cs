@@ -54,7 +54,7 @@ public class RewardTransactionEntityTypeConfiguration: IEntityTypeConfiguration<
 
         builder.Property(x => x.MetagraphAddress)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
-            .IsRequired()
+            .IsRequired(false)
             .HasConversion(
                 id => id!.Value,
                 value => new MetagraphAddress(value)

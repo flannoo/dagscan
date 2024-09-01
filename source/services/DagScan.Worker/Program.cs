@@ -29,6 +29,7 @@ builder.Services.AddDbContext<ReadOnlyDagContext>(options => { options.UseSqlSer
 
 builder.Services.AddScoped<IDataSeeder, HypergraphDataSeeder>();
 builder.Services.AddScoped<IDataSeeder, MetagraphDataSeeder>();
+builder.Services.AddScoped<IDataSeeder, RewardTransactionConfigDataSeeder>();
 
 builder.Services
     .AddCqrs(
@@ -40,9 +41,9 @@ builder.AddHangfire(databaseConnectionString);
 
 builder.Services.AddHttpClient();
 
-builder.Services.AddHostedService<SyncHypergraphSnapshotsWorker>();
-builder.Services.AddHostedService<SyncHypergraphSnapshotsMetadataWorker>();
-builder.Services.AddHostedService<SyncMetagraphSnapshotRewardsWorker>();
+//builder.Services.AddHostedService<SyncHypergraphSnapshotsWorker>();
+//builder.Services.AddHostedService<SyncHypergraphSnapshotsMetadataWorker>();
+//builder.Services.AddHostedService<SyncMetagraphSnapshotRewardsWorker>();
 
 var host = builder.Build();
 
@@ -58,6 +59,6 @@ if (bool.TryParse(Environment.GetEnvironmentVariable("ENABLE_DB_SEEDER") ?? "fal
     await host.Services.ApplySeedDatabase();
 }
 
-//host.Services.InitRecurringJobs();
+host.Services.InitRecurringJobs();
 
 host.Run();

@@ -5,14 +5,14 @@ namespace DagScan.Application.Domain;
 
 public sealed class RewardTransactionConfig : Entity<RewardTransactionConfigId>
 {
-    public string RewardCategory { get; init; } = default!;
-    public MetagraphId MetagraphId { get; init; } = default!;
-    public MetagraphAddress? MetagraphAddress { get; init; }
-    public WalletAddress FromWalletAddress { get; init; } = default!;
-    public WalletAddress? ToWalletAddress { get; init; }
-    public string? LastProcessedHash { get; set; }
-    public bool IsEnabled { get; init; }
-    public DateTime LastProcessedDate { get; set; }
+    public string RewardCategory { get; private init; } = default!;
+    public MetagraphId MetagraphId { get; private init; } = default!;
+    public MetagraphAddress? MetagraphAddress { get; private init; }
+    public WalletAddress FromWalletAddress { get; private init; } = default!;
+    public WalletAddress? ToWalletAddress { get; private init; }
+    public string? LastProcessedHash { get; private set; }
+    public bool IsEnabled { get; private init; }
+    public DateTime LastProcessedDate { get; private set; }
 
     public static RewardTransactionConfig Create(string rewardCategory, MetagraphId metagraphId,
         MetagraphAddress? metagraphAddress,

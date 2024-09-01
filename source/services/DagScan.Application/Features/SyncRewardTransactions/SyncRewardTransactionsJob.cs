@@ -13,7 +13,6 @@ using Microsoft.Extensions.Logging;
 namespace DagScan.Application.Features.SyncRewardTransactions;
 
 public sealed class SyncRewardTransactionsJob(
-    DagContext dagContext,
     IHttpClientFactory httpClientFactory,
     IServiceScopeFactory scopeFactory,
     ILogger<SyncRewardTransactionsJob> logger) : IJob
@@ -22,6 +21,8 @@ public sealed class SyncRewardTransactionsJob(
 
     public async Task Execute()
     {
+        await using var scope = scopeFactory.CreateAsyncScope();
+        var dagContext = scope.ServiceProvider.GetRequiredService<DagContext>();
         var rewardTransactionConfigs = await dagContext.RewardTransactionConfigs.ToListAsync();
 
         var tasks = rewardTransactionConfigs
@@ -35,6 +36,10 @@ public sealed class SyncRewardTransactionsJob(
     {
         try
         {
+            await using var scope = scopeFactory.CreateAsyncScope();
+            var dagContext = scope.ServiceProvider.GetRequiredService<DagContext>();
+            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
             var metagraph = await dagContext.Metagraphs
                 .FirstOrDefaultAsync(m => m.Id == rewardTransactionConfig.MetagraphId);
 
@@ -61,7 +66,8 @@ public sealed class SyncRewardTransactionsJob(
 
             if (lastTransaction is null || lastTransaction.Hash == rewardTransactionConfig.LastProcessedHash)
             {
-                logger.LogInformation("No new transactions found for config id {ConfigId}", rewardTransactionConfig.Id);
+                logger.LogInformation("No new transactions found for config id {ConfigId}",
+                    rewardTransactionConfig.Id.Value);
                 return;
             }
 
@@ -73,12 +79,9 @@ public sealed class SyncRewardTransactionsJob(
             {
                 logger.LogInformation(
                     "Something went wrong while retrieving reward transactions for config id {ConfigId}",
-                    rewardTransactionConfig.Id);
+                    rewardTransactionConfig.Id.Value);
                 return;
             }
-
-            await using var scope = scopeFactory.CreateAsyncScope();
-            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
             var commandResponse = await mediator.Send(
                 new InsertRewardTransactionsCommand()
@@ -139,6 +142,9 @@ public sealed class SyncRewardTransactionsJob(
         RewardTransactionConfig config, string lastProcessedHash, List<RewardTransactionDataDto> rewardTransactions,
         string? next = null)
     {
+        logger.LogInformation("Retrieving reward transactions for config id {ConfigId} with next parameter '{Next}'",
+            config.Id.Value, next);
+
         using var httpClient = httpClientFactory.CreateClient();
         httpClient.BaseAddress = new Uri(blockExplorerApiBaseAddress);
 

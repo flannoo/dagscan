@@ -33,8 +33,7 @@ public sealed class SyncMetagraphSnapshotRewardsWorker(
                     .Where(x => x is { DataSyncEnabled: true, MetagraphAddress: not null })
                     .Select(async metagraph =>
                     {
-                        errorOccurred = await ProcessMetagraphSnapshotRewards(metagraph, dagContext, options,
-                            cancellationToken);
+                        errorOccurred = await ProcessMetagraphSnapshotRewards(metagraph, options, cancellationToken);
                     });
 
                 await Task.WhenAll(tasks);
@@ -52,11 +51,14 @@ public sealed class SyncMetagraphSnapshotRewardsWorker(
         }
     }
 
-    private async Task<bool> ProcessMetagraphSnapshotRewards(Metagraph metagraph,
-        DagContext dagContext, JsonSerializerOptions options, CancellationToken cancellationToken)
+    private async Task<bool> ProcessMetagraphSnapshotRewards(Metagraph metagraph, JsonSerializerOptions options, CancellationToken cancellationToken)
     {
         try
         {
+            await using var scope = scopeFactory.CreateAsyncScope();
+            var dagContext = scope.ServiceProvider.GetRequiredService<DagContext>();
+            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
             var errorOccurred = false;
             var lastSyncedSnapshot = metagraph.LastSnapshotSynced;
 
@@ -96,8 +98,6 @@ public sealed class SyncMetagraphSnapshotRewardsWorker(
                 return errorOccurred;
             }
 
-            await using var scope = scopeFactory.CreateAsyncScope();
-            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
             var commandResponse =
                 await mediator.Send(
                     new InsertMetagraphSnapshotsCommand()

@@ -22,8 +22,6 @@ public sealed class UpsertMetagraphValidatorNodesCommandHandler(
 {
     public async Task<bool> Handle(UpsertMetagraphValidatorNodesCommand request, CancellationToken cancellationToken)
     {
-        using var httpClient = httpClientFactory.CreateClient();
-
         var metagraph = await dagContext.Metagraphs
             .FirstOrDefaultAsync(x => x.Id == new MetagraphId(request.MetagraphId), cancellationToken);
 
@@ -34,6 +32,7 @@ public sealed class UpsertMetagraphValidatorNodesCommandHandler(
 
         foreach (var metagraphEndpoint in metagraph.MetagraphEndpoints)
         {
+            using var httpClient = httpClientFactory.CreateClient();
             httpClient.BaseAddress = new Uri(metagraphEndpoint.ApiBaseAddress);
             httpClient.DefaultRequestHeaders.Accept.Clear();
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
