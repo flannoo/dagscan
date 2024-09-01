@@ -41,9 +41,9 @@ builder.AddHangfire(databaseConnectionString);
 
 builder.Services.AddHttpClient();
 
-//builder.Services.AddHostedService<SyncHypergraphSnapshotsWorker>();
-//builder.Services.AddHostedService<SyncHypergraphSnapshotsMetadataWorker>();
-//builder.Services.AddHostedService<SyncMetagraphSnapshotRewardsWorker>();
+builder.Services.AddHostedService<SyncHypergraphSnapshotsWorker>();
+builder.Services.AddHostedService<SyncHypergraphSnapshotsMetadataWorker>();
+builder.Services.AddHostedService<SyncMetagraphSnapshotRewardsWorker>();
 
 var host = builder.Build();
 

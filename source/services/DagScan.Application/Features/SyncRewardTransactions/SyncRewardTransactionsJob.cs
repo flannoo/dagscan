@@ -71,7 +71,14 @@ public sealed class SyncRewardTransactionsJob(
                 return;
             }
 
-            var rewardTransactions = new List<RewardTransactionDataDto> { lastTransaction };
+            var rewardTransactions = new List<RewardTransactionDataDto>();
+
+            if (rewardTransactionConfig.ToWalletAddress is null ||
+                rewardTransactionConfig.ToWalletAddress.Value == lastTransaction.Destination)
+            {
+                rewardTransactions.Add(lastTransaction);
+            }
+
             rewardTransactions = await GetTransactions(hypergraph.BlockExplorerApiBaseAddress, rewardTransactionConfig,
                 lastTransaction.Hash, rewardTransactions);
 
