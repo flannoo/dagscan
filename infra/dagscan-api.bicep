@@ -72,11 +72,11 @@ var environmentVariables = [
   }
   {
     name: 'DB_CONNECTION_STRING'
-    secretRef: 'database-connectionstring'
+    secretRef: 'https://${keyVaultName}.${environment().suffixes.keyvaultDns}/secrets/database-connectionstring'
   }
   {
     name: 'AZURE_CLIENT_ID'
-    secretRef: 'managed-identity-client-id'
+    secretRef: 'https://${keyVaultName}.${environment().suffixes.keyvaultDns}/secrets/managed-identity-client-id'
   }
 ]
 
