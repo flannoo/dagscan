@@ -1,0 +1,42 @@
+name: Release Azure Infrastructure
+
+on:
+  workflow_dispatch:
+    inputs:
+      ENVIRONMENT:
+        required: true
+        type: string
+        default: prd
+
+defaults:
+  run:
+    shell: bash
+    working-directory: ./infra
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-infrastructure:
+    environment: production
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Login for az cli commands 
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Deploy Bicep file
+      run: |
+        az deployment group create \
+          --resource-group dagscan-mainnet-prd-wus \
+          --template-file infra.bicep
+          --parameters \
+            adminUserLogin=${{ secrets.AD_ADMIN_LOGIN }} \
+            adminUserSid=${{ secrets.AD_ADMIN_SID }}
