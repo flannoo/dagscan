@@ -251,7 +251,7 @@ module sqlDatabaseConnectionStringSecret '_modules/azure-keyvault/secret/main.bi
   params: {
     keyvaultName: keyVault.outputs.name
     name: 'database-connectionstring'
-    value: 'Server=${sqlServer.outputs.name}; Authentication=Active Directory Managed Identity; Database=${sqlDatabaseName}; Encrypt=True; User Id=${managedIdentity.outputs.clientId};'
+    value: 'Server=${sqlServer.outputs.name}${environment().suffixes.sqlServerHostname}; Authentication=Active Directory Managed Identity; Database=${sqlDatabaseName}; Encrypt=True; User Id=${managedIdentity.outputs.clientId};'
   }
   scope: resourceGroup
 }
