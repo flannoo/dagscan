@@ -60,11 +60,11 @@ var keyVaultName = replace(
 var environmentVariables = [
   {
     name: 'ENABLE_DB_MIGRATION'
-    value: true
+    value: 'true'
   }
   {
     name: 'ENABLE_DB_SEEDER'
-    value: true
+    value: 'true'
   }
   {
     name: 'Logging__LogLevel__Default'
@@ -77,6 +77,14 @@ var environmentVariables = [
   {
     name: 'Logging__LogLevel__System'
     value: 'Warning'
+  }
+  {
+    name: 'IPAPI_URL'
+    value: 'http://pro.ip-api.com'
+  }
+  {
+    name: 'IPAPI_KEY'
+    secretRef: 'ipapi-key'
   }
   {
     name: 'DB_CONNECTION_STRING'
@@ -120,6 +128,11 @@ module containerApp '_modules/azure-container-app/main.bicep' = {
         name: 'managed-identity-client-id'
         identity: userIdentity.id
         keyVaultUrl: '${keyVault.properties.vaultUri}secrets/managed-identity-client-id'
+      }
+      {
+        name: 'ipapi-key'
+        identity: userIdentity.id
+        keyVaultUrl: '${keyVault.properties.vaultUri}secrets/IPAPI-KEY'
       }
     ]
   }
