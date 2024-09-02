@@ -69,6 +69,7 @@ jobs:
         IMAGE_NAME=dagscan-worker:${{ steps.gitversion.outputs.MajorMinorPatch }}
         docker build -t ${{ steps.parse_json.outputs.acr_name }}.azurecr.io/$IMAGE_NAME .
         docker push ${{ steps.parse_json.outputs.acr_name }}.azurecr.io/$IMAGE_NAME
+      working-directory: ./source/services/DagScan.Worker
 
     - name: Set container image name environment variable
       id: set_container_image_name
