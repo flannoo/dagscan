@@ -66,9 +66,9 @@ jobs:
     - name: Build and push Docker image
       run: |
         IMAGE_NAME=dagscan-api:${{ steps.gitversion.outputs.MajorMinorPatch }}
-        docker build -t ${{ steps.parse_json.outputs.acr_name }}.azurecr.io/$IMAGE_NAME .
+        docker build -f DagScan.Api/Dockerfile  -t ${{ steps.parse_json.outputs.acr_name }}.azurecr.io/$IMAGE_NAME .
         docker push ${{ steps.parse_json.outputs.acr_name }}.azurecr.io/$IMAGE_NAME
-      working-directory: ./source/services/DagScan.Api
+      working-directory: ./source/services
 
     - name: Set container image name environment variable
       id: set_container_image_name
