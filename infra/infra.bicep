@@ -201,7 +201,7 @@ module keyvaultAccessAdmin '_modules/azure-keyvault/role-assignment/main.bicep' 
   params: {
     roleName: 'Key Vault Administrator'
     keyVaultName: keyVault.outputs.name
-    principalId: adminAdUser.sid
+    principalId: adminUserSid
     principalType: 'User'
   }
   scope: resourceGroup
