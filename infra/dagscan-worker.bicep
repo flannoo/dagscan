@@ -132,7 +132,7 @@ module containerApp '_modules/azure-container-app/main.bicep' = {
       {
         name: 'ipapi-key'
         identity: userIdentity.id
-        keyVaultUrl: '${keyVault.properties.vaultUri}secrets/IPAPI_KEY'
+        keyVaultUrl: '${keyVault.properties.vaultUri}secrets/IPAPI-KEY'
       }
     ]
   }
