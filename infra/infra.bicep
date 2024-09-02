@@ -18,7 +18,6 @@ var location = parameters.general.location
 var locationAbbreviation = parameters.general.locationAbbreviation
 var purpose = parameters.general.dagscan.purpose
 var tags = parameters[env].tags
-var adminAdUser = parameters[env].activeDirectory.admin
 
 var resourceGroupName = replace(
   replace(
