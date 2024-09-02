@@ -18,7 +18,6 @@ var location = parameters.general.location
 var locationAbbreviation = parameters.general.locationAbbreviation
 var purpose = parameters.general.dagscan.purpose
 var tags = parameters[env].tags
-var adminAdUser = parameters[env].activeDirectory.admin
 
 var resourceGroupName = replace(
   replace(
@@ -143,7 +142,7 @@ module containerRegistryAdminAccess '_modules/azure-container-registry/role-assi
   params: {
     roleName: 'acr pull'
     registryName: containerRegistry.outputs.name
-    principalId: adminAdUser.sid
+    principalId: adminUserSid
     principalType: 'User'
   }
   scope: resourceGroup
@@ -178,7 +177,7 @@ module keyVault '_modules/azure-keyvault/main.bicep' = {
     location: location
     tags: tags
     createMode: 'default'
-    enableForTemplateDeployment: false
+    enableForTemplateDeployment: true
     enableSoftDelete: false
     publicNetworkAccess: 'Disabled'
   }
@@ -201,7 +200,7 @@ module keyvaultAccessAdmin '_modules/azure-keyvault/role-assignment/main.bicep' 
   params: {
     roleName: 'Key Vault Administrator'
     keyVaultName: keyVault.outputs.name
-    principalId: adminAdUser.sid
+    principalId: adminUserSid
     principalType: 'User'
   }
   scope: resourceGroup
@@ -243,6 +242,26 @@ module sqlDatabase '_modules/azure-sqldatabase/main.bicep' = {
     skuName: 'S0'
     skuTier: 'Standard'
     tags: tags
+  }
+  scope: resourceGroup
+}
+
+module sqlDatabaseConnectionStringSecret '_modules/azure-keyvault/secret/main.bicep' = {
+  name: '${sqlDatabaseName}_secret_connectionstring'
+  params: {
+    keyvaultName: keyVault.outputs.name
+    name: 'database-connectionstring'
+    value: 'Server=${sqlServer.outputs.name}; Authentication=Active Directory Managed Identity; Database=${sqlDatabaseName}; Encrypt=True; User Id=${managedIdentity.outputs.clientId};'
+  }
+  scope: resourceGroup
+}
+
+module managedIdentityClientIdSecret '_modules/azure-keyvault/secret/main.bicep' = {
+  name: 'ManagedIdentityClientIdSecret'
+  params: {
+    keyvaultName: keyVault.outputs.name
+    name: 'managed-identity-client-id'
+    value: managedIdentity.outputs.clientId
   }
   scope: resourceGroup
 }

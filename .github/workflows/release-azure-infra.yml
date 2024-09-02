@@ -14,13 +14,13 @@ defaults:
     working-directory: ./infra
 
 permissions:
+  id-token: write
   contents: read
 
 jobs:
   deploy-infrastructure:
     environment: production
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4

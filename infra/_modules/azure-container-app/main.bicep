@@ -12,10 +12,11 @@ param cpu string = '0.25'
 param memory string = '0.5Gi'
 param minReplicas int = 1
 param maxReplicas int = 1
+param ingress object = {}
 
 param tags object = {}
 
-resource managedEnvironment 'Microsoft.App/managedEnvironments@2023-05-02-preview' existing = {
+resource managedEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
   name: appserviceEnvironmentName
 }
 
@@ -23,11 +24,11 @@ resource userIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-
   name: identityName
 }
 
-resource registry 'Microsoft.ContainerRegistry/registries@2021-09-01' existing = {
+resource registry 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' existing = {
   name: registryName
 }
 
-resource app 'Microsoft.App/containerApps@2023-05-01' = {
+resource app 'Microsoft.App/containerApps@2024-03-01' = {
   name: name
   location: location
   identity: {
@@ -46,7 +47,7 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
           server: registry.properties.loginServer
         }
       ]
-      ingress: null
+      ingress: ingress
     }
     template: {
       containers: [

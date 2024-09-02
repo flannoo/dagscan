@@ -1,0 +1,100 @@
+name: Release App Worker
+
+on:
+  workflow_dispatch:
+    inputs:
+      ENVIRONMENT:
+        required: true
+        type: string
+        default: prd
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  id-token: write
+  contents: read
+  packages: write
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    environment: production
+
+    outputs:
+      imageName: ${{ steps.set_container_image_name.outputs.CONTAINER_IMAGE_NAME }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v3.0.0
+      with:
+        versionSpec: '6.x'
+
+    - name: Determine Version
+      uses: gittools/actions/gitversion/execute@v3.0.0
+      id: gitversion
+
+    - name: Parse infra.parameters.json and get ACR name
+      id: parse_json
+      run: |
+        PURPOSE=$(jq -r '.general.dagscan.purpose' ./infra/infra.parameters.json)
+        LOCATION_ABBR=$(jq -r '.general.locationAbbreviation' ./infra/infra.parameters.json)
+        ACR_NAME=$(jq -r '.general.dagscan.containerRegistry' ./infra/infra.parameters.json)
+
+        # Replace placeholders
+        ACR_NAME=${ACR_NAME//{purpose}/$PURPOSE}
+        ACR_NAME=${ACR_NAME//{locationAbbreviation}/$LOCATION_ABBR}
+        ACR_NAME=${ACR_NAME//{env}/${{ github.event.inputs.ENVIRONMENT }}}
+
+        echo "::set-output name=acr_name::$ACR_NAME"
+
+    - name: Login for az cli commands 
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Docker Login to ACR
+      run: |
+        az acr login --name ${{ steps.parse_json.outputs.acr_name }}
+
+    - name: Build and push Docker image
+      run: |
+        IMAGE_NAME=dagscan-worker:${{ steps.gitversion.outputs.fullsemver }}
+        docker build -t ${{ steps.parse_json.outputs.acr_name }}.azurecr.io/$IMAGE_NAME .
+        docker push ${{ steps.parse_json.outputs.acr_name }}.azurecr.io/$IMAGE_NAME
+
+    - name: Set container image name environment variable
+      id: set_container_image_name
+      run: echo "CONTAINER_IMAGE_NAME=${{ steps.parse_json.outputs.acr_name }}.azurecr.io/dagscan-worker:${{ steps.gitversion.outputs.fullsemver }}" >> $GITHUB_OUTPUT
+
+  deploy-worker:
+    needs: build-and-publish
+    if: ${{ github.ref == 'refs/heads/main' }}
+    environment: production
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Login for az cli commands 
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Deploy Bicep file
+      run: |
+        az deployment group create \
+          --resource-group dagscan-mainnet-prd-wus \
+          --template-file dagscan-worker.bicep \
+          --parameters \
+            containerImageName=${{ needs.build-and-publish.outputs.imageName }}
+      working-directory: ./infra
