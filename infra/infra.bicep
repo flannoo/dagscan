@@ -142,7 +142,7 @@ module containerRegistryAdminAccess '_modules/azure-container-registry/role-assi
   params: {
     roleName: 'acr pull'
     registryName: containerRegistry.outputs.name
-    principalId: adminAdUser.sid
+    principalId: adminUserSid
     principalType: 'User'
   }
   scope: resourceGroup
