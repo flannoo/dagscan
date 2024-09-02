@@ -28,6 +28,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v3.0.0
@@ -44,13 +46,12 @@ jobs:
         PURPOSE=$(jq -r '.general.dagscan.purpose' ./infra/infra.parameters.json)
         LOCATION_ABBR=$(jq -r '.general.locationAbbreviation' ./infra/infra.parameters.json)
         ACR_NAME=$(jq -r '.general.dagscan.containerRegistry' ./infra/infra.parameters.json)
+    
+        ACR_NAME="${ACR_NAME/\{purpose\}/$PURPOSE}"
+        ACR_NAME="${ACR_NAME/\{locationAbbreviation\}/$LOCATION_ABBR}"
+        ACR_NAME="${ACR_NAME/\{env\}/${{ github.event.inputs.ENVIRONMENT }}}"
 
-        # Replace placeholders
-        ACR_NAME=${ACR_NAME//{purpose}/$PURPOSE}
-        ACR_NAME=${ACR_NAME//{locationAbbreviation}/$LOCATION_ABBR}
-        ACR_NAME=${ACR_NAME//{env}/${{ github.event.inputs.ENVIRONMENT }}}
-
-        echo "::set-output name=acr_name::$ACR_NAME"
+        echo "acr_name=$ACR_NAME" >> $GITHUB_OUTPUT
 
     - name: Login for az cli commands 
       uses: azure/login@v1
@@ -65,13 +66,14 @@ jobs:
 
     - name: Build and push Docker image
       run: |
-        IMAGE_NAME=dagscan-worker:${{ steps.gitversion.outputs.fullsemver }}
-        docker build -t ${{ steps.parse_json.outputs.acr_name }}.azurecr.io/$IMAGE_NAME .
+        IMAGE_NAME=dagscan-worker:${{ steps.gitversion.outputs.MajorMinorPatch }}
+        docker build -f DagScan.Worker/Dockerfile -t ${{ steps.parse_json.outputs.acr_name }}.azurecr.io/$IMAGE_NAME .
         docker push ${{ steps.parse_json.outputs.acr_name }}.azurecr.io/$IMAGE_NAME
+      working-directory: ./source/services
 
     - name: Set container image name environment variable
       id: set_container_image_name
-      run: echo "CONTAINER_IMAGE_NAME=${{ steps.parse_json.outputs.acr_name }}.azurecr.io/dagscan-worker:${{ steps.gitversion.outputs.fullsemver }}" >> $GITHUB_OUTPUT
+      run: echo "CONTAINER_IMAGE_NAME=${{ steps.parse_json.outputs.acr_name }}.azurecr.io/dagscan-worker:${{ steps.gitversion.outputs.MajorMinorPatch }}" >> $GITHUB_OUTPUT
 
   deploy-worker:
     needs: build-and-publish

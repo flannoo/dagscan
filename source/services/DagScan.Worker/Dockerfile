@@ -8,7 +8,7 @@ WORKDIR /src
 COPY ["DagScan.Worker/DagScan.Worker.csproj", "DagScan.Worker/"]
 RUN dotnet restore "DagScan.Worker/DagScan.Worker.csproj"
 COPY . .
-WORKDIR "/src/dagscan.worker"
+WORKDIR "/src/DagScan.Worker"
 RUN dotnet build "DagScan.Worker.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
