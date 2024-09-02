@@ -367,3 +367,11 @@ crash.*.log
 .vscode/*
 **/.vscode/*
 **/.DS_Store
+
+# Jetbrains IDE
+.idea/*
+**/.idea/*
+
+# local env files
+**/.env.local
+**/docker-compose.override.local.yml

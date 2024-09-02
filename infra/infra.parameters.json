@@ -1,0 +1,27 @@
+{
+    "general": {
+        "location": "westus2",
+        "locationAbbreviation": "wus",
+        "dagscan": {
+            "purpose": "mainnet",
+            "resourceGroupName": "dagscan-{purpose}-{env}-{locationAbbreviation}",
+            "applicationinsightsName": "dagscan-{purpose}-{env}-{locationAbbreviation}-appi",
+            "managedIdentityName": "dagscan-{purpose}-{env}-{locationAbbreviation}-id",
+            "keyvault": "dagscan{purpose}{env}{locationAbbreviation}key",
+            "loganalytics": "dagscan-{purpose}-{env}-{locationAbbreviation}-log",
+            "containerRegistry": "dagscan{purpose}{env}{locationAbbreviation}cr",
+            "containerAppEnvironmentName": "dagscan-{purpose}-{env}-{locationAbbreviation}-cae",
+            "sqlServerName": "dagscan-{purpose}-{env}-{locationAbbreviation}-sql",
+            "sqlDatabaseName": "dagscan-{purpose}-{env}-{locationAbbreviation}-db",
+            "containerAppWorkerName": "dagscan-{purpose}-{env}-{locationAbbreviation}-worker-ca",
+            "containerAppApiName": "dagscan-{purpose}-{env}-{locationAbbreviation}-api-ca"
+        }
+    },
+    "prd": {
+        "tags": {
+            "application": "dagscan",
+            "purpose": "mainnet",
+            "environment": "production"
+        }
+    }
+}
