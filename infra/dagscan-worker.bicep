@@ -103,6 +103,10 @@ resource userIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-
   name: managedIdentityName
 }
 
+resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
+  name: keyVaultName
+}
+
 module containerApp '_modules/azure-container-app/main.bicep' = {
   name: containerAppWorkerName
   params: {
@@ -118,17 +122,17 @@ module containerApp '_modules/azure-container-app/main.bicep' = {
       {
         name: 'database-connectionstring'
         identity: userIdentity.id
-        keyVaultUrl: 'https://${keyVaultName}.${environment().suffixes.keyvaultDns}/secrets/database-connectionstring'
+        keyVaultUrl: '${keyVault.properties.vaultUri}secrets/database-connectionstring'
       }
       {
         name: 'managed-identity-client-id'
         identity: userIdentity.id
-        keyVaultUrl: 'https://${keyVaultName}.${environment().suffixes.keyvaultDns}/secrets/managed-identity-client-id'
+        keyVaultUrl: '${keyVault.properties.vaultUri}secrets/managed-identity-client-id'
       }
       {
         name: 'IPAPI_KEY'
         identity: userIdentity.id
-        keyVaultUrl: 'https://${keyVaultName}.${environment().suffixes.keyvaultDns}/secrets/IPAPI_KEY'
+        keyVaultUrl: '${keyVault.properties.vaultUri}secrets/IPAPI_KEY'
       }
     ]
   }
