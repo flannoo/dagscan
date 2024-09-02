@@ -13,7 +13,7 @@
             "containerAppEnvironmentName": "dagscan-{purpose}-{env}-{locationAbbreviation}-cae",
             "sqlServerName": "dagscan-{purpose}-{env}-{locationAbbreviation}-sql",
             "sqlDatabaseName": "dagscan-{purpose}-{env}-{locationAbbreviation}-db",
-            "containerAppWorkerName": "dagscan-{purpose}-{env}-{locationAbbreviation}-worker-ca",
+            "containerAppWorkerName": "dagscan-{purpose}-{env}-{locationAbbreviation}-work-ca",
             "containerAppApiName": "dagscan-{purpose}-{env}-{locationAbbreviation}-api-ca"
         }
     },

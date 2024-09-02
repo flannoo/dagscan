@@ -179,7 +179,7 @@ module keyVault '_modules/azure-keyvault/main.bicep' = {
     createMode: 'default'
     enableForTemplateDeployment: true
     enableSoftDelete: false
-    publicNetworkAccess: 'Disabled'
+    publicNetworkAccess: 'Enabled'
   }
   scope: resourceGroup
 }
@@ -239,7 +239,7 @@ module sqlDatabase '_modules/azure-sqldatabase/main.bicep' = {
     sqlServerName: sqlServer.outputs.name
     name: sqlDatabaseName
     collation: 'SQL_Latin1_General_CP1_CS_AS'
-    skuName: 'S0'
+    skuName: 'S1'
     skuTier: 'Standard'
     tags: tags
   }
@@ -251,7 +251,7 @@ module sqlDatabaseConnectionStringSecret '_modules/azure-keyvault/secret/main.bi
   params: {
     keyvaultName: keyVault.outputs.name
     name: 'database-connectionstring'
-    value: 'Server=${sqlServer.outputs.name}; Authentication=Active Directory Managed Identity; Database=${sqlDatabaseName}; Encrypt=True; User Id=${managedIdentity.outputs.clientId};'
+    value: 'Server=${sqlServer.outputs.name}${environment().suffixes.sqlServerHostname}; Authentication=Active Directory Managed Identity; Database=${sqlDatabaseName}; Encrypt=True; User Id=${managedIdentity.outputs.clientId};'
   }
   scope: resourceGroup
 }
