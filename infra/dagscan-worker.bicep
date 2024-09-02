@@ -84,7 +84,7 @@ var environmentVariables = [
   }
   {
     name: 'IPAPI_KEY'
-    secretRef: 'IPAPI_KEY'
+    secretRef: 'ipapi-key'
   }
   {
     name: 'DB_CONNECTION_STRING'
@@ -130,7 +130,7 @@ module containerApp '_modules/azure-container-app/main.bicep' = {
         keyVaultUrl: '${keyVault.properties.vaultUri}secrets/managed-identity-client-id'
       }
       {
-        name: 'IPAPI_KEY'
+        name: 'ipapi-key'
         identity: userIdentity.id
         keyVaultUrl: '${keyVault.properties.vaultUri}secrets/IPAPI_KEY'
       }
