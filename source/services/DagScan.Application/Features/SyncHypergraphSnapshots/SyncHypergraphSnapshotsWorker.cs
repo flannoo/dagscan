@@ -45,14 +45,16 @@ public sealed class SyncHypergraphSnapshotsWorker(
                     using var httpClient = httpClientFactory.CreateClient();
                     httpClient.BaseAddress = new Uri(hypergraph.BlockExplorerApiBaseAddress);
                     var response = await httpClient.GetAsync(
-                        $"global-snapshots?limit=1000&search_after={lastSyncedSnapshot}",
+                        $"global-snapshots?limit=300&search_after={lastSyncedSnapshot}",
                         cancellationToken);
 
                     var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
                     if (!response.IsSuccessStatusCode)
                     {
-                        logger.LogError("Error occurred while retrieving snapshot: {ResponseBody}", responseBody);
+                        logger.LogError(
+                            "Error occurred while retrieving snapshot: {ResponseBody} for lastSnapshot {lastSyncedSnapshot}",
+                            responseBody, lastSyncedSnapshot);
                         errorOccurred = true;
                         continue;
                     }
@@ -81,7 +83,7 @@ public sealed class SyncHypergraphSnapshotsWorker(
                     }
 
                     // Sleep the worker for a minute
-                    if (result.GlobalSnapshotData.Count < 1000)
+                    if (result.GlobalSnapshotData.Count < 300)
                     {
                         await Task.Delay(60_000, cancellationToken);
                     }

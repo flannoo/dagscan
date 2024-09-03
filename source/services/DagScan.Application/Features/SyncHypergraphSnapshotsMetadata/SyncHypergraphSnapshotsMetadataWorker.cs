@@ -72,6 +72,9 @@ public sealed class SyncHypergraphSnapshotsMetadataWorker(
                 .Take(parallelProcessingCount)
                 .ToListAsync(cancellationToken);
 
+            logger.LogInformation("Processing {RecordCount} metadata records for hypergraph snapshots",
+                snapshotsToSync.Count);
+
             var commandTasks = snapshotsToSync.Select(async snapshotToSync =>
                 await ProcessSnapshotAsync(snapshotToSync, hypergraph, options, cancellationToken));
 
@@ -167,8 +170,6 @@ public sealed class InsertGlobalSnapshotMetadataCommandHandler(
 {
     public async Task<bool> Handle(InsertGlobalSnapshotMetadataCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Processing metadata for snapshot {SnapshotOrdinal}", request.HypergraphSnapshotId.Value);
-
         var snapshot = await dagContext.HypergraphSnapshots
             .FirstOrDefaultAsync(x => x.Id == request.HypergraphSnapshotId, cancellationToken);
 
