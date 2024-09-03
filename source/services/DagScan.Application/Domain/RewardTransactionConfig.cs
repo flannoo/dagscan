@@ -13,6 +13,7 @@ public sealed class RewardTransactionConfig : Entity<RewardTransactionConfigId>
     public string? LastProcessedHash { get; private set; }
     public bool IsEnabled { get; private init; }
     public DateTime LastProcessedDate { get; private set; }
+    public bool IsProcessing { get; private set; }
 
     public static RewardTransactionConfig Create(string rewardCategory, MetagraphId metagraphId,
         MetagraphAddress? metagraphAddress,
@@ -30,6 +31,11 @@ public sealed class RewardTransactionConfig : Entity<RewardTransactionConfigId>
             LastProcessedHash = lastProcessedHash,
             IsEnabled = isEnabled
         };
+    }
+
+    public void SetProcessing(bool isProcessing)
+    {
+        IsProcessing = isProcessing;
     }
 
     public void UpdateLastProcessedHash(string hash, DateTime lastProcessedDate)
