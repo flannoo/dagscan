@@ -78,6 +78,10 @@ var environmentVariables = [
     name: 'AZURE_CLIENT_ID'
     secretRef: 'managed-identity-client-id'
   }
+  {
+    name: 'ASPNETCORE_URLS'
+    value: 'https://+:8081;http://+:8080'
+  }
 ]
 
 // =================================================================================
