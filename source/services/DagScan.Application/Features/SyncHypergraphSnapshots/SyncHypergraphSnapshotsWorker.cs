@@ -68,10 +68,17 @@ public sealed class SyncHypergraphSnapshotsWorker(
                         continue;
                     }
 
-                    // The ordinal 682076 exists twice, remove the one with the invalid hash
-                    const string excludedHash = "1bb224e59a8a606bb42ae136be5ffb85c367bc298242cbe10a79b30b932fbdab";
+                    // The following ordinals are returned twice, remove the ones with the invalid hash
+                    // 682076: 1bb224e59a8a606bb42ae136be5ffb85c367bc298242cbe10a79b30b932fbdab
+                    // 682007: e37bf18e6a22085f1a1bf6587179b2d57798b0c1db7846db79dcea184e988736
+                    var excludedHashes = new List<string>()
+                    {
+                        "1bb224e59a8a606bb42ae136be5ffb85c367bc298242cbe10a79b30b932fbdab",
+                        "e37bf18e6a22085f1a1bf6587179b2d57798b0c1db7846db79dcea184e988736"
+                    };
+
                     var globalSnapshots = result.GlobalSnapshotData
-                        .Where(snapshot => snapshot.Hash != excludedHash)
+                        .Where(snapshot => !excludedHashes.Contains(snapshot.Hash))
                         .ToList();
 
                     var commandResponse =
