@@ -121,7 +121,6 @@ module containerApp '_modules/azure-container-app/main.bicep' = {
       customDomains: [
         {
           name: 'api.dagscan.io'
-          bindingType: 'Disabled'
         }
       ]
     }
