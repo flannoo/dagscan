@@ -138,7 +138,7 @@ module containerApp '_modules/azure-container-app/main.bicep' = {
     cpu: '0.5'
     memory: '1Gi'
     ingress: {
-      enabled: false
+      external: false
     }
   }
 }

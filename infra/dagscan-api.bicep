@@ -114,5 +114,17 @@ module containerApp '_modules/azure-container-app/main.bicep' = {
         keyVaultUrl: '${keyVault.properties.vaultUri}secrets/managed-identity-client-id'
       }
     ]
+    ingress: {
+      external: true
+      targetPort: 8081
+      transport: 'https'
+      allowInsecure: false
+      customDomains: [
+        {
+          name: 'api.dagscan.io'
+          bindingType: 'ManagedCertificate'
+        }
+      ]
+    }
   }
 }
