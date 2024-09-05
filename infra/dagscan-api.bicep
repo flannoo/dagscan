@@ -91,6 +91,15 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: keyVaultName
 }
 
+resource managedEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
+  name: containerAppEnvironmentName
+}
+
+resource managedEnvironmentManagedCertificate 'Microsoft.App/managedEnvironments/managedCertificates@2024-03-01' existing = {
+  parent: managedEnvironment
+  name: 'api.dagscan.io-dagscan--240905212319'
+}
+
 module containerApp '_modules/azure-container-app/main.bicep' = {
   name: containerAppApiName
   params: {
@@ -121,6 +130,7 @@ module containerApp '_modules/azure-container-app/main.bicep' = {
       customDomains: [
         {
           name: 'api.dagscan.io'
+          certificateId: managedEnvironmentManagedCertificate.id
         }
       ]
     }
