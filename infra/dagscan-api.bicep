@@ -78,10 +78,6 @@ var environmentVariables = [
     name: 'AZURE_CLIENT_ID'
     secretRef: 'managed-identity-client-id'
   }
-  {
-    name: 'ASPNETCORE_URLS'
-    value: 'https://+:8081;http://+:8080'
-  }
 ]
 
 // =================================================================================
@@ -128,7 +124,7 @@ module containerApp '_modules/azure-container-app/main.bicep' = {
       }
     ]
     ingress: {
-      targetPort: 8081
+      targetPort: 8080
       external: true
       allowInsecure: false
       customDomains: [
