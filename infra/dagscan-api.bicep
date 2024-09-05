@@ -115,7 +115,6 @@ module containerApp '_modules/azure-container-app/main.bicep' = {
       }
     ]
     ingress: {
-      exposedPort: 443
       targetPort: 8081
       external: true
       allowInsecure: false
