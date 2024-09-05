@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DagScan.Application.Features.SyncRewardTransactions;
 
+[AutomaticRetry(Attempts = 0)]
 public sealed class SyncRewardTransactionsJob(
     IHttpClientFactory httpClientFactory,
     IServiceScopeFactory scopeFactory,

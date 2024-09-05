@@ -1,12 +1,14 @@
 ﻿using DagScan.Application.Data;
 using DagScan.Core.Constants;
 using DagScan.Core.Scheduling;
+using Hangfire;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace DagScan.Application.Features.SyncMetagraphValidatorNodes;
 
+[AutomaticRetry(Attempts = 0)]
 public sealed class SyncMetagraphValidatorNodesJob(
     DagContext dagContext,
     IServiceScopeFactory scopeFactory,
