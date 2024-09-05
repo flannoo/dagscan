@@ -115,14 +115,14 @@ module containerApp '_modules/azure-container-app/main.bicep' = {
       }
     ]
     ingress: {
-      external: true
+      exposedPort: 443
       targetPort: 8081
-      transport: 'https'
+      external: true
       allowInsecure: false
       customDomains: [
         {
           name: 'api.dagscan.io'
-          bindingType: 'ManagedCertificate'
+          bindingType: 'Disabled'
         }
       ]
     }
