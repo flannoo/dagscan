@@ -68,11 +68,17 @@ public sealed class SyncHypergraphSnapshotsWorker(
                         continue;
                     }
 
+                    // The ordinal 682076 exists twice, remove the one with the invalid hash
+                    const string excludedHash = "1bb224e59a8a606bb42ae136be5ffb85c367bc298242cbe10a79b30b932fbdab";
+                    var globalSnapshots = result.GlobalSnapshotData
+                        .Where(snapshot => snapshot.Hash != excludedHash)
+                        .ToList();
+
                     var commandResponse =
                         await mediator.Send(
                             new InsertGlobalSnapshotsCommand()
                             {
-                                HypergraphId = hypergraph.Id, GlobalSnapshots = result.GlobalSnapshotData
+                                HypergraphId = hypergraph.Id, GlobalSnapshots = globalSnapshots
                             }, cancellationToken);
 
                     if (!commandResponse)
