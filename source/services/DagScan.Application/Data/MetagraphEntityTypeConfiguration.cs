@@ -121,6 +121,11 @@ public sealed class MetagraphEntityTypeConfiguration : IEntityTypeConfiguration<
                     id => id.Value,
                     value => new WalletAddress(value)
                 );
+
+            balanceBuilder.HasIndex(x => x.MetagraphId)
+                .IncludeProperties(x => new { x.Balance, x.MetagraphAddress, x.WalletAddress })
+                .IsUnique(false)
+                .IsCreatedOnline(true);
         });
     }
 }

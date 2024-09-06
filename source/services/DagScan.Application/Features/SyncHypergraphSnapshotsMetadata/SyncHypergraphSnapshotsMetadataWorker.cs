@@ -21,7 +21,7 @@ public sealed class SyncHypergraphSnapshotsMetadataWorker(
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            const int parallelProcessingCount = 20;
+            const int parallelProcessingCount = 30;
             try
             {
                 await using var scope = scopeFactory.CreateAsyncScope();
@@ -48,6 +48,7 @@ public sealed class SyncHypergraphSnapshotsMetadataWorker(
 
                 if (errorOccurred)
                 {
+                    logger.LogError("Some error while syncing snapshot metadata, delaying next execution");
                     await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
                 }
             }

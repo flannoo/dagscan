@@ -60,6 +60,11 @@ public sealed class HypergraphEntityTypeConfiguration : IEntityTypeConfiguration
                     id => id.Value,
                     value => new WalletAddress(value)
                 );
+
+            balanceBuilder.HasIndex(x => x.HypergraphId)
+                .IncludeProperties(x => new { x.Balance, x.WalletAddress })
+                .IsUnique(false)
+                .IsCreatedOnline(true);
         });
 
     }
