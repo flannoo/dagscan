@@ -22,6 +22,18 @@ public sealed class SyncRewardTransactionsJob(
 
     public async Task Execute()
     {
+        using var connection = JobStorage.Current.GetConnection();
+        var monitoringApi = JobStorage.Current.GetMonitoringApi();
+
+        var processingJobs = monitoringApi.ProcessingJobs(0, int.MaxValue);
+        var activeJobInstances = processingJobs.Count(job => job.Value.Job.Type == typeof(SyncRewardTransactionsJob));
+
+        if (activeJobInstances > 1)
+        {
+            logger.LogInformation("A job instance for {JobName} is already running. Exiting.", nameof(SyncRewardTransactionsJob));
+            return;
+        }
+
         await using var scope = scopeFactory.CreateAsyncScope();
         var dagContext = scope.ServiceProvider.GetRequiredService<DagContext>();
         var rewardTransactionConfigs = await dagContext.RewardTransactionConfigs.ToListAsync();
@@ -30,13 +42,6 @@ public sealed class SyncRewardTransactionsJob(
             .Where(x => x.IsEnabled)
             .Select(async rewardTransactionConfig =>
             {
-                if (rewardTransactionConfig.IsProcessing)
-                {
-                    logger.LogInformation("RewardTransaction {rewardTransactionConfigId} still in process",
-                        rewardTransactionConfig.MetagraphId);
-                    return;
-                }
-
                 await ProcessRewardTransactions(rewardTransactionConfig);
             });
 
@@ -85,9 +90,6 @@ public sealed class SyncRewardTransactionsJob(
                 return;
             }
 
-            rewardTransactionConfig.SetProcessing(true);
-            await dagContext.SaveChangesAsync();
-
             var rewardTransactions = new List<RewardTransactionDataDto>();
 
             if (rewardTransactionConfig.ToWalletAddress is null ||
@@ -104,9 +106,6 @@ public sealed class SyncRewardTransactionsJob(
                 logger.LogInformation(
                     "Something went wrong while retrieving reward transactions for config id {ConfigId}",
                     rewardTransactionConfig.Id.Value);
-
-                rewardTransactionConfig.SetProcessing(false);
-                await dagContext.SaveChangesAsync();
 
                 return;
             }
@@ -127,9 +126,6 @@ public sealed class SyncRewardTransactionsJob(
                 logger.LogError(
                     "Something went wrong while syncing transaction rewards for config {RewardTransactionConfigId}",
                     rewardTransactionConfig.Id.Value);
-
-                rewardTransactionConfig.SetProcessing(false);
-                await dagContext.SaveChangesAsync();
             }
         }
         catch (Exception e)
@@ -137,9 +133,6 @@ public sealed class SyncRewardTransactionsJob(
             logger.LogError(e,
                 "Something went wrong while syncing transaction rewards for config {RewardTransactionConfigId}",
                 rewardTransactionConfig.Id.Value);
-
-            rewardTransactionConfig.SetProcessing(false);
-            await dagContext.SaveChangesAsync();
         }
     }
 
@@ -288,7 +281,6 @@ public sealed class InsertRewardTransactionsCommandHandler(
         }
 
         rewardTransactionConfig.UpdateLastProcessedHash(request.LastProcessedHash, request.LastProcessedDateTime);
-        rewardTransactionConfig.SetProcessing(false);
 
         return true;
     }

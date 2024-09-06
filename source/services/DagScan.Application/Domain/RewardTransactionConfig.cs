@@ -33,11 +33,6 @@ public sealed class RewardTransactionConfig : Entity<RewardTransactionConfigId>
         };
     }
 
-    public void SetProcessing(bool isProcessing)
-    {
-        IsProcessing = isProcessing;
-    }
-
     public void UpdateLastProcessedHash(string hash, DateTime lastProcessedDate)
     {
         LastProcessedHash = hash;
