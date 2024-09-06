@@ -53,7 +53,11 @@ public sealed class RefreshHypergraphBalancesCommandHandler(
                 balance.Value.GetInt64()));
         }
 
-        hypergraph.RefreshBalances(hypergraphBalances);
+        await dagContext.Database.ExecuteSqlRawAsync(
+            "DELETE FROM HypergraphBalances WHERE HypergraphId = {0}",
+            hypergraph.Id.Value);
+
+        dagContext.HypergraphBalances.AddRange(hypergraphBalances);
 
         return true;
     }
