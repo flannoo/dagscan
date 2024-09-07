@@ -21,7 +21,7 @@ public sealed class SyncHypergraphSnapshotsMetadataWorker(
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            const int parallelProcessingCount = 30;
+            const int parallelProcessingCount = 50;
             try
             {
                 await using var scope = scopeFactory.CreateAsyncScope();
@@ -69,7 +69,7 @@ public sealed class SyncHypergraphSnapshotsMetadataWorker(
 
             var snapshotsToSync = await dagContext.HypergraphSnapshots
                 .Where(x => !x.IsMetadataSynced && x.HypergraphId == hypergraph.Id)
-                .OrderBy(x => x.Ordinal)
+                .OrderByDescending(x => x.Ordinal)
                 .Take(parallelProcessingCount)
                 .ToListAsync(cancellationToken);
 
