@@ -225,7 +225,7 @@ public sealed class InsertGlobalSnapshotMetadataCommandHandler(
         var walletIds = proofs.Select(x => new WalletId(x.Id)).ToList();
         var existingParticipationRecords =
             await dagContext.HypergraphValidatorNodesParticipants.Where(x =>
-                walletIds.Contains(x.WalletId) && x.SnapshotDate >= snapshotDate).ToListAsync(cancellationToken);
+                walletIds.Contains(x.WalletId) && x.SnapshotDate == snapshotDate).ToListAsync(cancellationToken);
 
         foreach (var existingParticipationRecord in existingParticipationRecords)
         {
