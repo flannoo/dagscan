@@ -49,7 +49,7 @@ export type SnapshotMetric = {
     isTimeTriggered: boolean;
     totalSnapshotCount: number;
     totalSnapshotFeeAmount: number;
-    totalTransactionCount: number;    
+    totalTransactionCount: number;
     totalTransactionAmount: number;
     totalTransactionFeeAmount: number;
 }
@@ -75,4 +75,30 @@ export type Balance = {
     walletAddress: string;
     balance: number;
     metagraphBalances: MetagraphBalance[];
+};
+
+export type MetagraphNode = {
+    walletAddress: string;
+    walletId: string;
+    metagraphAddress: string | null;
+    metagraphType: string;
+    ipAddress: string;
+    nodeStatus: string;
+    serviceProvider: string;
+    country: string;
+    city: string;
+    latitude: number;
+    longitude: number;
+};
+
+export type WalletValidatorNodes = {
+    hypergraphValidatorNodeDto: ValidatorNode;
+    metagraphNodes: MetagraphNode[];
+};
+
+export type ValidatorNodeUptime = {
+    snapshotDate: string;
+    snapshotCountParticipated: number;
+    snapshotCountTotal: number;
+    uptimePercentage: number;
 };

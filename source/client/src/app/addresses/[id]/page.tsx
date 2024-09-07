@@ -1,6 +1,8 @@
 "use client";
 
+import ChartNodeUptime from "@/components/chart-node-uptime";
 import GridRewards from "@/components/grid-rewards";
+import NodeDetail from "@/components/node-detail";
 import { TransactionListAddress } from "@/components/transaction-list-wallet";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
@@ -112,6 +114,10 @@ export default function AddressPage({ params }: { params: { id: string } }) {
                 </TabsContent>
                 <TabsContent value="rewards">
                     <GridRewards addresses={id} />
+                </TabsContent>
+                <TabsContent value="node">
+                    <NodeDetail walletAddress={id} />
+                    <ChartNodeUptime walletAddress={id} />
                 </TabsContent>
             </Tabs>
         </div>

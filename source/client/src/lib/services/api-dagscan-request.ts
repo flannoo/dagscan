@@ -1,4 +1,4 @@
-import { Balance, Metagraph, Reward, SnapshotMetric, ValidatorNode, WalletRichlistInfo } from "@/lib/shared/types";
+import { Balance, Metagraph, Reward, SnapshotMetric, ValidatorNode, ValidatorNodeUptime, WalletRichlistInfo, WalletValidatorNodes } from "@/lib/shared/types";
 
 export async function getMetagraphs(network?: string) {
     const apiUrl = process.env.NEXT_PUBLIC_API_DAGSCAN_URL;
@@ -114,4 +114,38 @@ export async function getBalance(walletAddress: string, network?: string) {
     const data = await res.json();
     const wallets = data as Balance;
     return wallets;
+}
+
+export async function getValidatorNodes(walletAddress: string, network?: string) {
+    const apiUrl = process.env.NEXT_PUBLIC_API_DAGSCAN_URL;
+    const networkUrl = network || 'mainnet';
+
+    const url = `${apiUrl}/hypergraph/${networkUrl}/validators/${walletAddress}`;
+
+    const res = await fetch(url);
+
+    if (!res.ok) {
+        throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    const validators = data as WalletValidatorNodes;
+    return validators;
+}
+
+export async function getValidatorNodeUptime(walletAddress: string, network?: string) {
+    const apiUrl = process.env.NEXT_PUBLIC_API_DAGSCAN_URL;
+    const networkUrl = network || 'mainnet';
+
+    const url = `${apiUrl}/hypergraph/${networkUrl}/validators/${walletAddress}/uptime`;
+
+    const res = await fetch(url);
+
+    if (!res.ok) {
+        throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    const validators = data as ValidatorNodeUptime[];
+    return validators;
 }
