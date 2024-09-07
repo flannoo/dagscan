@@ -25,8 +25,8 @@ internal sealed class GetHypergraphValidatorNodesUptimeQueryHandler(ReadOnlyDagC
             return [];
         }
 
-        var startDate = request.FromDate ?? DateOnly.FromDateTime(DateTime.Today.AddDays(-7));
-        var endDate = request.ToDate ?? DateOnly.FromDateTime(DateTime.Today);
+        var startDate = request.FromDate ?? DateOnly.FromDateTime(DateTime.Today.AddMonths(-6));
+        var endDate = request.ToDate ?? DateOnly.FromDateTime(DateTime.Today.AddDays(1));
 
         var maxSnapshotCountsByDay = await dagContext.HypergraphValidatorNodesParticipants
             .Where(x =>
