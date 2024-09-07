@@ -46,8 +46,7 @@ const aggregateDataBySnapshotDate = (data: SnapshotMetric[]): AggregatedSnapshot
         return acc;
     }, {});
 
-    // Return the data as an array of objects
-    return Object.values(aggregatedData);
+    return Object.values(aggregatedData).sort((a, b) => new Date(a.snapshotDate).getTime() - new Date(b.snapshotDate).getTime());
 };
 
 export function ChartSnapshotCount() {
@@ -117,7 +116,7 @@ export function ChartSnapshotCount() {
                                 }
                             />
                             <Line
-                                dataKey="Count"
+                                dataKey="totalSnapshotCount"
                                 type="linear"
                                 dot={false}
                             />
