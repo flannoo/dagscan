@@ -52,17 +52,21 @@ internal sealed class GetHypergraphValidatorNodesUptimeQueryHandler(ReadOnlyDagC
             return [];
         }
 
-        var uptimes = from max in maxSnapshotCountsByDay
-            join wallet in walletSnapshotCountsByDay on max.Date equals wallet.Date into walletGroup
-            from w in walletGroup.DefaultIfEmpty()
-            select new HypergraphValidatorNodesUptimeDto(
-                max.Date,
-                w.SnapshotCount,
-                max.MaxSnapshotCount,
-                (max.MaxSnapshotCount > 0 && w != null)
-                    ? (int)((double)w.SnapshotCount / max.MaxSnapshotCount * 100)
-                    : 0
-            );
+        var uptimes = maxSnapshotCountsByDay
+            .Select(max =>
+            {
+                var wallet = walletSnapshotCountsByDay.FirstOrDefault(w => w.Date == max.Date);
+                var uptimePercent = max.MaxSnapshotCount > 0
+                    ? (int)((double)(wallet?.SnapshotCount ?? 0) / max.MaxSnapshotCount * 100)
+                    : 0;
+
+                return new HypergraphValidatorNodesUptimeDto(
+                    max.Date,
+                    wallet?.SnapshotCount ?? 0,
+                    max.MaxSnapshotCount,
+                    uptimePercent
+                );
+            });
 
         return uptimes.ToList();
     }
