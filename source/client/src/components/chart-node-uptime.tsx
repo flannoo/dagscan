@@ -4,7 +4,7 @@ import { SkeletonCard } from "@/components/ui/skeleton-card";
 import { AlertCircle } from "lucide-react";
 import React from "react";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { LineChart, CartesianGrid, XAxis, YAxis, Line } from "recharts";
+import { AreaChart, CartesianGrid, XAxis, YAxis, Area } from "recharts";
 import {
     Card,
     CardContent,
@@ -56,12 +56,12 @@ export default function ChartNodeUptime({ walletAddress }: NodeUptimeProps) {
             <Card>
                 <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
                     <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
-                        <CardTitle>Hypergraph Uptime</CardTitle>
+                        <CardTitle>Hypergraph Uptime %</CardTitle>
                     </div>
                 </CardHeader>
                 <CardContent className="px-2 sm:p-6">
                     <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
-                        <LineChart
+                        <AreaChart
                             accessibilityLayer
                             data={data}
                             margin={{
@@ -95,13 +95,13 @@ export default function ChartNodeUptime({ walletAddress }: NodeUptimeProps) {
                                     })
                                 }
                             />
-                            <Line
+                            <Area
                                 dataKey="uptimePercentage"
                                 type="linear"
                                 dot={false}
                             />
 
-                        </LineChart>
+                        </AreaChart>
                     </ChartContainer>
                 </CardContent>
             </Card>
