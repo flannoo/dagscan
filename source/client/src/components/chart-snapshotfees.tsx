@@ -2,7 +2,6 @@
 
 import React from "react"
 import { useQuery } from "@tanstack/react-query";
-import { getSnapshotFees } from "@/lib/services/api-nebula-requests";
 import {
     Card,
     CardContent,
@@ -19,15 +18,18 @@ import {
 import { LineChart, CartesianGrid, XAxis, YAxis, Line } from "recharts";
 import { SkeletonCard } from "./ui/skeleton-card";
 import { AlertCircle } from "lucide-react";
+import { getSnapshotMetrics } from "@/lib/services/api-dagscan-request";
 
 export function ChartSnapshotFees() {
     const { data, isLoading, isError } = useQuery({
         queryKey: ['snapshotfees'],
-        queryFn: async () => getSnapshotFees(),
+        queryFn: async () => getSnapshotMetrics(),
         refetchOnWindowFocus: true,
     });
 
-    const totalFees = data?.reduce((acc, fee) => acc + fee.FeeAmount, 0) || 0;
+    const totalFees = data?.reduce((acc, fee) => {
+        return fee.isTimeTriggered ? acc + fee.totalSnapshotFeeAmount : acc;
+    }, 0) || 0;
 
     const chartConfig = {
         FeeAmount: {

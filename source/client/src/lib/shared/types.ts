@@ -33,3 +33,34 @@ export type OnChainSnapshot = {
 export type DataApplication = {
     onChainState: string[];
 }
+
+export type WalletRichlistInfo = {
+    rank: number;
+    address: string;
+    tag: string;
+    balance: number;
+    usdValue: number;
+    supplyPercentage: number;
+}
+
+export type SnapshotMetric = {
+    snapshotDate: string;
+    metagraphAddress: string;
+    isTimeTriggered: boolean;
+    totalSnapshotCount: number;
+    totalSnapshotFeeAmount: number;
+    totalTransactionCount: number;    
+    totalTransactionAmount: number;
+    totalTransactionFeeAmount: number;
+}
+
+export type Reward = {
+    walletAddress: string;
+    transactionDate: string;
+    metagraphAddress: string;
+    amount: number;
+    rewardCategory: string;
+    transactionHash: string;
+    ordinal: number;
+    currencySymbol: string;
+};

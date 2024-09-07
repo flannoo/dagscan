@@ -42,7 +42,7 @@ export default function HomePage() {
         </TabsContent>
         <TabsContent value="wallets">
           <div className="mb-4">
-            <GridWallets metagraphSymbol="DAG" />
+            <GridWallets />
           </div>
         </TabsContent>
         <TabsContent value="snapshots">

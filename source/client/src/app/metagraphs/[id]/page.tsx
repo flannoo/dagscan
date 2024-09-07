@@ -44,7 +44,7 @@ export default function MetagraphPage({ params }: { params: { id: string } }) {
                 </TabsContent>
                 <TabsContent value="wallets">
                     <div className="mb-4">
-                        <GridWallets metagraphSymbol={metagraphSymbol} />
+                        <GridWallets metagraphAddress={id} />
                     </div>
                 </TabsContent>
                 <TabsContent value="snapshots">
