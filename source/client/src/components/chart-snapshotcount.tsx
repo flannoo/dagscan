@@ -2,7 +2,6 @@
 
 import React from "react"
 import { useQuery } from "@tanstack/react-query";
-import { getSnapshotCount } from "@/lib/services/api-nebula-requests";
 import {
     Card,
     CardContent,
@@ -19,13 +18,45 @@ import {
 import { LineChart, CartesianGrid, XAxis, YAxis, Line } from "recharts";
 import { SkeletonCard } from "./ui/skeleton-card";
 import { AlertCircle } from "lucide-react";
+import { getSnapshotMetrics } from "@/lib/services/api-dagscan-request";
+import { SnapshotMetric } from "@/lib/shared/types";
+
+type AggregatedSnapshot = {
+    snapshotDate: string;
+    totalSnapshotCount: number;
+};
+
+type AggregatedData = {
+    [snapshotDate: string]: AggregatedSnapshot;
+};
+
+const aggregateDataBySnapshotDate = (data: SnapshotMetric[]): AggregatedSnapshot[] => {
+    const aggregatedData: AggregatedData = data.reduce((acc: AggregatedData, curr: SnapshotMetric) => {
+        const snapshotDate = curr.snapshotDate;
+        const existing = acc[snapshotDate];
+
+        if (existing) {
+            existing.totalSnapshotCount += curr.totalSnapshotCount;
+        } else {
+            acc[snapshotDate] = {
+                snapshotDate: snapshotDate,
+                totalSnapshotCount: curr.totalSnapshotCount,
+            };
+        }
+        return acc;
+    }, {});
+
+    return Object.values(aggregatedData).sort((a, b) => new Date(a.snapshotDate).getTime() - new Date(b.snapshotDate).getTime());
+};
 
 export function ChartSnapshotCount() {
     const { data, isLoading, isError } = useQuery({
         queryKey: ['snapshotcount'],
-        queryFn: async () => getSnapshotCount(),
+        queryFn: async () => getSnapshotMetrics(),
         refetchOnWindowFocus: true,
     });
+    
+    const processedData = data ? aggregateDataBySnapshotDate(data) : [];
 
     const chartConfig = {
         Count: {
@@ -52,7 +83,7 @@ export function ChartSnapshotCount() {
                     <ChartContainer config={chartConfig}>
                         <LineChart
                             accessibilityLayer
-                            data={data}
+                            data={processedData}
                             margin={{
                                 left: 12,
                                 right: 12,
@@ -61,7 +92,7 @@ export function ChartSnapshotCount() {
                         >
                             <CartesianGrid vertical={false} />
                             <XAxis
-                                dataKey="Timestamp"
+                                dataKey="snapshotDate"
                                 tickLine={false}
                                 axisLine={false}
                                 tickMargin={8}
@@ -72,7 +103,7 @@ export function ChartSnapshotCount() {
                                 angle={-45}
                                 textAnchor="end"
                             />
-                            <YAxis dataKey="Count" />
+                            <YAxis dataKey="totalSnapshotCount" />
                             <ChartTooltip
                                 cursor={false}
                                 content={<ChartTooltipContent indicator="line" />}
@@ -85,7 +116,7 @@ export function ChartSnapshotCount() {
                                 }
                             />
                             <Line
-                                dataKey="Count"
+                                dataKey="totalSnapshotCount"
                                 type="linear"
                                 dot={false}
                             />

@@ -1,7 +1,6 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { getRewards, Reward } from "@/lib/services/api-nebula-requests"
 import { useQuery } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
@@ -9,10 +8,12 @@ import Link from "next/link";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 import { DataTableWithSearch } from "@/components/ui/data-table-with-search"
 import { formatDate, formatMetagraphAmount } from "@/lib/utils";
+import { Reward } from "@/lib/shared/types";
+import { getRewards } from "@/lib/services/api-dagscan-request";
 
 export const columns: ColumnDef<Reward>[] = [
     {
-        accessorKey: "Timestamp",
+        accessorKey: "transactionDate",
         header: ({ column }) => {
             return (
                 <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
@@ -22,50 +23,50 @@ export const columns: ColumnDef<Reward>[] = [
             )
         },
         cell: ({ row }) => {
-            return formatDate(row.getValue("Timestamp"))
+            return formatDate(row.getValue("transactionDate"));
         }
     },
     {
-        accessorKey: "Currency",
+        accessorKey: "currencySymbol",
         header: "Currency",
         cell: ({ row }) => {
-            const currency = row.getValue("Currency");
+            const currency = row.getValue("currencySymbol");
             return <span className="flex items-center">
                 <img
                     src={`/icons/${currency}-icon.svg`} className="w-5 h-5 mr-2"
                     onError={(e) => (e.currentTarget.style.display = "none")} />
-                {row.getValue("Currency")}
+                {row.getValue("currencySymbol")}
             </span>;
         },
         enableColumnFilter: true,
         filterFn: 'includesString',
     },
     {
-        accessorKey: "Amount",
+        accessorKey: "amount",
         header: "Amount",
         cell: ({ row }) => {
-            return formatMetagraphAmount(row.getValue("Amount"));
+            return formatMetagraphAmount(row.getValue("amount"));
         },
     },
     {
-        accessorKey: "RewardType",
+        accessorKey: "rewardCategory",
         header: "Type",
     },
     {
-        accessorKey: "Address",
+        accessorKey: "walletAddress",
         header: "Address",
         cell: ({ row }) => {
-            const address: string = row.getValue("Address");
+            const address: string = row.getValue("walletAddress");
             return <Link href={`/addresses/${address}`} className="hover:underline" prefetch={false}>
                 {address}
             </Link>
         },
     },
     {
-        accessorKey: "TransactionHash",
+        accessorKey: "transactionHash",
         header: "TransactionRef",
         cell: ({ row }) => {
-            const transactionRef: string = row.getValue("TransactionHash");
+            const transactionRef: string = row.getValue("transactionHash");
             if (!transactionRef) {
                 return null;
             }

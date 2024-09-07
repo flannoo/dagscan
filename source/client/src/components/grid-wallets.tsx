@@ -1,44 +1,45 @@
 "use client";
 
-import { getMetagraphWallets, Wallet } from "@/lib/services/api-nebula-requests";
 import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { DataTableWithSearch } from "@/components/ui/data-table-with-search";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
-import { formatAmount } from "@/lib/utils";
+import { formatMetagraphAmount } from "@/lib/utils";
+import { WalletRichlistInfo } from "@/lib/shared/types";
+import { getMetagraphWallets } from "@/lib/services/api-dagscan-request";
 
-export const columns: ColumnDef<Wallet>[] = [
+export const columns: ColumnDef<WalletRichlistInfo>[] = [
     {
-        accessorKey: "Rank",
+        accessorKey: "rank",
         header: "Rank",
     },
     {
-        accessorKey: "Address",
+        accessorKey: "address",
         header: "Address",
         cell: ({ row }) => {
-            const address: string = row.getValue("Address");
+            const address: string = row.getValue("address");
             return <Link href={`/addresses/${address}`} className="hover:underline" prefetch={false}>
                 {address.slice(0, 6)}...{address.slice(-6)}
             </Link>
         },
     },
     {
-        accessorKey: "Tag",
+        accessorKey: "tag",
         header: "Tag",
     },
     {
-        accessorKey: "Balance",
+        accessorKey: "balance",
         header: "Balance",
         cell: ({ row }) => {
-            return formatAmount(row.getValue("Balance"));
+            return formatMetagraphAmount(row.getValue("balance"));
         },
     },
     {
-        accessorKey: "BalanceUSD",
+        accessorKey: "usdValue",
         header: "USD Value",
         cell: ({ row }) => {
-            const parsedAmount = parseFloat(row.getValue("BalanceUSD"));
+            const parsedAmount = parseFloat(row.getValue("usdValue"));
             if (isNaN(parsedAmount)) {
                 return "";
             }
@@ -54,26 +55,26 @@ export const columns: ColumnDef<Wallet>[] = [
         },
     },
     {
-        accessorKey: "SupplyPercentage",
+        accessorKey: "supplyPercent",
         header: "% Supply",
         cell: ({ row }) => {
-            const parsedAmount = parseFloat(row.getValue("SupplyPercentage"));
+            const parsedAmount = parseFloat(row.getValue("supplyPercent"));
             if (isNaN(parsedAmount)) {
                 return "";
             }
             const formattedAmount = new Intl.NumberFormat('en-US', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 8,
-            }).format(parsedAmount * 100)
+            }).format(parsedAmount);
 
             return `${formattedAmount} %`;
         },
     },
     {
-        accessorKey: "Address",
+        accessorKey: "address",
         header: "Rewards",
         cell: ({ row }) => {
-            const address: string = row.getValue("Address");
+            const address: string = row.getValue("address");
             return <Link href={`/rewards/${address}`} className="hover:underline" prefetch={false}>
                 View Rewards
             </Link>
@@ -81,10 +82,10 @@ export const columns: ColumnDef<Wallet>[] = [
     },
 ]
 
-export default function GridWallets({ metagraphSymbol }: { metagraphSymbol: string }) {
+export default function GridWallets({ metagraphAddress }: { metagraphAddress?: string }) {
     const { data: wallets, isLoading, isError } = useQuery({
-        queryKey: ['metagraphWallets-' + metagraphSymbol],
-        queryFn: async () => getMetagraphWallets(metagraphSymbol),
+        queryKey: ['metagraphWallets-' + metagraphAddress],
+        queryFn: async () => getMetagraphWallets("mainnet", metagraphAddress),
     });
 
     return (

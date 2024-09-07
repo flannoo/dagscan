@@ -10,7 +10,11 @@ export const formatDate = (value: string | number | undefined): string => {
     return "";
   }
 
-  const date = new Date(value);
+  const stringValue = String(value);
+  // Append 'Z' if it doesn't end with 'Z'
+  const formattedValue = stringValue.endsWith('Z') ? stringValue : `${stringValue}Z`;
+
+  const date = new Date(formattedValue);
 
   // Check if the date is valid
   if (isNaN(date.getTime())) {

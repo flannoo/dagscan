@@ -2,7 +2,6 @@
 
 import React from "react"
 import { useQuery } from "@tanstack/react-query";
-import { getSnapshotFees } from "@/lib/services/api-nebula-requests";
 import {
     Card,
     CardContent,
@@ -19,15 +18,48 @@ import {
 import { LineChart, CartesianGrid, XAxis, YAxis, Line } from "recharts";
 import { SkeletonCard } from "./ui/skeleton-card";
 import { AlertCircle } from "lucide-react";
+import { getSnapshotMetrics } from "@/lib/services/api-dagscan-request";
+import { SnapshotMetric } from "@/lib/shared/types";
+
+type AggregatedSnapshot = {
+    snapshotDate: string;
+    totalSnapshotFeeAmount: number;
+};
+
+type AggregatedData = {
+    [snapshotDate: string]: AggregatedSnapshot;
+};
+
+const aggregateDataBySnapshotDate = (data: SnapshotMetric[]): AggregatedSnapshot[] => {
+    const filteredData = data.filter((metric) => new Date(metric.snapshotDate) > new Date('2024-08-07')); //.filter((metric) => metric.isTimeTriggered);
+
+    const aggregatedData: AggregatedData = filteredData.reduce((acc: AggregatedData, curr: SnapshotMetric) => {
+        const snapshotDate = curr.snapshotDate;
+        const existing = acc[snapshotDate];
+
+        if (existing) {
+            existing.totalSnapshotFeeAmount += curr.totalSnapshotFeeAmount / 100000000;
+        } else {
+            acc[snapshotDate] = {
+                snapshotDate: snapshotDate,
+                totalSnapshotFeeAmount: curr.totalSnapshotFeeAmount / 100000000,
+            };
+        }
+        return acc;
+    }, {});
+
+    return Object.values(aggregatedData).sort((a, b) => new Date(a.snapshotDate).getTime() - new Date(b.snapshotDate).getTime());
+};
 
 export function ChartSnapshotFees() {
     const { data, isLoading, isError } = useQuery({
         queryKey: ['snapshotfees'],
-        queryFn: async () => getSnapshotFees(),
+        queryFn: async () => getSnapshotMetrics(),
         refetchOnWindowFocus: true,
     });
 
-    const totalFees = data?.reduce((acc, fee) => acc + fee.FeeAmount, 0) || 0;
+    const processedData = data ? aggregateDataBySnapshotDate(data) : [];
+    const totalFees = processedData.reduce((acc, curr) => acc + curr.totalSnapshotFeeAmount, 0);
 
     const chartConfig = {
         FeeAmount: {
@@ -54,7 +86,7 @@ export function ChartSnapshotFees() {
                     <ChartContainer config={chartConfig}>
                         <LineChart
                             accessibilityLayer
-                            data={data}
+                            data={processedData}
                             margin={{
                                 left: 12,
                                 right: 12,
@@ -63,7 +95,7 @@ export function ChartSnapshotFees() {
                         >
                             <CartesianGrid vertical={false} />
                             <XAxis
-                                dataKey="Timestamp"
+                                dataKey="snapshotDate"
                                 tickLine={false}
                                 axisLine={false}
                                 tickMargin={8}
@@ -74,7 +106,7 @@ export function ChartSnapshotFees() {
                                 angle={-45}
                             textAnchor="end"
                             />
-                            <YAxis dataKey="FeeAmount" />
+                            <YAxis dataKey="totalSnapshotFeeAmount" />
                             <ChartTooltip
                                 cursor={false}
                                 content={<ChartTooltipContent indicator="line" />}
@@ -87,7 +119,7 @@ export function ChartSnapshotFees() {
                                 }
                             />
                             <Line
-                                dataKey="FeeAmount"
+                                dataKey="totalSnapshotFeeAmount"
                                 type="linear"
                                 dot={false}
                             />
