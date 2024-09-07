@@ -1,11 +1,13 @@
 ﻿using DagScan.Application.Data;
 using DagScan.Core.Constants;
 using DagScan.Core.Scheduling;
+using Hangfire;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace DagScan.Application.Features.SyncHypergraphValidatorNodes;
 
+[AutomaticRetry(Attempts = 0)]
 public sealed class SyncHypergraphValidatorNodesJob(
     DagContext dagContext,
     IMediator mediator,

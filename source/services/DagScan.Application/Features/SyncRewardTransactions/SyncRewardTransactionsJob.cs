@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DagScan.Application.Features.SyncRewardTransactions;
 
+[AutomaticRetry(Attempts = 0)]
 public sealed class SyncRewardTransactionsJob(
     IHttpClientFactory httpClientFactory,
     IServiceScopeFactory scopeFactory,
@@ -21,25 +22,43 @@ public sealed class SyncRewardTransactionsJob(
 
     public async Task Execute()
     {
+        using var connection = JobStorage.Current.GetConnection();
+        var monitoringApi = JobStorage.Current.GetMonitoringApi();
+
+        var processingJobs = monitoringApi.ProcessingJobs(0, int.MaxValue);
+        var activeJobInstances = processingJobs.Count(job => job.Value.Job.Type == typeof(SyncRewardTransactionsJob));
+
+        if (activeJobInstances > 1)
+        {
+            logger.LogInformation("A job instance for {JobName} is already running. Exiting.", nameof(SyncRewardTransactionsJob));
+            return;
+        }
+
         await using var scope = scopeFactory.CreateAsyncScope();
         var dagContext = scope.ServiceProvider.GetRequiredService<DagContext>();
         var rewardTransactionConfigs = await dagContext.RewardTransactionConfigs.ToListAsync();
 
         var tasks = rewardTransactionConfigs
             .Where(x => x.IsEnabled)
-            .Select(async rewardTransactionConfig => { await ProcessRewardTransactions(rewardTransactionConfig); });
+            .Select(async rewardTransactionConfig =>
+            {
+                await ProcessRewardTransactions(rewardTransactionConfig);
+            });
 
         await Task.WhenAll(tasks);
     }
 
     private async Task ProcessRewardTransactions(RewardTransactionConfig rewardTransactionConfig)
     {
+        await using var scope = scopeFactory.CreateAsyncScope();
+        var dagContext = scope.ServiceProvider.GetRequiredService<DagContext>();
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+        rewardTransactionConfig =
+            await dagContext.RewardTransactionConfigs.FirstAsync(x => x.Id == rewardTransactionConfig.Id);
+
         try
         {
-            await using var scope = scopeFactory.CreateAsyncScope();
-            var dagContext = scope.ServiceProvider.GetRequiredService<DagContext>();
-            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-
             var metagraph = await dagContext.Metagraphs
                 .FirstOrDefaultAsync(m => m.Id == rewardTransactionConfig.MetagraphId);
 
@@ -87,6 +106,7 @@ public sealed class SyncRewardTransactionsJob(
                 logger.LogInformation(
                     "Something went wrong while retrieving reward transactions for config id {ConfigId}",
                     rewardTransactionConfig.Id.Value);
+
                 return;
             }
 

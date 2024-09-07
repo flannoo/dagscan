@@ -77,7 +77,7 @@ public sealed class SyncMetagraphSnapshotRewardsWorker(
             using var httpClient = httpClientFactory.CreateClient();
             httpClient.BaseAddress = new Uri(hypergraph.BlockExplorerApiBaseAddress);
             var response = await httpClient.GetAsync(
-                $"currency/{metagraph.MetagraphAddress!.Value}/snapshots?limit=1000&search_after={lastSyncedSnapshot}",
+                $"currency/{metagraph.MetagraphAddress!.Value}/snapshots?limit=300&search_after={lastSyncedSnapshot}",
                 cancellationToken);
 
             var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);

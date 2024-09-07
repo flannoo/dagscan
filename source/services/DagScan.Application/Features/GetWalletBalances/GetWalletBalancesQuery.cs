@@ -22,7 +22,7 @@ internal sealed class GetMetagraphsQueryHandler(ReadOnlyDagContext dagContext)
             return null;
         }
 
-        var hypergraphBalance = hypergraph.HypergraphBalances.FirstOrDefault(x =>
+        var hypergraphBalance = dagContext.HypergraphBalances.FirstOrDefault(x =>
             x.HypergraphId == hypergraph.Id && x.WalletAddress == new WalletAddress(request.WalletAddress));
 
         var metagraphs = await dagContext.Metagraphs.Where(x => x.HypergraphId == hypergraph.Id)
@@ -31,9 +31,8 @@ internal sealed class GetMetagraphsQueryHandler(ReadOnlyDagContext dagContext)
         var metagraphBalancesDto = new List<MetagraphBalancesDto>();
         foreach (var metagraph in metagraphs)
         {
-            var metagraphBalance =
-                metagraph.MetagraphBalances.FirstOrDefault(x =>
-                    x.WalletAddress == new WalletAddress(request.WalletAddress));
+            var metagraphBalance = await dagContext.MetagraphBalances.FirstOrDefaultAsync(x =>
+                x.WalletAddress == new WalletAddress(request.WalletAddress), cancellationToken);
 
             if (metagraph.MetagraphAddress is null)
             {

@@ -13,6 +13,7 @@ param memory string = '0.5Gi'
 param minReplicas int = 1
 param maxReplicas int = 1
 param ingress object = {}
+param ingressEnabled bool = true
 
 param tags object = {}
 
@@ -47,7 +48,7 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
           server: registry.properties.loginServer
         }
       ]
-      ingress: ingress
+      ingress: ingressEnabled ? ingress : null
     }
     template: {
       containers: [

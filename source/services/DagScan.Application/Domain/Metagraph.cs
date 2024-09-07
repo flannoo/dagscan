@@ -24,7 +24,6 @@ public sealed class Metagraph : Aggregate<MetagraphId>
     public string? Website { get; private init; }
     public string? Description { get; private init; }
     public bool DataSyncEnabled { get; private init; }
-    public List<MetagraphBalance> MetagraphBalances { get; private set; } = [];
     public long LastSnapshotSynced { get; private set; }
 
     public static Metagraph Create(HypergraphId hypergraphId, MetagraphAddress? metagraphAddress, string name,
@@ -50,12 +49,6 @@ public sealed class Metagraph : Aggregate<MetagraphId>
     {
         Guard.Against.Null(metagraphEndpoint, nameof(metagraphEndpoint));
         MetagraphEndpoints.Add(metagraphEndpoint);
-    }
-
-    public void RefreshBalances(List<MetagraphBalance> balances)
-    {
-        Guard.Against.Null(balances, nameof(balances));
-        MetagraphBalances = balances;
     }
 
     public void UpdateLastSnapshotSynced(long ordinal)

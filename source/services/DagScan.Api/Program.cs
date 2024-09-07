@@ -44,6 +44,7 @@ builder.Services
     );
 
 builder.Services.AddCarter();
+builder.Services.AddResponseCompression();
 
 builder.Services.AddHttpClient();
 
@@ -62,6 +63,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors(defaultCorsPolicyName);
+app.UseResponseCompression();
 
 app.MapCarter();
 

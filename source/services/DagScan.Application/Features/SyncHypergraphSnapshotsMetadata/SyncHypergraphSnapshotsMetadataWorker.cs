@@ -21,7 +21,7 @@ public sealed class SyncHypergraphSnapshotsMetadataWorker(
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            const int parallelProcessingCount = 20;
+            const int parallelProcessingCount = 50;
             try
             {
                 await using var scope = scopeFactory.CreateAsyncScope();
@@ -48,6 +48,7 @@ public sealed class SyncHypergraphSnapshotsMetadataWorker(
 
                 if (errorOccurred)
                 {
+                    logger.LogError("Some error while syncing snapshot metadata, delaying next execution");
                     await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
                 }
             }
@@ -68,9 +69,12 @@ public sealed class SyncHypergraphSnapshotsMetadataWorker(
 
             var snapshotsToSync = await dagContext.HypergraphSnapshots
                 .Where(x => !x.IsMetadataSynced && x.HypergraphId == hypergraph.Id)
-                .OrderBy(x => x.Ordinal)
+                .OrderByDescending(x => x.Ordinal)
                 .Take(parallelProcessingCount)
                 .ToListAsync(cancellationToken);
+
+            logger.LogInformation("Processing {RecordCount} metadata records for hypergraph snapshots",
+                snapshotsToSync.Count);
 
             var commandTasks = snapshotsToSync.Select(async snapshotToSync =>
                 await ProcessSnapshotAsync(snapshotToSync, hypergraph, options, cancellationToken));
@@ -167,8 +171,6 @@ public sealed class InsertGlobalSnapshotMetadataCommandHandler(
 {
     public async Task<bool> Handle(InsertGlobalSnapshotMetadataCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Processing metadata for snapshot {SnapshotOrdinal}", request.HypergraphSnapshotId.Value);
-
         var snapshot = await dagContext.HypergraphSnapshots
             .FirstOrDefaultAsync(x => x.Id == request.HypergraphSnapshotId, cancellationToken);
 
@@ -223,7 +225,7 @@ public sealed class InsertGlobalSnapshotMetadataCommandHandler(
         var walletIds = proofs.Select(x => new WalletId(x.Id)).ToList();
         var existingParticipationRecords =
             await dagContext.HypergraphValidatorNodesParticipants.Where(x =>
-                walletIds.Contains(x.WalletId) && x.SnapshotDate >= snapshotDate).ToListAsync(cancellationToken);
+                walletIds.Contains(x.WalletId) && x.SnapshotDate == snapshotDate).ToListAsync(cancellationToken);
 
         foreach (var existingParticipationRecord in existingParticipationRecords)
         {

@@ -45,14 +45,16 @@ public sealed class SyncHypergraphSnapshotsWorker(
                     using var httpClient = httpClientFactory.CreateClient();
                     httpClient.BaseAddress = new Uri(hypergraph.BlockExplorerApiBaseAddress);
                     var response = await httpClient.GetAsync(
-                        $"global-snapshots?limit=1000&search_after={lastSyncedSnapshot}",
+                        $"global-snapshots?limit=300&search_after={lastSyncedSnapshot}",
                         cancellationToken);
 
                     var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
                     if (!response.IsSuccessStatusCode)
                     {
-                        logger.LogError("Error occurred while retrieving snapshot: {ResponseBody}", responseBody);
+                        logger.LogError(
+                            "Error occurred while retrieving snapshot: {ResponseBody} for lastSnapshot {lastSyncedSnapshot}",
+                            responseBody, lastSyncedSnapshot);
                         errorOccurred = true;
                         continue;
                     }
@@ -66,11 +68,26 @@ public sealed class SyncHypergraphSnapshotsWorker(
                         continue;
                     }
 
+                    // The following ordinals are returned twice, remove the ones with the invalid hash
+                    // 682076: 1bb224e59a8a606bb42ae136be5ffb85c367bc298242cbe10a79b30b932fbdab
+                    // 682007: e37bf18e6a22085f1a1bf6587179b2d57798b0c1db7846db79dcea184e988736
+                    // 756291: 7ad194b8bb53343e379b007eb0099b4ff7df7432df1c543c8b482dd75617c542
+                    var excludedHashes = new List<string>()
+                    {
+                        "1bb224e59a8a606bb42ae136be5ffb85c367bc298242cbe10a79b30b932fbdab",
+                        "e37bf18e6a22085f1a1bf6587179b2d57798b0c1db7846db79dcea184e988736",
+                        "7ad194b8bb53343e379b007eb0099b4ff7df7432df1c543c8b482dd75617c542"
+                    };
+
+                    var globalSnapshots = result.GlobalSnapshotData
+                        .Where(snapshot => !excludedHashes.Contains(snapshot.Hash))
+                        .ToList();
+
                     var commandResponse =
                         await mediator.Send(
                             new InsertGlobalSnapshotsCommand()
                             {
-                                HypergraphId = hypergraph.Id, GlobalSnapshots = result.GlobalSnapshotData
+                                HypergraphId = hypergraph.Id, GlobalSnapshots = globalSnapshots
                             }, cancellationToken);
 
                     if (!commandResponse)
@@ -81,7 +98,7 @@ public sealed class SyncHypergraphSnapshotsWorker(
                     }
 
                     // Sleep the worker for a minute
-                    if (result.GlobalSnapshotData.Count < 1000)
+                    if (result.GlobalSnapshotData.Count < 300)
                     {
                         await Task.Delay(60_000, cancellationToken);
                     }

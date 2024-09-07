@@ -25,7 +25,7 @@ public sealed class RefreshMetagraphBalancesCommandHandler(
     public async Task<bool> Handle(RefreshMetagraphBalancesCommand request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Refreshing balances for {MetagraphId}", request.MetagraphId);
-        
+
         using var httpClient = httpClientFactory.CreateClient();
 
         var metagraph = await dagContext.Metagraphs
@@ -76,7 +76,11 @@ public sealed class RefreshMetagraphBalancesCommandHandler(
                 balance.Value.GetInt64()));
         }
 
-        metagraph.RefreshBalances(metagraphBalances);
+        await dagContext.Database.ExecuteSqlRawAsync(
+            "DELETE FROM MetagraphBalances WHERE MetagraphId = {0}",
+            metagraph.Id.Value);
+
+        dagContext.MetagraphBalances.AddRange(metagraphBalances);
 
         return true;
     }
