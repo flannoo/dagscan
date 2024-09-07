@@ -25,21 +25,18 @@ internal sealed class GetMetagraphsQueryHandler(ReadOnlyDagContext dagContext)
         var hypergraphBalance = dagContext.HypergraphBalances.FirstOrDefault(x =>
             x.HypergraphId == hypergraph.Id && x.WalletAddress == new WalletAddress(request.WalletAddress));
 
-        var metagraphs = await dagContext.Metagraphs.Where(x => x.HypergraphId == hypergraph.Id)
+        var metagraphs = await dagContext.Metagraphs
+            .Where(x => x.HypergraphId == hypergraph.Id && x.MetagraphAddress != null)
             .ToListAsync(cancellationToken: cancellationToken);
 
         var metagraphBalancesDto = new List<MetagraphBalancesDto>();
         foreach (var metagraph in metagraphs)
         {
             var metagraphBalance = await dagContext.MetagraphBalances.FirstOrDefaultAsync(x =>
-                x.WalletAddress == new WalletAddress(request.WalletAddress), cancellationToken);
+                x.WalletAddress == new WalletAddress(request.WalletAddress) &&
+                x.MetagraphAddress == metagraph.MetagraphAddress!, cancellationToken);
 
-            if (metagraph.MetagraphAddress is null)
-            {
-                continue;
-            }
-
-            metagraphBalancesDto.Add(new MetagraphBalancesDto(metagraph.MetagraphAddress.Value, metagraph.Symbol,
+            metagraphBalancesDto.Add(new MetagraphBalancesDto(metagraph.MetagraphAddress!.Value, metagraph.Symbol,
                 metagraphBalance?.Balance ?? 0));
         }
 

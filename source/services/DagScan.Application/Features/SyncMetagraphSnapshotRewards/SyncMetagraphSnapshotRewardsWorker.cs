@@ -40,13 +40,13 @@ public sealed class SyncMetagraphSnapshotRewardsWorker(
 
                 if (errorOccurred)
                 {
-                    await Task.Delay(30_000, cancellationToken);
+                    await Task.Delay(60_000, cancellationToken);
                 }
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error while syncing snapshots");
-                await Task.Delay(30_000, cancellationToken);
+                await Task.Delay(60_000, cancellationToken);
             }
         }
     }

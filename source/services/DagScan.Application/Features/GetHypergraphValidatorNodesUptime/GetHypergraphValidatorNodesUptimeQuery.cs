@@ -25,8 +25,8 @@ internal sealed class GetHypergraphValidatorNodesUptimeQueryHandler(ReadOnlyDagC
             return [];
         }
 
-        var startDate = request.FromDate ?? DateOnly.FromDateTime(DateTime.Today.AddDays(-7));
-        var endDate = request.ToDate ?? DateOnly.FromDateTime(DateTime.Today);
+        var startDate = request.FromDate ?? DateOnly.FromDateTime(DateTime.Today.AddMonths(-6));
+        var endDate = request.ToDate ?? DateOnly.FromDateTime(DateTime.Today.AddDays(1));
 
         var maxSnapshotCountsByDay = await dagContext.HypergraphValidatorNodesParticipants
             .Where(x =>
@@ -46,6 +46,11 @@ internal sealed class GetHypergraphValidatorNodesUptimeQueryHandler(ReadOnlyDagC
             .GroupBy(x => x.SnapshotDate)
             .Select(g => new { Date = g.Key, SnapshotCount = g.Sum(x => x.SnapshotCount) })
             .ToListAsync(cancellationToken);
+
+        if (walletSnapshotCountsByDay.Count == 0)
+        {
+            return [];
+        }
 
         var uptimes = from max in maxSnapshotCountsByDay
             join wallet in walletSnapshotCountsByDay on max.Date equals wallet.Date into walletGroup
