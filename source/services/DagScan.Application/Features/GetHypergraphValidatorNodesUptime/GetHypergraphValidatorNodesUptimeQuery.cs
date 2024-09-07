@@ -47,6 +47,11 @@ internal sealed class GetHypergraphValidatorNodesUptimeQueryHandler(ReadOnlyDagC
             .Select(g => new { Date = g.Key, SnapshotCount = g.Sum(x => x.SnapshotCount) })
             .ToListAsync(cancellationToken);
 
+        if (walletSnapshotCountsByDay.Count == 0)
+        {
+            return [];
+        }
+
         var uptimes = from max in maxSnapshotCountsByDay
             join wallet in walletSnapshotCountsByDay on max.Date equals wallet.Date into walletGroup
             from w in walletGroup.DefaultIfEmpty()
