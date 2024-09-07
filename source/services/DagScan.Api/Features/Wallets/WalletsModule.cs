@@ -35,5 +35,6 @@ public class WalletsModule() : CarterModule("/wallets")
                 var response = await sender.Send(request);
                 return Results.Ok(response);
             });
+
     }
 }

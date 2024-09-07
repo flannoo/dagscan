@@ -3,6 +3,7 @@ using DagScan.Application.Domain.ValueObjects;
 using DagScan.Application.Features.GetHypergraphSnapshotMetrics;
 using DagScan.Application.Features.GetHypergraphValidatorNodes;
 using DagScan.Application.Features.GetHypergraphValidatorNodesUptime;
+using DagScan.Application.Features.GetValidatorNode;
 using MediatR;
 
 namespace DagScan.Api.Features.Hypergraph;
@@ -14,6 +15,13 @@ public class HypergraphModule() : CarterModule("/hypergraph")
         app.MapGet("/{network}/validators", async (string network, ISender sender) =>
         {
             var request = new GetHypergraphValidatorNodesQuery(network);
+            var response = await sender.Send(request);
+            return Results.Ok(response);
+        });
+
+        app.MapGet("/{network}/validators/{walletAddress}", async (string network, string walletAddress, ISender sender) =>
+        {
+            var request = new GetValidatorNodeQuery(network, walletAddress);
             var response = await sender.Send(request);
             return Results.Ok(response);
         });
