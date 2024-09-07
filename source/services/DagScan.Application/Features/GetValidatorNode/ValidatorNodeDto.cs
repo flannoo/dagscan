@@ -10,7 +10,7 @@ public sealed class ValidatorNodeDto()
 
 public sealed record MetagraphValidatorNodeDto(
     string WalletAddress,
-    string NodeId,
+    string WalletId,
     string? MetagraphAddress,
     string MetagraphType,
     string IpAddress,
@@ -23,7 +23,7 @@ public sealed record MetagraphValidatorNodeDto(
 
 public sealed record HypergraphValidatorNodeDto(
     string WalletAddress,
-    string NodeId,
+    string WalletId,
     string IpAddress,
     string NodeStatus,
     bool IsInConsensus,
