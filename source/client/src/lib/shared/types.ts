@@ -64,3 +64,15 @@ export type Reward = {
     ordinal: number;
     currencySymbol: string;
 };
+
+export type MetagraphBalance = {
+    metagraphAddress: string;
+    tokenSymbol: string;
+    balance: number;
+};
+
+export type Balance = {
+    walletAddress: string;
+    balance: number;
+    metagraphBalances: MetagraphBalance[];
+};

@@ -8,6 +8,7 @@ export type Transaction = {
     blockHash: string;
     snapshotHash: string;
     snapshotOrdinal: number;
+    metagraphId?: string;
 };
 
 export type Block = string;
@@ -72,6 +73,30 @@ export async function getTransactions(metagraphId?: string, next?: string) {
     }
 
     const res = await fetch(url);
+    if (!res.ok) {
+        throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
+    }
+    const data = await res.json();
+    const transactions = data as Transactions;
+    return transactions;
+}
+
+export async function getTransactionsAddress(walletAddress: string, metagraphId?: string, next?: string) {
+    const apiUrl = process.env.NEXT_PUBLIC_API_BLOCKEXPLORER_URL;
+
+    let url: string;
+    if (!metagraphId) {
+        url = `${apiUrl}/addresses/${walletAddress}/transactions?limit=10${next ? `&next=${next}` : ''}`;
+    } else {
+        url = `${apiUrl}/currency/${metagraphId}/addresses/${walletAddress}/transactions?limit=10${next ? `&next=${next}` : ''}`;
+    }
+
+    const res = await fetch(url);
+
+    if (res.status === 404) {
+        return { data: [], meta: { next: '' } } as Transactions;
+    }
+
     if (!res.ok) {
         throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
     }

@@ -1,4 +1,4 @@
-import { Metagraph, Reward, SnapshotMetric, ValidatorNode, WalletRichlistInfo } from "@/lib/shared/types";
+import { Balance, Metagraph, Reward, SnapshotMetric, ValidatorNode, WalletRichlistInfo } from "@/lib/shared/types";
 
 export async function getMetagraphs(network?: string) {
     const apiUrl = process.env.NEXT_PUBLIC_API_DAGSCAN_URL;
@@ -96,5 +96,22 @@ export async function getRewards(walletAddresses: string, network?: string) {
 
     const data = await res.json();
     const wallets = data as Reward[];
+    return wallets;
+}
+
+export async function getBalance(walletAddress: string, network?: string) {
+    const apiUrl = process.env.NEXT_PUBLIC_API_DAGSCAN_URL;
+    const networkUrl = network || 'mainnet';
+
+    const url = `${apiUrl}/wallets/${networkUrl}/${walletAddress}`;
+
+    const res = await fetch(url);
+
+    if (!res.ok) {
+        throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    const wallets = data as Balance;
     return wallets;
 }
