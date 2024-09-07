@@ -1,5 +1,6 @@
 ﻿using Carter;
 using DagScan.Application.Domain.ValueObjects;
+using DagScan.Application.Features.GetHypergraphSnapshotMetrics;
 using DagScan.Application.Features.GetHypergraphValidatorNodes;
 using DagScan.Application.Features.GetHypergraphValidatorNodesUptime;
 using MediatR;
@@ -24,6 +25,18 @@ public class HypergraphModule() : CarterModule("/hypergraph")
                 var endDateValid = DateOnly.TryParse(endDate, out var toDate);
 
                 var request = new GetHypergraphValidatorNodesUptimeQuery(network, walletAddress,
+                    startDateValid && endDateValid ? fromDate : null, startDateValid && endDateValid ? toDate : null);
+                var response = await sender.Send(request);
+                return Results.Ok(response);
+            });
+
+        app.MapGet("/{network}/snapshots/metrics",
+            async (string network, string? startDate, string? endDate, ISender sender) =>
+            {
+                var startDateValid = DateOnly.TryParse(startDate, out var fromDate);
+                var endDateValid = DateOnly.TryParse(endDate, out var toDate);
+
+                var request = new GetHypergraphSnapshotMetricsQuery(network,
                     startDateValid && endDateValid ? fromDate : null, startDateValid && endDateValid ? toDate : null);
                 var response = await sender.Send(request);
                 return Results.Ok(response);
