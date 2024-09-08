@@ -45,12 +45,13 @@ const aggregateDataBySnapshotDate = (data: SnapshotMetric[]): AggregatedSnapshot
     return Object.values(aggregatedData).sort((a, b) => new Date(a.snapshotDate).getTime() - new Date(b.snapshotDate).getTime());
 };
 
-interface ChartSnapshotCountProps {
+interface ChartMetagraphSnapshotCountProps {
     snapshotMetrics: SnapshotMetric[];
+    metagraphAddress: string
 }
 
-export function ChartSnapshotCount({ snapshotMetrics }: ChartSnapshotCountProps) {
-    const filteredData = snapshotMetrics.filter((metric) => !metric.isTimeTriggered);
+export function ChartMetagraphSnapshotCount({ snapshotMetrics, metagraphAddress }: ChartMetagraphSnapshotCountProps) {
+    const filteredData = snapshotMetrics.filter((metric) => metric.metagraphAddress === metagraphAddress);
     const processedData = filteredData ? aggregateDataBySnapshotDate(filteredData) : [];
 
     const chartConfig = {
@@ -64,7 +65,7 @@ export function ChartSnapshotCount({ snapshotMetrics }: ChartSnapshotCountProps)
         <Card>
             <CardHeader>
                 <CardTitle>Snapshot Count</CardTitle>
-                <CardDescription>Global L0 snapshots</CardDescription>
+                <CardDescription>Metagraph L0 snapshots aggregated by day</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer config={chartConfig}>

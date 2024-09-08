@@ -19,7 +19,7 @@ import { SnapshotMetric } from "@/lib/shared/types";
 
 type AggregatedSnapshot = {
     snapshotDate: string;
-    totalSnapshotCount: number;
+    totalSnapshotFeeAmount: number;
 };
 
 type AggregatedData = {
@@ -27,16 +27,18 @@ type AggregatedData = {
 };
 
 const aggregateDataBySnapshotDate = (data: SnapshotMetric[]): AggregatedSnapshot[] => {
-    const aggregatedData: AggregatedData = data.reduce((acc: AggregatedData, curr: SnapshotMetric) => {
+    const filteredData = data.filter((metric) => new Date(metric.snapshotDate) > new Date('2024-08-07')); //.filter((metric) => metric.isTimeTriggered);
+
+    const aggregatedData: AggregatedData = filteredData.reduce((acc: AggregatedData, curr: SnapshotMetric) => {
         const snapshotDate = curr.snapshotDate;
         const existing = acc[snapshotDate];
 
         if (existing) {
-            existing.totalSnapshotCount += curr.totalSnapshotCount;
+            existing.totalSnapshotFeeAmount += curr.totalSnapshotFeeAmount / 100000000;
         } else {
             acc[snapshotDate] = {
                 snapshotDate: snapshotDate,
-                totalSnapshotCount: curr.totalSnapshotCount,
+                totalSnapshotFeeAmount: curr.totalSnapshotFeeAmount / 100000000,
             };
         }
         return acc;
@@ -45,17 +47,20 @@ const aggregateDataBySnapshotDate = (data: SnapshotMetric[]): AggregatedSnapshot
     return Object.values(aggregatedData).sort((a, b) => new Date(a.snapshotDate).getTime() - new Date(b.snapshotDate).getTime());
 };
 
-interface ChartSnapshotCountProps {
+interface ChartMetagraphSnapshotFeesProps {
     snapshotMetrics: SnapshotMetric[];
+    metagraphAddress: string
 }
 
-export function ChartSnapshotCount({ snapshotMetrics }: ChartSnapshotCountProps) {
-    const filteredData = snapshotMetrics.filter((metric) => !metric.isTimeTriggered);
+export function ChartMetagraphSnapshotFees({ snapshotMetrics, metagraphAddress }: ChartMetagraphSnapshotFeesProps) {
+    const filteredData = snapshotMetrics.filter((metric) => metric.metagraphAddress === metagraphAddress);
+    
     const processedData = filteredData ? aggregateDataBySnapshotDate(filteredData) : [];
+    const totalFees = processedData.reduce((acc, curr) => acc + curr.totalSnapshotFeeAmount, 0);
 
     const chartConfig = {
-        Count: {
-            label: "Count",
+        FeeAmount: {
+            label: "Fee Amount",
             color: "hsl(var(--chart-1))",
         },
     } satisfies ChartConfig
@@ -63,8 +68,8 @@ export function ChartSnapshotCount({ snapshotMetrics }: ChartSnapshotCountProps)
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Snapshot Count</CardTitle>
-                <CardDescription>Global L0 snapshots</CardDescription>
+                <CardTitle>Snapshot Fees</CardTitle>
+                <CardDescription>Total snapshot fees consumed: {totalFees.toFixed(0)} $DAG</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer config={chartConfig}>
@@ -74,7 +79,7 @@ export function ChartSnapshotCount({ snapshotMetrics }: ChartSnapshotCountProps)
                         margin={{
                             left: 12,
                             right: 12,
-                            bottom: 16,
+                            bottom: 20,
                         }}
                     >
                         <CartesianGrid vertical={false} />
@@ -90,7 +95,7 @@ export function ChartSnapshotCount({ snapshotMetrics }: ChartSnapshotCountProps)
                             angle={-45}
                             textAnchor="end"
                         />
-                        <YAxis dataKey="totalSnapshotCount" />
+                        <YAxis dataKey="totalSnapshotFeeAmount" />
                         <ChartTooltip
                             cursor={false}
                             content={<ChartTooltipContent indicator="line" />}
@@ -103,7 +108,7 @@ export function ChartSnapshotCount({ snapshotMetrics }: ChartSnapshotCountProps)
                             }
                         />
                         <Line
-                            dataKey="totalSnapshotCount"
+                            dataKey="totalSnapshotFeeAmount"
                             type="linear"
                             dot={false}
                         />
