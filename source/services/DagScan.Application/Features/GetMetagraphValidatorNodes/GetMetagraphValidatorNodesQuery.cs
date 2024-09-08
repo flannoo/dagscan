@@ -27,7 +27,7 @@ internal sealed class GetMetagraphValidatorNodesQueryHandler(ReadOnlyDagContext 
             .Where(x => x.HypergraphId == hypergraph.Id)
             .ToListAsync(cancellationToken);
 
-        var metagraphAddress = request.MetagraphAddress != null ? new WalletAddress(request.MetagraphAddress) : null;
+        var metagraphAddress = request.MetagraphAddress != null ? new MetagraphAddress(request.MetagraphAddress) : null;
         var metagraph = metagraphs.FirstOrDefault(
             x => x.MetagraphAddress == metagraphAddress);
 
@@ -42,6 +42,7 @@ internal sealed class GetMetagraphValidatorNodesQueryHandler(ReadOnlyDagContext 
         var validatorNodeDtos = validatorNodes.Select(node => new MetagraphValidatorNodesDto(
             WalletAddress: node.WalletAddress.Value,
             WalletId: node.WalletId.Value,
+            MetagraphType: node.MetagraphType.ToString(),
             IpAddress: node.IpAddress,
             NodeStatus: node.NodeStatus,
             ServiceProvider: node.ServiceProvider,
