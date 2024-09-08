@@ -24,6 +24,24 @@ export const formatDate = (value: string | number | undefined): string => {
   return date.toLocaleString();
 };
 
+export const formatIntegerAmount = (amount: number | undefined) => {
+  if (amount === undefined) {
+    return "";
+  }
+
+  const parsedAmount = parseFloat(String(amount));
+  if (isNaN(parsedAmount)) {
+    return "";
+  }
+
+  const formattedAmount = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(parsedAmount);
+
+  return `${formattedAmount}`;
+};
+
 export const formatAmount = (amount: number | undefined) => {
   if (amount === undefined) {
     return "";

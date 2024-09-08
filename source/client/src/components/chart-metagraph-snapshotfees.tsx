@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/chart";
 import { LineChart, CartesianGrid, XAxis, YAxis, Line } from "recharts";
 import { SnapshotMetric } from "@/lib/shared/types";
+import { formatIntegerAmount } from "@/lib/utils";
 
 type AggregatedSnapshot = {
     snapshotDate: string;
@@ -69,7 +70,7 @@ export function ChartMetagraphSnapshotFees({ snapshotMetrics, metagraphAddress }
         <Card>
             <CardHeader>
                 <CardTitle>Snapshot Fees</CardTitle>
-                <CardDescription>Total snapshot fees consumed: {totalFees.toFixed(0)} $DAG</CardDescription>
+                <CardDescription>Total snapshot fees consumed: {formatIntegerAmount(totalFees)} $DAG</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer config={chartConfig}>
