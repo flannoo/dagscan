@@ -50,8 +50,7 @@ interface ChartSnapshotCountProps {
 }
 
 export function ChartSnapshotCount({ snapshotMetrics }: ChartSnapshotCountProps) {
-    const filteredData = snapshotMetrics.filter((metric) => !metric.isTimeTriggered);
-    const processedData = filteredData ? aggregateDataBySnapshotDate(filteredData) : [];
+    const processedData = snapshotMetrics ? aggregateDataBySnapshotDate(snapshotMetrics) : [];
 
     const chartConfig = {
         Count: {

@@ -3,7 +3,7 @@ import { Table, TableBody, TableCell, TableRow, TableHead, TableHeader } from "@
 import { getValidatorNodes } from "@/lib/services/api-dagscan-request";
 import { useQuery } from "@tanstack/react-query";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, CheckCircle, XCircle } from "lucide-react";
 import React from "react";
 
 interface NodeDetailProps {
@@ -41,41 +41,49 @@ export default function NodeDetail({ walletAddress }: NodeDetailProps) {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>IP Address</TableHead>
-                                    <TableHead>Metagraph Type</TableHead>
+                                    <TableHead>Node Type</TableHead>
                                     <TableHead>Metagraph Address</TableHead>
                                     <TableHead>Node Status</TableHead>
-                                    <TableHead>Is In Consensus</TableHead>
+                                    <TableHead>In Consensus</TableHead>
                                     <TableHead>Country</TableHead>
                                     <TableHead>City</TableHead>
                                     <TableHead>Service Provider</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {/* Render Hypergraph Validator Node */}
-                                <TableRow>
-                                    <TableCell>{data?.hypergraphValidatorNodeDto.ipAddress || ''}</TableCell>
-                                    <TableCell>{'Hypergraph'}</TableCell>
-                                    <TableCell></TableCell>
-                                    <TableCell>{data?.hypergraphValidatorNodeDto.nodeStatus || ''}</TableCell>
-                                    <TableCell>{data?.hypergraphValidatorNodeDto.isInConsensus ? 'Yes' : 'No'}</TableCell>
-                                    <TableCell>{data?.hypergraphValidatorNodeDto.country || ''}</TableCell>
-                                    <TableCell>{data?.hypergraphValidatorNodeDto.city || ''}</TableCell>
-                                    <TableCell>{data?.hypergraphValidatorNodeDto.serviceProvider || ''}</TableCell>
-                                </TableRow>
-
-                                {/* Render Metagraph Nodes */}
-                                {data?.metagraphNodes.map((node, index) => (
-                                    <TableRow key={index}>
-                                        <TableCell>{node.ipAddress || ''}</TableCell>
-                                        <TableCell>{node.metagraphType || ''}</TableCell>
-                                        <TableCell>{node.metagraphAddress || ''}</TableCell>
-                                        <TableCell>{node.nodeStatus || ''}</TableCell>
+                                {data?.hypergraphValidatorNodeDto && (
+                                    <TableRow>
+                                        <TableCell>{data?.hypergraphValidatorNodeDto.ipAddress || ''}</TableCell>
+                                        <TableCell>{'Hypergraph'}</TableCell>
                                         <TableCell></TableCell>
-                                        <TableCell>{node.country || ''}</TableCell>
-                                        <TableCell>{node.city || ''}</TableCell>
-                                        <TableCell>{node.serviceProvider || ''}</TableCell>
+                                        <TableCell>{data?.hypergraphValidatorNodeDto.nodeStatus || ''}</TableCell>
+                                        <TableCell>{
+                                            data?.hypergraphValidatorNodeDto.isInConsensus ? (
+                                                <CheckCircle className="text-green-500" size={20} />
+                                            ) : (
+                                                <XCircle className="text-red-500" size={20} />
+                                            )
+                                        }
+                                        </TableCell>
+                                        <TableCell>{data?.hypergraphValidatorNodeDto.country || ''}</TableCell>
+                                        <TableCell>{data?.hypergraphValidatorNodeDto.city || ''}</TableCell>
+                                        <TableCell>{data?.hypergraphValidatorNodeDto.serviceProvider || ''}</TableCell>
                                     </TableRow>
-                                ))}
+                                )}
+                                {data?.metagraphNodes && data.metagraphNodes.length > 0 && (
+                                    data?.metagraphNodes.map((node, index) => (
+                                        <TableRow key={index}>
+                                            <TableCell>{node.ipAddress || ''}</TableCell>
+                                            <TableCell>{node.metagraphType || ''}</TableCell>
+                                            <TableCell>{node.metagraphAddress || ''}</TableCell>
+                                            <TableCell>{node.nodeStatus || ''}</TableCell>
+                                            <TableCell>N/A</TableCell>
+                                            <TableCell>{node.country || ''}</TableCell>
+                                            <TableCell>{node.city || ''}</TableCell>
+                                            <TableCell>{node.serviceProvider || ''}</TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
                             </TableBody>
                         </Table>
                     </CardContent>

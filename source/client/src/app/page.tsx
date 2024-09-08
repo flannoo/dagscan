@@ -7,6 +7,7 @@ import { ChartSnapshotFees } from "@/components/chart-snapshotfees";
 import GridWallets from "@/components/grid-wallets";
 import { LatestSnapshots } from "@/components/latest-snapshots";
 import { LatestTransactions } from "@/components/latest-transactions";
+import NodeExplorer from "@/components/node-explorer";
 import { SnapshotList } from "@/components/snapshot-list";
 import { TransactionList } from "@/components/transaction-list";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
@@ -33,6 +34,7 @@ export default function HomePage() {
           <TabsTrigger value="wallets">Wallets</TabsTrigger>
           <TabsTrigger value="snapshots">Snapshots</TabsTrigger>
           <TabsTrigger value="transactions">Transactions</TabsTrigger>
+          <TabsTrigger value="nodes">Node Explorer</TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
           <div className="flex flex-col lg:flex-row lg:space-x-4 space-y-4 lg:space-y-0 mb-4">
@@ -109,6 +111,11 @@ export default function HomePage() {
         <TabsContent value="transactions">
           <div className="mb-4">
             <TransactionList />
+          </div>
+        </TabsContent>
+        <TabsContent value="nodes">
+          <div className="mb-4">
+            <NodeExplorer />
           </div>
         </TabsContent>
       </Tabs>

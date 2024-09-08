@@ -1,4 +1,4 @@
-import { Balance, Metagraph, Reward, SnapshotMetric, ValidatorNode, ValidatorNodeUptime, WalletRichlistInfo, WalletValidatorNodes } from "@/lib/shared/types";
+import { Balance, Metagraph, MetagraphNode, Reward, SnapshotMetric, ValidatorNode, ValidatorNodeUptime, WalletRichlistInfo, WalletValidatorNodes } from "@/lib/shared/types";
 
 export async function getMetagraphs(network?: string) {
     const apiUrl = process.env.NEXT_PUBLIC_API_DAGSCAN_URL;
@@ -33,8 +33,8 @@ export async function getMetagraphValidatorNodes(network?: string, metagraphAddr
     const networkUrl = network || 'mainnet';
 
     const url = metagraphAddress
-        ? `${apiUrl}/hypergraph/${networkUrl}/validators?metagraphAddress=${metagraphAddress}`
-        : `${apiUrl}/hypergraph/${networkUrl}/validators`;
+        ? `${apiUrl}/metagraphs/${networkUrl}/validators?metagraphAddress=${metagraphAddress}`
+        : `${apiUrl}/metagraphs/${networkUrl}/validators`;
 
     const res = await fetch(url);
 
@@ -42,7 +42,7 @@ export async function getMetagraphValidatorNodes(network?: string, metagraphAddr
         throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
     }
     const data = await res.json();
-    const validatorNodes = data as ValidatorNode[];
+    const validatorNodes = data as MetagraphNode[];
     return validatorNodes;
 }
 

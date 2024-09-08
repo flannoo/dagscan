@@ -53,8 +53,7 @@ interface ChartSnapshotFeesProps {
 }
 
 export function ChartSnapshotFees({ snapshotMetrics }: ChartSnapshotFeesProps) {
-    const filteredData = snapshotMetrics.filter((metric) => !metric.isTimeTriggered);
-    const processedData = filteredData ? aggregateDataBySnapshotDate(filteredData) : [];
+    const processedData = snapshotMetrics ? aggregateDataBySnapshotDate(snapshotMetrics) : [];
     const totalFees = processedData.reduce((acc, curr) => acc + curr.totalSnapshotFeeAmount, 0);
 
     const chartConfig = {

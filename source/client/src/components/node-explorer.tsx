@@ -10,7 +10,7 @@ import { getHypergraphValidatorNodes } from "@/lib/services/api-dagscan-request"
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 import NodesDetails from "@/components/nodes-details";
 
-export default function NodesPage() {
+export default function NodeExplorer() {
     const { data, isLoading, isError } = useQuery({
         queryKey: ['hypergraphnodes'],
         queryFn: async () => getHypergraphValidatorNodes(),
@@ -28,8 +28,6 @@ export default function NodesPage() {
 
     return (
         <div className="container mx-auto px-4 lg:px-8 mb-4 mt-4">
-            <h1 className="text-2xl font-bold mb-4">Node Explorer</h1>
-
             <Tabs defaultValue="overview" className="w-full">
                 <TabsList className="w-full justify-start">
                     <TabsTrigger value="overview">Overview</TabsTrigger>

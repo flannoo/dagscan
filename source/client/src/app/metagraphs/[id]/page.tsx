@@ -15,6 +15,7 @@ import { ChartMetagraphSnapshotCount } from "@/components/chart-metagraph-snapsh
 import { ChartMetagraphSnapshotFees } from "@/components/chart-metagraph-snapshotfees";
 import { ChartMetagraphTransactionCount } from "@/components/chart-metagraph-transaction-count";
 import { ChartMetagraphTransactionVolume } from "@/components/chart-metagraph-transaction-volume";
+import NodeExplorerMetagraph from "@/components/node-explorer-metagraph";
 
 export default function MetagraphPage({ params }: { params: { id: string } }) {
     const id = Array.isArray(params.id) ? params.id[0] : params.id;
@@ -43,6 +44,7 @@ export default function MetagraphPage({ params }: { params: { id: string } }) {
                     <TabsTrigger value="wallets">Wallets</TabsTrigger>
                     <TabsTrigger value="snapshots">Snapshots</TabsTrigger>
                     <TabsTrigger value="transactions">Transactions</TabsTrigger>
+                    <TabsTrigger value="nodes">Node Explorer</TabsTrigger>
                 </TabsList>
                 <TabsContent value="overview">
                     <div className="flex flex-col lg:flex-row lg:space-x-4 space-y-4 lg:space-y-0 mb-4">
@@ -119,6 +121,11 @@ export default function MetagraphPage({ params }: { params: { id: string } }) {
                 <TabsContent value="transactions">
                     <div className="mb-4">
                         <TransactionList metagraphId={id} metagraphSymbol={metagraphSymbol} />
+                    </div>
+                </TabsContent>
+                <TabsContent value="nodes">
+                    <div className="mb-4">
+                        <NodeExplorerMetagraph metagraphAddress={id} />
                     </div>
                 </TabsContent>
             </Tabs>

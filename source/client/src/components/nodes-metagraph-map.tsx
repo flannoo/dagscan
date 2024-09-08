@@ -5,18 +5,18 @@ import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility"; // This ensures icons load correctly
-import { ValidatorNode } from "@/lib/shared/types";
+import { MetagraphNode } from "@/lib/shared/types";
 import L from "leaflet";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 // Props interface definition
 interface NodesMapProps {
-  nodesData: ValidatorNode[];
+  nodesData: MetagraphNode[];
 }
 
 // Group the data by latitude and longitude
-const groupDataByCoordinates = (nodesData: ValidatorNode[]) => {
-  const grouped: { [key: string]: ValidatorNode[] } = {};
+const groupDataByCoordinates = (nodesData: MetagraphNode[]) => {
+  const grouped: { [key: string]: MetagraphNode[] } = {};
 
   nodesData.forEach(vps => {
     const key = `${vps.latitude},${vps.longitude}`;
@@ -29,8 +29,8 @@ const groupDataByCoordinates = (nodesData: ValidatorNode[]) => {
   return grouped;
 };
 
-const groupDataByProperty = (nodesData: ValidatorNode[], property: keyof ValidatorNode) => {
-  const grouped: { [key: string]: ValidatorNode[] } = {};
+const groupDataByProperty = (nodesData: MetagraphNode[], property: keyof MetagraphNode) => {
+  const grouped: { [key: string]: MetagraphNode[] } = {};
 
   nodesData.forEach(vps => {
     const key = String(vps[property]) || "Unknown"; // Group by property (e.g., country or isp)
@@ -39,7 +39,6 @@ const groupDataByProperty = (nodesData: ValidatorNode[], property: keyof Validat
     }
     grouped[key].push(vps);
   });
-
 
   return grouped;
 };
@@ -61,12 +60,12 @@ export default function NodesMap({ nodesData }: NodesMapProps) {
     .sort((a, b) => nodesByIsp[b].length - nodesByIsp[a].length);
 
   // State for currently selected filter (either country or ISP)
-  const [selectedFilter, setSelectedFilter] = useState<{ type: keyof ValidatorNode | null, value: string | null }>({
+  const [selectedFilter, setSelectedFilter] = useState<{ type: keyof MetagraphNode | null, value: string | null }>({
     type: null,
     value: null,
   });
 
-  const handleFilter = (type: keyof ValidatorNode, value: string) => {
+  const handleFilter = (type: keyof MetagraphNode, value: string) => {
     if (selectedFilter.type === type && selectedFilter.value === value) {
       // If clicking the same row, deselect it (reset the filter)
       setSelectedFilter({ type: null, value: null });
