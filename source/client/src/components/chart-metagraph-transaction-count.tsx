@@ -19,7 +19,7 @@ import { SnapshotMetric } from "@/lib/shared/types";
 
 type AggregatedSnapshot = {
     snapshotDate: string;
-    totalSnapshotCount: number;
+    totalTransactionCount: number;
 };
 
 type AggregatedData = {
@@ -32,11 +32,11 @@ const aggregateDataBySnapshotDate = (data: SnapshotMetric[]): AggregatedSnapshot
         const existing = acc[snapshotDate];
 
         if (existing) {
-            existing.totalSnapshotCount += curr.totalSnapshotCount;
+            existing.totalTransactionCount += curr.totalTransactionCount;
         } else {
             acc[snapshotDate] = {
                 snapshotDate: snapshotDate,
-                totalSnapshotCount: curr.totalSnapshotCount,
+                totalTransactionCount: curr.totalTransactionCount,
             };
         }
         return acc;
@@ -45,12 +45,15 @@ const aggregateDataBySnapshotDate = (data: SnapshotMetric[]): AggregatedSnapshot
     return Object.values(aggregatedData).sort((a, b) => new Date(a.snapshotDate).getTime() - new Date(b.snapshotDate).getTime());
 };
 
-interface ChartSnapshotCountProps {
+interface ChartMetagraphTransactionsProps {
     snapshotMetrics: SnapshotMetric[];
+    metagraphAddress: string
 }
 
-export function ChartSnapshotCount({ snapshotMetrics }: ChartSnapshotCountProps) {
-    const processedData = snapshotMetrics ? aggregateDataBySnapshotDate(snapshotMetrics) : [];
+export function ChartMetagraphTransactionCount({ snapshotMetrics, metagraphAddress }: ChartMetagraphTransactionsProps) {
+    const filteredData = snapshotMetrics.filter((metric) => new Date(metric.snapshotDate) > new Date('2024-07-08') && metric.metagraphAddress === metagraphAddress);
+
+    const processedData = filteredData ? aggregateDataBySnapshotDate(filteredData) : [];
 
     const chartConfig = {
         Count: {
@@ -62,8 +65,8 @@ export function ChartSnapshotCount({ snapshotMetrics }: ChartSnapshotCountProps)
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Snapshot Count</CardTitle>
-                <CardDescription>Global L0 snapshots</CardDescription>
+                <CardTitle>Transaction Count</CardTitle>
+                <CardDescription>Total Transactions Count</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer config={chartConfig}>
@@ -89,7 +92,7 @@ export function ChartSnapshotCount({ snapshotMetrics }: ChartSnapshotCountProps)
                             angle={-45}
                             textAnchor="end"
                         />
-                        <YAxis dataKey="totalSnapshotCount" />
+                        <YAxis dataKey="totalTransactionCount" />
                         <ChartTooltip
                             cursor={false}
                             content={<ChartTooltipContent indicator="line" />}
@@ -102,7 +105,7 @@ export function ChartSnapshotCount({ snapshotMetrics }: ChartSnapshotCountProps)
                             }
                         />
                         <Line
-                            dataKey="totalSnapshotCount"
+                            dataKey="totalTransactionCount"
                             type="linear"
                             dot={false}
                         />

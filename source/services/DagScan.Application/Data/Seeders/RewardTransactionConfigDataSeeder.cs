@@ -57,7 +57,7 @@ public sealed class RewardTransactionConfigDataSeeder(
                 new WalletAddress("DAG5hKjytwENhcx2vmC5qWyWSgnqWmYq7cUvGLDG"),
                 null,
                 null,
-                true
+                false
             ),
             RewardTransactionConfig.Create(
                 "DTM",
@@ -66,7 +66,7 @@ public sealed class RewardTransactionConfigDataSeeder(
                 new WalletAddress("DAG8BSw4tGn269vbF9wor4FGd4yt9XGdJuiMb6uS"),
                 null,
                 null,
-                true
+                false
             ),
             RewardTransactionConfig.Create(
                 "Softnode",
@@ -94,7 +94,7 @@ public sealed class RewardTransactionConfigDataSeeder(
                 new WalletAddress("DAG0U7R9jXMSiNMU5mgqpvCVuaBwfRBzY77nJZM1"),
                 null,
                 null,
-                true
+                false
             ),
             RewardTransactionConfig.Create(
                 "DOR Validator Tax",

@@ -19,7 +19,7 @@ import { SnapshotMetric } from "@/lib/shared/types";
 
 type AggregatedSnapshot = {
     snapshotDate: string;
-    totalSnapshotCount: number;
+    totalTransactionAmount: number;
 };
 
 type AggregatedData = {
@@ -32,11 +32,11 @@ const aggregateDataBySnapshotDate = (data: SnapshotMetric[]): AggregatedSnapshot
         const existing = acc[snapshotDate];
 
         if (existing) {
-            existing.totalSnapshotCount += curr.totalSnapshotCount;
+            existing.totalTransactionAmount += curr.totalTransactionAmount / 100000000;
         } else {
             acc[snapshotDate] = {
                 snapshotDate: snapshotDate,
-                totalSnapshotCount: curr.totalSnapshotCount,
+                totalTransactionAmount: curr.totalTransactionAmount / 100000000,
             };
         }
         return acc;
@@ -45,12 +45,14 @@ const aggregateDataBySnapshotDate = (data: SnapshotMetric[]): AggregatedSnapshot
     return Object.values(aggregatedData).sort((a, b) => new Date(a.snapshotDate).getTime() - new Date(b.snapshotDate).getTime());
 };
 
-interface ChartSnapshotCountProps {
+interface ChartDagTransactionVolumeProps {
     snapshotMetrics: SnapshotMetric[];
 }
 
-export function ChartSnapshotCount({ snapshotMetrics }: ChartSnapshotCountProps) {
-    const processedData = snapshotMetrics ? aggregateDataBySnapshotDate(snapshotMetrics) : [];
+export function ChartDagTransactionVolume({ snapshotMetrics }: ChartDagTransactionVolumeProps) {
+    const filteredData = snapshotMetrics.filter((metric) => new Date(metric.snapshotDate) > new Date('2024-07-08') && !metric.metagraphAddress);
+
+    const processedData = filteredData ? aggregateDataBySnapshotDate(filteredData) : [];
 
     const chartConfig = {
         Count: {
@@ -62,8 +64,8 @@ export function ChartSnapshotCount({ snapshotMetrics }: ChartSnapshotCountProps)
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Snapshot Count</CardTitle>
-                <CardDescription>Global L0 snapshots</CardDescription>
+                <CardTitle>DAG Transaction Volume</CardTitle>
+                <CardDescription>Total DAG Volume Transacted</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer config={chartConfig}>
@@ -89,7 +91,7 @@ export function ChartSnapshotCount({ snapshotMetrics }: ChartSnapshotCountProps)
                             angle={-45}
                             textAnchor="end"
                         />
-                        <YAxis dataKey="totalSnapshotCount" />
+                        <YAxis dataKey="totalTransactionAmount" />
                         <ChartTooltip
                             cursor={false}
                             content={<ChartTooltipContent indicator="line" />}
@@ -102,7 +104,7 @@ export function ChartSnapshotCount({ snapshotMetrics }: ChartSnapshotCountProps)
                             }
                         />
                         <Line
-                            dataKey="totalSnapshotCount"
+                            dataKey="totalTransactionAmount"
                             type="linear"
                             dot={false}
                         />

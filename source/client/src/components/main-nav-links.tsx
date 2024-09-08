@@ -48,15 +48,6 @@ export function MainNavLinks({ setIsOpen }: MainNavLinksProps) {
                     Reward Explorer
                 </span>
             </Link>
-            <Link href="/nodes" passHref>
-                <span
-                    onClick={handleClick}
-                    className={`w-max rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${pathname.startsWith("/nodes") ? "bg-accent text-accent-foreground" : ""
-                        }`}
-                >
-                    Node Explorer
-                </span>
-            </Link>
         </>
     )
 }
