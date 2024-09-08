@@ -3,6 +3,7 @@
 public sealed record MetagraphValidatorNodesDto(
     string WalletAddress,
     string WalletId,
+    string MetagraphType,
     string IpAddress,
     string NodeStatus,
     string? ServiceProvider,
