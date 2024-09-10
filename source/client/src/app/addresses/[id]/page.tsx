@@ -57,6 +57,14 @@ export default function AddressPage({ params }: { params: { id: string } }) {
                                 </TableRow>
                                 <TableRow>
                                     <TableCell>
+                                        <span>Tag</span>
+                                    </TableCell>
+                                    <TableCell>
+                                        <span>{walletbalance?.tag}</span>
+                                    </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>
                                         Balance
                                     </TableCell>
                                     <TableCell>

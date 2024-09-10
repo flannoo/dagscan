@@ -22,6 +22,8 @@ internal sealed class GetWalletsQueryHandler(ReadOnlyDagContext dagContext)
             return [];
         }
 
+        var walletTags = await dagContext.WalletTags.ToListAsync(cancellationToken);
+
         var walletBalances = new List<WalletDto>();
         List<WalletInfo> wallets;
 
@@ -46,10 +48,11 @@ internal sealed class GetWalletsQueryHandler(ReadOnlyDagContext dagContext)
         foreach (var wallet in wallets)
         {
             var supplyPercentage = totalBalance != 0 ? (double)wallet.Balance / totalBalance * 100 : 0;
+            var walletTag = walletTags.FirstOrDefault(x => x.WalletAddress == wallet.WalletAddress);
             walletBalances.Add(new WalletDto(
                 rank,
                 wallet.WalletAddress.Value,
-                null,
+                walletTag?.Tag,
                 wallet.Balance,
                 0,
                 supplyPercentage));
