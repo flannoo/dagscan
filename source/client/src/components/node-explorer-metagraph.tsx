@@ -49,7 +49,7 @@ export default function NodeExplorerMetagraph({ metagraphAddress }: NodeExplorer
             <div className="my-4">
                 <Select onValueChange={(value) => setSelectedType(value)} defaultValue="MetagraphL0">
                     <SelectTrigger className="w-[200px]">
-                        <SelectValue>MetagraphL0</SelectValue>
+                        <SelectValue>{selectedType || "MetagraphL0"}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                         {distinctTypes.map((type) => (

@@ -24,12 +24,6 @@ export type Metagraph = {
     l1CurrencyApiUrl: string;
 }
 
-export type OnChainSnapshot = {
-    ordinal: number;
-    dataApplication: DataApplication;
-    messages: any[];
-};
-
 export type DataApplication = {
     onChainState: string[];
 }
@@ -43,9 +37,13 @@ export type WalletRichlistInfo = {
     supplyPercentage: number;
 }
 
+export type MetagraphAddress = {
+    value: string;
+}
+
 export type SnapshotMetric = {
     snapshotDate: string;
-    metagraphAddress: string;
+    metagraphAddress: MetagraphAddress;
     isTimeTriggered: boolean;
     totalSnapshotCount: number;
     totalSnapshotFeeAmount: number;

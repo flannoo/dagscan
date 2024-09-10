@@ -116,11 +116,11 @@ export const formatDdagAmount = (amount: number | undefined) => {
   return `${formattedAmount} dDAG`;
 };
 
-export const getRawStringFromByteArray = (byteArray: string[]) => {
+export const getRawStringFromByteArray = (byteArray: number[]) => {
   return "[" + byteArray.join(',') + "]";
 };
 
-export const getConvertedStringFromByteArray = (byteArray: string[]) => {
-  const jsonString = String.fromCharCode(...byteArray.map(byte => parseInt(byte, 10)));
+export const getConvertedStringFromByteArray = (byteArray: number[]) => {
+  const jsonString = String.fromCharCode(...byteArray.map(byte => byte));
   return jsonString;
 };

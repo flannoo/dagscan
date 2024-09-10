@@ -20,6 +20,7 @@ public sealed class DagContext(DbContextOptions<DagContext> options) : DbContext
 
     public DbSet<Hypergraph> Hypergraphs => Set<Hypergraph>();
     public DbSet<HypergraphBalance> HypergraphBalances => Set<HypergraphBalance>();
+    public DbSet<HypergraphSnapshotMetric> HypergraphSnapshotMetrics => Set<HypergraphSnapshotMetric>();
     public DbSet<HypergraphValidatorNode> HypergraphValidatorNodes => Set<HypergraphValidatorNode>();
     public DbSet<HypergraphSnapshot> HypergraphSnapshots => Set<HypergraphSnapshot>();
     public DbSet<HypergraphSnapshotReward> HypergraphSnapshotRewards => Set<HypergraphSnapshotReward>();
@@ -55,6 +56,7 @@ public sealed class ReadOnlyDagContext : DbContext
 
     public DbSet<Hypergraph> Hypergraphs => Set<Hypergraph>();
     public DbSet<HypergraphBalance> HypergraphBalances => Set<HypergraphBalance>();
+    public DbSet<HypergraphSnapshotMetric> HypergraphSnapshotMetrics => Set<HypergraphSnapshotMetric>();
     public DbSet<HypergraphValidatorNode> HypergraphValidatorNodes => Set<HypergraphValidatorNode>();
     public DbSet<HypergraphSnapshot> HypergraphSnapshots => Set<HypergraphSnapshot>();
     public DbSet<HypergraphSnapshotReward> HypergraphSnapshotReward => Set<HypergraphSnapshotReward>();

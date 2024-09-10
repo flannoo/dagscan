@@ -149,3 +149,25 @@ export async function getValidatorNodeUptime(walletAddress: string, network?: st
     const validators = data as ValidatorNodeUptime[];
     return validators;
 }
+
+
+export async function getOnChainDataSnapshot(snapshotId: string, metagraphAddress?: string, network?: string) {
+    if (!metagraphAddress) {
+        return null;
+    }
+
+    const apiUrl = process.env.NEXT_PUBLIC_API_DAGSCAN_URL;
+    const networkUrl = network || 'mainnet';
+
+    const url = `${apiUrl}/metagraphs/${networkUrl}/${metagraphAddress}/snapshot/${snapshotId}`;
+
+    const res = await fetch(url);
+
+    if (!res.ok) {
+        throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    const onchainSnapshot = data as number[];
+    return onchainSnapshot;
+}

@@ -51,7 +51,7 @@ interface ChartMetagraphSnapshotCountProps {
 }
 
 export function ChartMetagraphSnapshotCount({ snapshotMetrics, metagraphAddress }: ChartMetagraphSnapshotCountProps) {
-    const filteredData = snapshotMetrics.filter((metric) => metric.metagraphAddress === metagraphAddress);
+    const filteredData = snapshotMetrics.filter((metric) => metric.metagraphAddress?.value === metagraphAddress);
     const processedData = filteredData ? aggregateDataBySnapshotDate(filteredData) : [];
 
     const chartConfig = {
@@ -64,8 +64,8 @@ export function ChartMetagraphSnapshotCount({ snapshotMetrics, metagraphAddress 
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Snapshot Count</CardTitle>
-                <CardDescription>Metagraph L0 snapshots aggregated by day</CardDescription>
+                <CardTitle>Global L0 Snapshot Count</CardTitle>
+                <CardDescription>Total event-triggered global L0 snapshots</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer config={chartConfig}>

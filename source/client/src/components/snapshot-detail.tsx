@@ -8,18 +8,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 import { TableRow, TableBody, TableCell, Table } from "@/components/ui/table";
 import { formatDate, getConvertedStringFromByteArray, getRawStringFromByteArray } from "@/lib/utils";
-import { getOnChainDataSnapshot } from "@/lib/services/api-metagraph-requests";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ReactJsonPretty from 'react-json-pretty';
+import { getOnChainDataSnapshot } from "@/lib/services/api-dagscan-request";
 
 interface SnapshotDetailProps {
     snapshotId: string;
     metagraphId?: string;
     metagraphSymbol?: string;
-    onchainApiUrl?: string;
 }
 
-export default function SnapshotDetail({ snapshotId, metagraphId, metagraphSymbol, onchainApiUrl }: SnapshotDetailProps) {
+export default function SnapshotDetail({ snapshotId, metagraphId, metagraphSymbol }: SnapshotDetailProps) {
     const { data, isLoading, isError } = useQuery({
         queryKey: ['snapshotdetail-' + snapshotId + '-' + metagraphId],
         queryFn: async () => getSnapshotDetail(snapshotId, metagraphId),
@@ -27,7 +26,7 @@ export default function SnapshotDetail({ snapshotId, metagraphId, metagraphSymbo
 
     const { data: onchainData } = useQuery({
         queryKey: ['snapshotdetaildata-' + snapshotId + '-' + metagraphId],
-        queryFn: async () => getOnChainDataSnapshot(snapshotId, onchainApiUrl),
+        queryFn: async () => getOnChainDataSnapshot(snapshotId, metagraphId),
     });
 
     return (
@@ -114,7 +113,7 @@ export default function SnapshotDetail({ snapshotId, metagraphId, metagraphSymbo
                                     <TableBody>
                                         <TableRow>
                                             <TableCell>
-                                                <ReactJsonPretty data={JSON.parse(getConvertedStringFromByteArray(onchainData.dataApplication.onChainState))} />
+                                                <ReactJsonPretty data={JSON.parse(getConvertedStringFromByteArray(onchainData))} />
                                             </TableCell>
                                         </TableRow>
                                     </TableBody>
@@ -125,7 +124,7 @@ export default function SnapshotDetail({ snapshotId, metagraphId, metagraphSymbo
                                     <TableBody>
                                         <TableRow>
                                             <TableCell>
-                                                {getRawStringFromByteArray(onchainData.dataApplication.onChainState)}
+                                                {getRawStringFromByteArray(onchainData)}
                                             </TableCell>
                                         </TableRow>
                                     </TableBody>

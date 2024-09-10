@@ -13,8 +13,6 @@ import { SkeletonCard } from "@/components/ui/skeleton-card";
 import { AlertCircle } from "lucide-react";
 import { ChartMetagraphSnapshotCount } from "@/components/chart-metagraph-snapshotcount";
 import { ChartMetagraphSnapshotFees } from "@/components/chart-metagraph-snapshotfees";
-import { ChartMetagraphTransactionCount } from "@/components/chart-metagraph-transaction-count";
-import { ChartMetagraphTransactionVolume } from "@/components/chart-metagraph-transaction-volume";
 import NodeExplorerMetagraph from "@/components/node-explorer-metagraph";
 
 export default function MetagraphPage({ params }: { params: { id: string } }) {
@@ -70,32 +68,6 @@ export default function MetagraphPage({ params }: { params: { id: string } }) {
                                 </div>
                             ) : (
                                 <ChartMetagraphSnapshotFees snapshotMetrics={data} metagraphAddress={id} />
-                            )}
-                        </div>
-                    </div>
-                    <div className="flex flex-col lg:flex-row lg:space-x-4 space-y-4 lg:space-y-0 mb-4">
-                        <div className="lg:w-1/2">
-                            {isLoading ? (
-                                <SkeletonCard />
-                            ) : isError || !data ? (
-                                <div className="flex justify-center items-center text-red-500">
-                                    <AlertCircle className="h-8 w-8 mr-2" />
-                                    <span>Failed to fetch data</span>
-                                </div>
-                            ) : (
-                                <ChartMetagraphTransactionCount snapshotMetrics={data} metagraphAddress={id} />
-                            )}
-                        </div>
-                        <div className="lg:w-1/2">
-                            {isLoading ? (
-                                <SkeletonCard />
-                            ) : isError || !data ? (
-                                <div className="flex justify-center items-center text-red-500">
-                                    <AlertCircle className="h-8 w-8 mr-2" />
-                                    <span>Failed to fetch data</span>
-                                </div>
-                            ) : (
-                                <ChartMetagraphTransactionVolume snapshotMetrics={data} metagraphAddress={id} />
                             )}
                         </div>
                     </div>

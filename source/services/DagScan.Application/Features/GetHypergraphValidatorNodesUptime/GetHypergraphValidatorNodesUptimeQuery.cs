@@ -68,6 +68,6 @@ internal sealed class GetHypergraphValidatorNodesUptimeQueryHandler(ReadOnlyDagC
                 );
             });
 
-        return uptimes.ToList();
+        return uptimes.OrderBy(x => x.SnapshotDate).ToList();
     }
 }
