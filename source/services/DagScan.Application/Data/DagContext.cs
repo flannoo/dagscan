@@ -34,6 +34,7 @@ public sealed class DagContext(DbContextOptions<DagContext> options) : DbContext
     public DbSet<RewardTransactionConfig> RewardTransactionConfigs => Set<RewardTransactionConfig>();
     public DbSet<RewardTransaction> RewardTransactions => Set<RewardTransaction>();
     public DbSet<WalletTag> WalletTags => Set<WalletTag>();
+    public DbSet<CurrencyPrice> CurrencyPrices => Set<CurrencyPrice>();
 }
 
 public sealed class ReadOnlyDagContext : DbContext
@@ -71,6 +72,7 @@ public sealed class ReadOnlyDagContext : DbContext
     public DbSet<RewardTransactionConfig> RewardTransactionConfigs => Set<RewardTransactionConfig>();
     public DbSet<RewardTransaction> RewardTransactions => Set<RewardTransaction>();
     public DbSet<WalletTag> WalletTags => Set<WalletTag>();
+    public DbSet<CurrencyPrice> CurrencyPrices => Set<CurrencyPrice>();
 }
 
 public class DagContextFactory : IDesignTimeDbContextFactory<DagContext>

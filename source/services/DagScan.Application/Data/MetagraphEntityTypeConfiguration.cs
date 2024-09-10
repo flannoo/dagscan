@@ -69,6 +69,10 @@ public sealed class MetagraphEntityTypeConfiguration : IEntityTypeConfiguration<
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.LongText)
             .IsRequired(false);
 
+        builder.Property(m => m.CoingeckoId)
+            .HasMaxLength(DatabaseConstants.ColumnTypeLengths.NormalText)
+            .IsRequired(false);
+
         builder.Property(m => m.DataSyncEnabled)
             .HasDefaultValue(false);
 

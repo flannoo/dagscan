@@ -27,8 +27,17 @@ internal sealed class GetWalletsQueryHandler(ReadOnlyDagContext dagContext)
         var walletBalances = new List<WalletDto>();
         List<WalletInfo> wallets;
 
+        var currencyPrice = 0m;
+        var currentDate = DateOnly.FromDateTime(DateTime.UtcNow);
+
         if (request.MetagraphAddress is null)
         {
+            var persistedCurrencyPrice =
+                await dagContext.CurrencyPrices.FirstOrDefaultAsync(
+                    x => x.MetagraphAddress == null && x.Date == currentDate, cancellationToken);
+
+            currencyPrice = persistedCurrencyPrice?.Price ?? 0m;
+
             wallets = await dagContext.HypergraphBalances
                 .Where(x => x.HypergraphId == hypergraph.Id)
                 .OrderByDescending(x => x.Balance).Select(x => new WalletInfo(x.WalletAddress, x.Balance))
@@ -36,6 +45,12 @@ internal sealed class GetWalletsQueryHandler(ReadOnlyDagContext dagContext)
         }
         else
         {
+            var persistedCurrencyPrice =
+                await dagContext.CurrencyPrices.FirstOrDefaultAsync(
+                    x => x.MetagraphAddress == null && x.Date == currentDate, cancellationToken);
+
+            currencyPrice = persistedCurrencyPrice?.Price ?? 0m;
+
             wallets = await dagContext.MetagraphBalances
                 .Where(x => x.MetagraphAddress == new MetagraphAddress(request.MetagraphAddress))
                 .OrderByDescending(x => x.Balance).Select(x => new WalletInfo(x.WalletAddress, x.Balance))
@@ -49,12 +64,13 @@ internal sealed class GetWalletsQueryHandler(ReadOnlyDagContext dagContext)
         {
             var supplyPercentage = totalBalance != 0 ? (double)wallet.Balance / totalBalance * 100 : 0;
             var walletTag = walletTags.FirstOrDefault(x => x.WalletAddress == wallet.WalletAddress);
+            var usdPrice = wallet.Balance != 0 ? (wallet.Balance / 100_000_000m) * currencyPrice : 0;
             walletBalances.Add(new WalletDto(
                 rank,
                 wallet.WalletAddress.Value,
                 walletTag?.Tag,
                 wallet.Balance,
-                0,
+                usdPrice,
                 supplyPercentage));
             rank++;
         }

@@ -22,12 +22,13 @@ public sealed class Metagraph : Aggregate<MetagraphId>
     public List<MetagraphEndpoint> MetagraphEndpoints { get; private init; } = [];
     public string? CompanyName { get; private init; }
     public string? Website { get; private init; }
+    public string? CoingeckoId { get; private init; }
     public string? Description { get; private init; }
     public bool DataSyncEnabled { get; private init; }
     public long LastSnapshotSynced { get; private set; }
 
     public static Metagraph Create(HypergraphId hypergraphId, MetagraphAddress? metagraphAddress, string name,
-        string symbol, WalletAddress? feeAddress, bool dataSyncEnabled, long lastSnapshotSynced)
+        string symbol, WalletAddress? feeAddress, bool dataSyncEnabled, long lastSnapshotSynced, string? coingeckoId)
     {
         Guard.Against.NullOrWhiteSpace(name, nameof(name));
         Guard.Against.NullOrWhiteSpace(symbol, nameof(symbol));
@@ -41,7 +42,8 @@ public sealed class Metagraph : Aggregate<MetagraphId>
             Symbol = symbol,
             FeeAddress = feeAddress,
             DataSyncEnabled = dataSyncEnabled,
-            LastSnapshotSynced = lastSnapshotSynced
+            LastSnapshotSynced = lastSnapshotSynced,
+            CoingeckoId = coingeckoId
         };
     }
 

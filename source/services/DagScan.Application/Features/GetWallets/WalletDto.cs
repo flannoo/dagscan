@@ -7,7 +7,7 @@ public sealed record WalletDto(
     string Address,
     string? Tag,
     long Balance,
-    long UsdValue,
+    decimal UsdValue,
     double SupplyPercent);
 
 public sealed record WalletInfo(WalletAddress WalletAddress, long Balance);
