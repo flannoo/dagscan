@@ -1,5 +1,6 @@
 ﻿using Carter;
 using DagScan.Application.Features.GetMetagraphs;
+using DagScan.Application.Features.GetMetagraphSnapshotOnChainData;
 using DagScan.Application.Features.GetMetagraphValidatorNodes;
 using MediatR;
 
@@ -20,6 +21,14 @@ public class MetagraphModule() : CarterModule("/metagraphs")
             async (string network, string? metagraphAddress, ISender sender) =>
             {
                 var request = new GetMetagraphValidatorNodesQuery(network, metagraphAddress);
+                var response = await sender.Send(request);
+                return Results.Ok(response);
+            });
+
+        app.MapGet("/{network}/{metagraphAddress}/snapshot/{ordinal:long}",
+            async (string network, string metagraphAddress, long ordinal, ISender sender) =>
+            {
+                var request = new GetMetagraphSnapshotOnChainDataQuery(network, metagraphAddress, ordinal);
                 var response = await sender.Send(request);
                 return Results.Ok(response);
             });

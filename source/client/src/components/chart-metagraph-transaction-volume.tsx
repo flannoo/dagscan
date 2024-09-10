@@ -51,7 +51,7 @@ interface ChartMetagraphTransactionVolumeProps {
 }
 
 export function ChartMetagraphTransactionVolume({ snapshotMetrics, metagraphAddress }: ChartMetagraphTransactionVolumeProps) {
-    const filteredData = snapshotMetrics.filter((metric) => new Date(metric.snapshotDate) > new Date('2024-07-08') && metric.metagraphAddress === metagraphAddress);
+    const filteredData = snapshotMetrics.filter((metric) => new Date(metric.snapshotDate) > new Date('2024-07-08') && metric.metagraphAddress?.value === metagraphAddress);
 
     const processedData = filteredData ? aggregateDataBySnapshotDate(filteredData) : [];
 

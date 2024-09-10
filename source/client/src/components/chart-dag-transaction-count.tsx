@@ -50,7 +50,7 @@ interface ChartDagTransactionsProps {
 }
 
 export function ChartDagTransactionCount({ snapshotMetrics }: ChartDagTransactionsProps) {
-    const filteredData = snapshotMetrics.filter((metric) => new Date(metric.snapshotDate) > new Date('2024-07-08') && !metric.metagraphAddress);
+    const filteredData = snapshotMetrics.filter((metric) => new Date(metric.snapshotDate) > new Date('2024-07-08'));
 
     const processedData = filteredData ? aggregateDataBySnapshotDate(filteredData) : [];
 
