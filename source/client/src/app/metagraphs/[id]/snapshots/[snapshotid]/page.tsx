@@ -25,7 +25,7 @@ export default function SnapshotDetailPage({ params }: { params: { id: string, s
             <div className="container mx-auto px-4 lg:px-8 mb-4 mt-4">
                 <div className="mb-4">
                     {metagraphSymbol ? (
-                        <SnapshotDetail snapshotId={snapid} metagraphId={metagraphId} metagraphSymbol={metagraphSymbol} onchainApiUrl={metagraphApiUrl} />
+                        <SnapshotDetail snapshotId={snapid} metagraphId={metagraphId} metagraphSymbol={metagraphSymbol} />
                     ) : (<SkeletonCard />)}
                 </div>
                 <div className="mb-4">
