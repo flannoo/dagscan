@@ -47,7 +47,7 @@ internal sealed class GetWalletsQueryHandler(ReadOnlyDagContext dagContext)
         {
             var persistedCurrencyPrice =
                 await dagContext.CurrencyPrices.FirstOrDefaultAsync(
-                    x => x.MetagraphAddress == null && x.Date == currentDate, cancellationToken);
+                    x => x.MetagraphAddress == new MetagraphAddress(request.MetagraphAddress) && x.Date == currentDate, cancellationToken);
 
             currencyPrice = persistedCurrencyPrice?.Price ?? 0m;
 
