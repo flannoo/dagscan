@@ -30,6 +30,7 @@ builder.Services.AddDbContext<ReadOnlyDagContext>(options => { options.UseSqlSer
 builder.Services.AddScoped<IDataSeeder, HypergraphDataSeeder>();
 builder.Services.AddScoped<IDataSeeder, MetagraphDataSeeder>();
 builder.Services.AddScoped<IDataSeeder, RewardTransactionConfigDataSeeder>();
+builder.Services.AddScoped<IDataSeeder, WalletTagDataSeeder>();
 
 builder.Services
     .AddCqrs(

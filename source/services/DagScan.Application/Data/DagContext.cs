@@ -33,6 +33,7 @@ public sealed class DagContext(DbContextOptions<DagContext> options) : DbContext
     public DbSet<MetagraphValidatorNode> MetagraphValidatorNodes => Set<MetagraphValidatorNode>();
     public DbSet<RewardTransactionConfig> RewardTransactionConfigs => Set<RewardTransactionConfig>();
     public DbSet<RewardTransaction> RewardTransactions => Set<RewardTransaction>();
+    public DbSet<WalletTag> WalletTags => Set<WalletTag>();
 }
 
 public sealed class ReadOnlyDagContext : DbContext
@@ -69,6 +70,7 @@ public sealed class ReadOnlyDagContext : DbContext
     public DbSet<MetagraphValidatorNode> MetagraphValidatorNodes => Set<MetagraphValidatorNode>();
     public DbSet<RewardTransactionConfig> RewardTransactionConfigs => Set<RewardTransactionConfig>();
     public DbSet<RewardTransaction> RewardTransactions => Set<RewardTransaction>();
+    public DbSet<WalletTag> WalletTags => Set<WalletTag>();
 }
 
 public class DagContextFactory : IDesignTimeDbContextFactory<DagContext>

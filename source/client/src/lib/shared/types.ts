@@ -72,6 +72,7 @@ export type MetagraphBalance = {
 export type Balance = {
     walletAddress: string;
     balance: number;
+    tag: string;
     metagraphBalances: MetagraphBalance[];
 };
 
