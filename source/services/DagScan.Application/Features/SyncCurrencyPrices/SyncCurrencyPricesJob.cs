@@ -48,7 +48,8 @@ public sealed class SyncCurrencyPricesJob(
                 var usdPrice = json[metagraph.CoingeckoId!]?["usd"]?.Value<decimal>() ?? 0;
 
                 var currencyPrice = await dagContext.CurrencyPrices
-                    .Where(x => x.MetagraphAddress == metagraph.MetagraphAddress).FirstOrDefaultAsync();
+                    .Where(x => x.MetagraphAddress == metagraph.MetagraphAddress && x.Date == currentDate)
+                    .FirstOrDefaultAsync();
 
                 if (currencyPrice == null)
                 {

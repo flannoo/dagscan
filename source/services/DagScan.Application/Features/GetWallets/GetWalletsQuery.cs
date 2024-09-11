@@ -28,13 +28,12 @@ internal sealed class GetWalletsQueryHandler(ReadOnlyDagContext dagContext)
         List<WalletInfo> wallets;
 
         var currencyPrice = 0m;
-        var currentDate = DateOnly.FromDateTime(DateTime.UtcNow);
 
         if (request.MetagraphAddress is null)
         {
             var persistedCurrencyPrice =
-                await dagContext.CurrencyPrices.FirstOrDefaultAsync(
-                    x => x.MetagraphAddress == null && x.Date == currentDate, cancellationToken);
+                await dagContext.CurrencyPrices.OrderByDescending(x => x.Date).FirstOrDefaultAsync(
+                    x => x.MetagraphAddress == null, cancellationToken);
 
             currencyPrice = persistedCurrencyPrice?.Price ?? 0m;
 
@@ -46,8 +45,8 @@ internal sealed class GetWalletsQueryHandler(ReadOnlyDagContext dagContext)
         else
         {
             var persistedCurrencyPrice =
-                await dagContext.CurrencyPrices.FirstOrDefaultAsync(
-                    x => x.MetagraphAddress == new MetagraphAddress(request.MetagraphAddress) && x.Date == currentDate, cancellationToken);
+                await dagContext.CurrencyPrices.OrderByDescending(x => x.Date).FirstOrDefaultAsync(
+                    x => x.MetagraphAddress == new MetagraphAddress(request.MetagraphAddress), cancellationToken);
 
             currencyPrice = persistedCurrencyPrice?.Price ?? 0m;
 
