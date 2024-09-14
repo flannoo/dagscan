@@ -67,5 +67,8 @@ public class RewardTransactionEntityTypeConfiguration: IEntityTypeConfiguration<
         builder.Property(x => x.TransactionHash)
             .HasMaxLength(DatabaseConstants.ColumnTypeLengths.LongText)
             .IsRequired();
+
+        builder.HasIndex(x => x.TransactionHash).IsUnique();
+        builder.HasIndex(x => x.WalletAddress);
     }
 }

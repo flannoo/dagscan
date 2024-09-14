@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
-import { ColumnDef } from "@tanstack/react-table"
+import { ColumnDef, FilterFn } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 import Link from "next/link";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
@@ -10,7 +10,8 @@ import { DataTableWithSearch } from "@/components/ui/data-table-with-search"
 import { formatDate, formatMetagraphAmount } from "@/lib/utils";
 import { Reward } from "@/lib/shared/types";
 import { getRewards } from "@/lib/services/api-dagscan-request";
-
+import React from "react";
+  
 export const columns: ColumnDef<Reward>[] = [
     {
         accessorKey: "transactionDate",
@@ -65,17 +66,40 @@ export const columns: ColumnDef<Reward>[] = [
     {
         accessorKey: "transactionHash",
         header: "TransactionRef",
+        enableColumnFilter: true,
+        filterFn: 'transactionRef',
         cell: ({ row }) => {
             const transactionRef: string = row.getValue("transactionHash");
-            if (!transactionRef) {
+            const snapshotRef: number = row.original.ordinal;
+            const metagraphAddress: string = row.original.metagraphAddress;
+
+            if (!transactionRef && !snapshotRef) {
                 return null;
             }
 
-            return <Link href={`/transactions/${transactionRef}`} className="hover:underline" prefetch={false}>
-                {transactionRef.slice(0, 6)}...{transactionRef.slice(-6)}
+            if (transactionRef) {
+                if (metagraphAddress) {
+                    return <Link href={`/metagraphs/${metagraphAddress}/transactions/${transactionRef}`} className="hover:underline" prefetch={false}>
+                        {transactionRef.slice(0, 6)}...{transactionRef.slice(-6)}
+                    </Link>
+                }
+
+                return <Link href={`/transactions/${transactionRef}`} className="hover:underline" prefetch={false}>
+                    {transactionRef.slice(0, 6)}...{transactionRef.slice(-6)}
+                </Link>
+            }
+
+            if (metagraphAddress) {
+                return <Link href={`/metagraphs/${metagraphAddress}/snapshots/${snapshotRef}`} className="hover:underline" prefetch={false}>
+                    {snapshotRef}
+                </Link>
+            }
+
+            return <Link href={`/snapshots/${snapshotRef}`} className="hover:underline" prefetch={false}>
+                {snapshotRef}
             </Link>
         },
-    },
+    }
 ]
 
 export default function GridRewards({ addresses }: { addresses: string }) {
@@ -83,6 +107,11 @@ export default function GridRewards({ addresses }: { addresses: string }) {
         queryKey: ['rewards-' + addresses],
         queryFn: async () => getRewards(addresses),
     });
+
+    const [columnVisibility, setColumnVisibility] = React.useState({
+        ordinal: false,
+    });
+    
     return (
         <div className="mb-4">
             {isLoading ? (
