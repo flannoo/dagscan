@@ -80,7 +80,8 @@ export function DataTable<TData, TValue>({
       columnFilters,
     },
     filterFns: {
-      fuzzy: fuzzyFilter, 
+      fuzzy: fuzzyFilter,
+      transactionRef: fuzzyFilter
     },
   })
 
