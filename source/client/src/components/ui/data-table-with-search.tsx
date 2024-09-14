@@ -37,6 +37,7 @@ declare module '@tanstack/react-table' {
   //add fuzzy filter to the filterFns
   interface FilterFns {
     fuzzy: FilterFn<unknown>
+    transactionRef: FilterFn<unknown>;
   }
   interface FilterMeta {
     itemRank: RankingInfo
@@ -49,13 +50,39 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value)
 
   // Store the itemRank info
-  addMeta({
-    itemRank,
-  })
+  if (addMeta) {
+    addMeta({
+      itemRank,
+    })
+  }
 
   // Return if the item should be filtered in/out
   return itemRank.passed
 }
+
+// Custom filter function for transactionRef column
+const transactionRefFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  const transactionRef = row.original.transactionHash;
+  const snapshotRef = row.original.ordinal;
+
+  const itemRank = rankItem(transactionRef, value);
+  if (typeof addMeta === 'function') {
+    addMeta({ itemRank });
+  }
+
+  return (
+    itemRank.passed ||
+    snapshotRef?.toString().includes(value) ||
+    transactionRef?.toLowerCase().includes(value.toLowerCase())
+  );
+};
+
+const combinedGlobalFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  const fuzzyResult = fuzzyFilter(row, columnId, value, addMeta);
+  const transactionRefResult = transactionRefFilter(row, columnId, value, addMeta);
+
+  return fuzzyResult || transactionRefResult;
+};
 
 interface DataTableWithSearchProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -95,14 +122,15 @@ export function DataTableWithSearch<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    globalFilterFn: 'fuzzy',
+    globalFilterFn: combinedGlobalFilter,
     state: {
       sorting,
       columnFilters,
       globalFilter
     },
     filterFns: {
-      fuzzy: fuzzyFilter, 
+      fuzzy: fuzzyFilter,
+      transactionRef: transactionRefFilter,
     },
   })
 

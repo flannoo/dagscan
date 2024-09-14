@@ -49,13 +49,13 @@ public sealed class SyncHypergraphSnapshotsMetadataWorker(
                 if (errorOccurred)
                 {
                     logger.LogError("Some error while syncing snapshot metadata, delaying next execution");
-                    await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
+                    await Task.Delay(TimeSpan.FromSeconds(60), cancellationToken);
                 }
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error while syncing snapshot metadata");
-                await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(60), cancellationToken);
             }
         }
     }
@@ -68,7 +68,9 @@ public sealed class SyncHypergraphSnapshotsMetadataWorker(
             var completedSuccessfully = true;
 
             var snapshotsToSync = await dagContext.HypergraphSnapshots
-                .Where(x => !x.IsMetadataSynced && x.HypergraphId == hypergraph.Id)
+                .Where(x =>
+                    !x.IsMetadataSynced && x.HypergraphId == hypergraph.Id &&
+                    x.Ordinal >= hypergraph.StartSnapshotMetadataOrdinal)
                 .OrderByDescending(x => x.Ordinal)
                 .Take(parallelProcessingCount)
                 .ToListAsync(cancellationToken);
@@ -185,16 +187,13 @@ public sealed class InsertGlobalSnapshotMetadataCommandHandler(
 
         snapshot.SetFee(SumStateChannelSnapshotFees(request.NodeSnapshot));
 
-        if (!snapshot.IsTimeTriggeredSnapshot)
+        var stateChannelSnapshot = request.NodeSnapshot.Value.StateChannelSnapshots?.FirstOrDefault();
+        if (stateChannelSnapshot is not null)
         {
-            var stateChannelSnapshot = request.NodeSnapshot.Value.StateChannelSnapshots?.FirstOrDefault();
-            if (stateChannelSnapshot is not null)
+            var metagraphAddress = stateChannelSnapshot.Value.Key;
+            if (!string.IsNullOrWhiteSpace(metagraphAddress))
             {
-                var metagraphAddress = stateChannelSnapshot.Value.Key;
-                if (!string.IsNullOrWhiteSpace(metagraphAddress))
-                {
-                    snapshot.SetMetagraphAddress(new WalletAddress(metagraphAddress));
-                }
+                snapshot.SetMetagraphAddress(new WalletAddress(metagraphAddress));
             }
         }
 
