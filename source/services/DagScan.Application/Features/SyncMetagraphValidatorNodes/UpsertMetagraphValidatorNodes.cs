@@ -76,9 +76,11 @@ public sealed class UpsertMetagraphValidatorNodesCommandHandler(
             }
 
             // Mark nodes as offline if they are not included in validatorNodes API response and not already marked as offline
-            foreach (var persistedNode in metagraphNodes.Where(x => x.NodeStatus != "Offline"))
+            var validatorNodeMap = validatorNodes.ToDictionary(node => node.Id, node => node);
+            foreach (var persistedNode in metagraphNodes)
             {
-                if (!metagraphNodes.Select(x => x.WalletId).Contains(persistedNode.WalletId))
+                if (persistedNode.NodeStatus != "Offline" &&
+                    !validatorNodeMap.ContainsKey(persistedNode.WalletId.Value))
                 {
                     persistedNode.UpdateNodeStatus("Offline");
                 }
