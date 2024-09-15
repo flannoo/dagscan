@@ -121,6 +121,10 @@ export const getRawStringFromByteArray = (byteArray: number[]) => {
 };
 
 export const getConvertedStringFromByteArray = (byteArray: number[]) => {
+  if (byteArray.length === 0) {
+    return "{}";
+  }  
+
   const jsonString = String.fromCharCode(...byteArray.map(byte => byte));
   return jsonString;
 };
