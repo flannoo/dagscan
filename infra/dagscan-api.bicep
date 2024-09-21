@@ -78,6 +78,18 @@ var environmentVariables = [
     name: 'AZURE_CLIENT_ID'
     secretRef: 'managed-identity-client-id'
   }
+  {
+    name: 'DAGSCAN_API__AzureAd__Instance'
+    value: environment().authentication.loginEndpoint
+  }
+  {
+    name: 'DAGSCAN_API__AzureAd__TenantId'
+    value: tenant().tenantId
+  }
+  {
+    name: 'DAGSCAN_API__AzureAd__ClientId'
+    secretRef: 'api-client-id'
+  }
 ]
 
 // =================================================================================
@@ -121,6 +133,11 @@ module containerApp '_modules/azure-container-app/main.bicep' = {
         name: 'managed-identity-client-id'
         identity: userIdentity.id
         keyVaultUrl: '${keyVault.properties.vaultUri}secrets/managed-identity-client-id'
+      }
+      {
+        name: 'api-client-id'
+        identity: userIdentity.id
+        keyVaultUrl: '${keyVault.properties.vaultUri}secrets/api-client-id'
       }
     ]
     ingress: {
