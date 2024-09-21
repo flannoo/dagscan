@@ -5,9 +5,12 @@ using DagScan.Application.Data;
 using DagScan.Core.CQRS;
 using Hangfire;
 using Hangfire.Dashboard;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
+var environment = builder.Environment;
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -32,6 +35,18 @@ var databaseConnectionString = Environment.GetEnvironmentVariable("DB_CONNECTION
 builder.Services.AddDbContext<DagContext>(options => { options.UseSqlServer(databaseConnectionString); });
 builder.Services.AddDbContext<ReadOnlyDagContext>(options => { options.UseSqlServer(databaseConnectionString); });
 
+if (!environment.IsDevelopment())
+{
+    builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+        .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("DAGSCAN_API:AzureAd"));
+}
+else
+{
+    builder.Services.AddAuthentication();
+}
+
+builder.Services.AddAuthorization();
+
 builder.Services.AddHangfire(configuration => configuration
     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
     .UseSimpleAssemblyNameTypeSerializer()
@@ -50,26 +65,41 @@ builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
+app.UseAuthentication();
+app.UseRouting();
+app.UseAuthorization();
+
+app.UseHttpsRedirection();
+app.UseCors(defaultCorsPolicyName);
+app.UseResponseCompression();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 
-    app.UseHangfireDashboard("/hangfire", new DashboardOptions
-    {
-        Authorization = new [] { new HangfireAuthFilter() }
-    });
+    app.MapHangfireDashboard("/hangfire", new DashboardOptions { Authorization = [new HangfireAnonymousFilter()] });
 }
-
-app.UseHttpsRedirection();
-app.UseCors(defaultCorsPolicyName);
-app.UseResponseCompression();
+else
+{
+    app.MapHangfireDashboard("/hangfire", new DashboardOptions { Authorization = [new HangfireAuthFilter()] })
+        .RequireAuthorization();
+}
 
 app.MapCarter();
 
 app.Run();
 
 internal sealed class HangfireAuthFilter : IDashboardAuthorizationFilter
+{
+    public bool Authorize(DashboardContext context)
+    {
+        var httpContext = context.GetHttpContext();
+        return httpContext.User.Identity?.IsAuthenticated == true && httpContext.User.IsInRole("Admin");
+    }
+}
+
+internal sealed class HangfireAnonymousFilter : IDashboardAuthorizationFilter
 {
     public bool Authorize(DashboardContext context)
     {
