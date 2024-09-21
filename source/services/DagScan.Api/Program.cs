@@ -65,13 +65,13 @@ builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
-app.UseAuthentication();
-app.UseRouting();
-app.UseAuthorization();
-
 app.UseHttpsRedirection();
 app.UseCors(defaultCorsPolicyName);
 app.UseResponseCompression();
+
+app.UseAuthentication();
+app.UseRouting();
+app.UseAuthorization();
 
 if (environment.IsDevelopment())
 {
