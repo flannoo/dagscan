@@ -35,14 +35,14 @@ var databaseConnectionString = Environment.GetEnvironmentVariable("DB_CONNECTION
 builder.Services.AddDbContext<DagContext>(options => { options.UseSqlServer(databaseConnectionString); });
 builder.Services.AddDbContext<ReadOnlyDagContext>(options => { options.UseSqlServer(databaseConnectionString); });
 
-if (!environment.IsDevelopment())
+if (environment.IsDevelopment())
 {
-    builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-        .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("DAGSCAN_API:AzureAd"));
+    builder.Services.AddAuthentication();
 }
 else
 {
-    builder.Services.AddAuthentication();
+    builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+        .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("DAGSCAN_API:AzureAd"));
 }
 
 builder.Services.AddAuthorization();
@@ -73,7 +73,7 @@ app.UseHttpsRedirection();
 app.UseCors(defaultCorsPolicyName);
 app.UseResponseCompression();
 
-if (app.Environment.IsDevelopment())
+if (environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
