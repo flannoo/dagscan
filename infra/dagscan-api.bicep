@@ -71,6 +71,10 @@ var environmentVariables = [
     value: 'Warning'
   }
   {
+    name: 'ASPNETCORE_FORWARDEDHEADERS_ENABLED'
+    value: 'true'
+  }
+  {
     name: 'DB_CONNECTION_STRING'
     secretRef: 'database-connectionstring'
   }
