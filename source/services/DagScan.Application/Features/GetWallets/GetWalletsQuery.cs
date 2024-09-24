@@ -38,7 +38,7 @@ internal sealed class GetWalletsQueryHandler(ReadOnlyDagContext dagContext)
             currencyPrice = persistedCurrencyPrice?.Price ?? 0m;
 
             wallets = await dagContext.HypergraphBalances
-                .Where(x => x.HypergraphId == hypergraph.Id)
+                .Where(x => x.HypergraphId == hypergraph.Id && x.Balance > 0)
                 .OrderByDescending(x => x.Balance).Select(x => new WalletInfo(x.WalletAddress, x.Balance))
                 .ToListAsync(cancellationToken);
         }
@@ -51,7 +51,7 @@ internal sealed class GetWalletsQueryHandler(ReadOnlyDagContext dagContext)
             currencyPrice = persistedCurrencyPrice?.Price ?? 0m;
 
             wallets = await dagContext.MetagraphBalances
-                .Where(x => x.MetagraphAddress == new MetagraphAddress(request.MetagraphAddress))
+                .Where(x => x.MetagraphAddress == new MetagraphAddress(request.MetagraphAddress) && x.Balance > 0)
                 .OrderByDescending(x => x.Balance).Select(x => new WalletInfo(x.WalletAddress, x.Balance))
                 .ToListAsync(cancellationToken);
         }
