@@ -135,8 +135,6 @@ module containerApp '_modules/azure-container-app/main.bicep' = {
         keyVaultUrl: '${keyVault.properties.vaultUri}secrets/IPAPI-KEY'
       }
     ]
-    cpu: '2'
-    memory: '4Gi'
     ingressEnabled: false
   }
 }
