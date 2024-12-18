@@ -45,39 +45,43 @@ export default function MetagraphPage({ params }: { params: { id: string } }) {
                     <TabsTrigger value="nodes">Node Explorer</TabsTrigger>
                 </TabsList>
                 <TabsContent value="overview">
-                    <div className="flex flex-col lg:flex-row lg:space-x-4 space-y-4 lg:space-y-0 mb-4">
-                        <div className="lg:w-1/2">
-                            {isLoading ? (
-                                <SkeletonCard />
-                            ) : isError || !data ? (
-                                <div className="flex justify-center items-center text-red-500">
-                                    <AlertCircle className="h-8 w-8 mr-2" />
-                                    <span>Failed to fetch data</span>
-                                </div>
-                            ) : (
-                                <ChartMetagraphSnapshotCount snapshotMetrics={data} metagraphAddress={id} />
-                            )}
+                    {id !== 'DAG7fwxZJpqBpXeHqjomVkvUfC9NgZeQ11qjmB5e' && (
+                        <div className="flex flex-col lg:flex-row lg:space-x-4 space-y-4 lg:space-y-0 mb-4">
+                            <div className="lg:w-1/2">
+                                {isLoading ? (
+                                    <SkeletonCard />
+                                ) : isError || !data ? (
+                                    <div className="flex justify-center items-center text-red-500">
+                                        <AlertCircle className="h-8 w-8 mr-2" />
+                                        <span>Failed to fetch data</span>
+                                    </div>
+                                ) : (
+                                    <ChartMetagraphSnapshotCount snapshotMetrics={data} metagraphAddress={id} />
+                                )}
+                            </div>
+                            <div className="lg:w-1/2">
+                                {isLoading ? (
+                                    <SkeletonCard />
+                                ) : isError || !data ? (
+                                    <div className="flex justify-center items-center text-red-500">
+                                        <AlertCircle className="h-8 w-8 mr-2" />
+                                        <span>Failed to fetch data</span>
+                                    </div>
+                                ) : (
+                                    <ChartMetagraphSnapshotFees snapshotMetrics={data} metagraphAddress={id} />
+                                )}
+                            </div>
                         </div>
-                        <div className="lg:w-1/2">
-                            {isLoading ? (
-                                <SkeletonCard />
-                            ) : isError || !data ? (
-                                <div className="flex justify-center items-center text-red-500">
-                                    <AlertCircle className="h-8 w-8 mr-2" />
-                                    <span>Failed to fetch data</span>
-                                </div>
-                            ) : (
-                                <ChartMetagraphSnapshotFees snapshotMetrics={data} metagraphAddress={id} />
-                            )}
-                        </div>
-                    </div>
+                    )}
                     <div className="flex flex-col lg:flex-row lg:space-x-4 space-y-4 lg:space-y-0">
                         <div className="lg:w-1/2">
                             <LatestSnapshots metagraphId={id} metagraphSymbol={metagraphSymbol} />
                         </div>
-                        <div className="lg:w-1/2">
-                            <LatestTransactions metagraphId={id} metagraphSymbol={metagraphSymbol} />
-                        </div>
+                        {id !== 'DAG7fwxZJpqBpXeHqjomVkvUfC9NgZeQ11qjmB5e' && (
+                            <div className="lg:w-1/2">
+                                <LatestTransactions metagraphId={id} metagraphSymbol={metagraphSymbol} />
+                            </div>
+                        )}
                     </div>
                 </TabsContent>
                 <TabsContent value="wallets">

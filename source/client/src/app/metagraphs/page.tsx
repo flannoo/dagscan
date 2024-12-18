@@ -46,7 +46,8 @@ export default function MetagraphsPage() {
                         <MetagraphList metagraphs={filterMetagraphs} />
                     </div>
 
-                    {filterMetagraphs.map(metagraph => (
+                    {filterMetagraphs.filter(metagraph => metagraph.metagraphAddress !== 'DAG7fwxZJpqBpXeHqjomVkvUfC9NgZeQ11qjmB5e')
+                        .map(metagraph => (
                         <>
                             <h2 className="text-2xl font-bold mb-4">{metagraph.symbol} Statistics</h2>
                             <div className="flex flex-col lg:flex-row lg:space-x-4 space-y-4 lg:space-y-0 mb-4">
