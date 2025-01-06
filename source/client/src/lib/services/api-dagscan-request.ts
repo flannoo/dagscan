@@ -86,7 +86,7 @@ export async function getRewards(walletAddresses: string, network?: string) {
     const apiUrl = process.env.NEXT_PUBLIC_API_DAGSCAN_URL;
     const networkUrl = network || 'mainnet';
 
-    const url = `${apiUrl}/wallets/${networkUrl}/${walletAddresses}/rewards?startDate=2021-01-01&endDate=2025-01-01`;
+    const url = `${apiUrl}/wallets/${networkUrl}/${walletAddresses}/rewards?startDate=2021-01-01&endDate=2026-01-01`;
 
     const res = await fetch(url);
 
