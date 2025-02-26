@@ -19,7 +19,7 @@ const groupDataByCoordinates = (nodesData: ValidatorNode[]) => {
   const grouped: { [key: string]: ValidatorNode[] } = {};
 
   nodesData.forEach(vps => {
-    const key = `${vps.latitude},${vps.longitude}`;
+    const key = `${vps.latitude},${vps.longitude},${vps.serviceProvider}`;
     if (!grouped[key]) {
       grouped[key] = [];
     }
