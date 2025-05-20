@@ -40,7 +40,6 @@ export function LatestSnapshots({ metagraphId, metagraphSymbol }: { metagraphId?
                                     <TableHead>Ordinal</TableHead>
                                     <TableHead>Timestamp</TableHead>
                                     <TableHead>Blocks</TableHead>
-                                    <TableHead>Rewards</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -59,7 +58,6 @@ export function LatestSnapshots({ metagraphId, metagraphSymbol }: { metagraphId?
                                         </TableCell>
                                         <TableCell>{formatDate(snapshot.timestamp)}</TableCell>
                                         <TableCell>{snapshot.blocks.length}</TableCell>
-                                        <TableCell>{snapshot.rewards.length} recipients</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

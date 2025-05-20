@@ -73,7 +73,6 @@ export function SnapshotList({ metagraphId, metagraphSymbol }: { metagraphId?: s
                                         <TableHead className="px-2 py-1 leading-loose">Ordinal</TableHead>
                                         <TableHead className="px-2 py-1 leading-loose">Timestamp</TableHead>
                                         <TableHead className="px-2 py-1 leading-loose">Blocks</TableHead>
-                                        <TableHead className="px-2 py-1 leading-loose">Rewards</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -92,7 +91,6 @@ export function SnapshotList({ metagraphId, metagraphSymbol }: { metagraphId?: s
                                             </TableCell>
                                             <TableCell className="px-2 py-1 leading-loose">{formatDate(snapshot.timestamp)}</TableCell>
                                             <TableCell className="px-2 py-1 leading-loose">{snapshot.blocks.length}</TableCell>
-                                            <TableCell className="px-2 py-1 leading-loose">{snapshot.rewards.length} recipients</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
